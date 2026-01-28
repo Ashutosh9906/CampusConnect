@@ -1,0 +1,33 @@
+{
+  "name": "campusconnect",
+  "version": "1.0.0",
+  "description": "A PBL ( project based learning ) project to improve web development skills",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ashutosh9906/CampusConnect.git"
+  },
+  "author": "Gandule_D_Ashutosh",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ashutosh9906/CampusConnect/issues"
+  },
+  "homepage": "https://github.com/Ashutosh9906/CampusConnect#readme",
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.2",
+    "express": "^5.2.1",
+    "prisma": "^6.19.2"
+  }
+}
