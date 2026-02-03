@@ -1,0 +1,143 @@
+.carousel-wrapper {
+  position: relative;
+  width: 100%;
+  height: 420px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  perspective: 1400px;
+}
+
+/* =========================
+   BASE CARD
+   ========================= */
+.event-card-3d {
+  position: absolute;
+  width: 300px;
+  height: 380px;
+
+  border-radius: 18px;
+  overflow: hidden;
+  background: black;
+
+  transition:
+    transform 0.6s ease,
+    opacity 0.6s ease;
+
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.35);
+}
+
+.event-card-3d img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Overlay */
+.event-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.75),
+    rgba(0, 0, 0, 0.15),
+    transparent
+  );
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 20px;
+}
+
+.event-overlay h3 {
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.event-overlay button {
+  align-self: flex-start;
+  background: white;
+  color: #2563eb;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* =========================
+   3D POSITIONS (CORE PART)
+   ========================= */
+
+/* CENTER */
+.event-card-3d.center {
+  transform: translateX(0) translateZ(200px);
+  z-index: 5;
+  opacity: 1;
+}
+
+/* LEFT */
+.event-card-3d.left {
+  transform: translateX(-240px) rotateY(35deg) translateZ(80px);
+  z-index: 4;
+  opacity: 0.9;
+}
+
+/* RIGHT */
+.event-card-3d.right {
+  transform: translateX(240px) rotateY(-35deg) translateZ(80px);
+  z-index: 4;
+  opacity: 0.9;
+}
+
+/* FAR LEFT */
+.event-card-3d.far-left {
+  transform: translateX(-420px) rotateY(55deg) translateZ(-40px);
+  z-index: 3;
+  opacity: 0.6;
+}
+
+/* FAR RIGHT */
+.event-card-3d.far-right {
+  transform: translateX(420px) rotateY(-55deg) translateZ(-40px);
+  z-index: 3;
+  opacity: 0.6;
+}
+
+/* =========================
+   NAV BUTTONS
+   ========================= */
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+
+  background: white;
+  border: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+
+  font-size: 28px;
+  font-weight: bold;
+  color: #2563eb;
+
+  cursor: pointer;
+  z-index: 10;
+
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+}
+
+.carousel-btn.left {
+  left: 40px;
+}
+
+.carousel-btn.right {
+  right: 40px;
+}
