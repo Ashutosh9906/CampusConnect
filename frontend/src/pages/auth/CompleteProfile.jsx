@@ -1,38 +1,31 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import "../../styles/auth.css";
 import "../../styles/form.css";
-import illustration from "../../assets/login-illustration.svg";
-import googleIcon from "../../assets/google_logo.png";
 
-function Login() {
+function CompleteProfile() {
   const [showPassword, setShowPassword] = useState(false);
+
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [prn, setPrn] = useState("");
+  const [roll, setRoll] = useState("");
+  const [division, setDivision] = useState("");
 
   return (
     <div className="auth-page">
       <div className="auth-card">
-        {/* LEFT PANEL */}
-        <div className="auth-left">
-          <img src={illustration} alt="Campus Connect" />
-          <h2>Campus Connect</h2>
-          <p>One platform for campus events</p>
-        </div>
-
-        {/* RIGHT PANEL */}
         <div className="auth-right">
-          <h3>Sign In</h3>
+          <h3>Complete your profile</h3>
 
+          {/* PASSWORD */}
           <div className="form-group">
-            <label>Email</label>
-            <input type="email" />
-          </div>
-
-          {/* PASSWORD WITH PERFECT CENTERED EYE */}
-          <div className="form-group">
-            <label>Password</label>
-
             <div className="password-field">
-              <input type={showPassword ? "text" : "password"} />
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Create Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
 
               <span
                 className="eye-btn"
@@ -78,24 +71,39 @@ function Login() {
             </div>
           </div>
 
-          <button className="btn-primary">Sign In</button>
+          <input
+            type="text"
+            placeholder="Student Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
 
-          <div className="divider">
-            <span>or</span>
-          </div>
+          <input
+            type="text"
+            placeholder="PRN Number"
+            value={prn}
+            onChange={(e) => setPrn(e.target.value)}
+          />
 
-          <button className="btn-google">
-            <img src={googleIcon} alt="Google" />
-            Sign in with Google
-          </button>
+          <input
+            type="text"
+            placeholder="Roll Number"
+            value={roll}
+            onChange={(e) => setRoll(e.target.value)}
+          />
 
-          <p className="signup-text">
-            Don’t have an account? <Link to="/register">Register</Link>
-          </p>
+          <input
+            type="text"
+            placeholder="Division"
+            value={division}
+            onChange={(e) => setDivision(e.target.value)}
+          />
+
+          <button className="btn-primary">Create Account</button>
         </div>
       </div>
     </div>
   );
 }
 
-export default Login;
+export default CompleteProfile;
