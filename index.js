@@ -2,7 +2,8 @@
 import express from "express";
 import { configDotenv } from "dotenv";
 import { PrismaClient } from "@prisma/client";
-import { ID } from "node-appwrite";
+import cors from "cors";
+
 configDotenv();
 
 // server variables
@@ -17,65 +18,68 @@ import { comparePassword, handleResponse, hashPassword } from "./utilities/userU
 
 //middlewares
 app.use(express.json());
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true
+}));
+
 
 //custom api
-app.get("/auth/google", (req, res) => {
-  const redirectUrl =
-    `${process.env.APPWRITE_ENDPOINT}/account/sessions/oauth2/google` +
-    `?project=${process.env.APPWRITE_PROJECT_ID}` +
-    `&success=${encodeURIComponent("http://localhost:4000/auth/success")}` +
-    `&failure=${encodeURIComponent("http://localhost:4000/auth/failure")}`;
-
-  res.redirect(redirectUrl);
-});
-
-app.get("/auth/success", async (req, res, next) => {
+app.post("/auth/google-login", async (req, res, next) => {
   try {
-    const user = await account.get();
+    const { appwriteUserId, email, name } = req.body;
 
-    let dbUser = await prisma.user.findUnique({
-      where: { appwriteUserId: user.$id },
-    })
-    
-    if (!dbUser) {
-      dbUser = await prisma.user.create({
+    let user = await prisma.user.findUnique({
+      where: { appwriteUserId },
+    });
+
+    // If user doesn't exist → create
+    if (!user) {
+      user = await prisma.user.create({
         data: {
-          appwriteUserId: user.$id,
-          email: user.email,
-          name: user.name,
+          appwriteUserId,
+          email,
+          name,
+          profileComplete: false,
         },
       });
     }
 
-    return handleResponse(res, 200, "User verified successfully");
-  } catch (error) {
-    next(error);
-  }
-});
-
-app.get("/auth/failure", (req, res) => {
-  res.status(401).send("❌ Google login failed");
-});
-
-app.post("/auth/otp/send", async (req, res, next) => {
-  try {
-    const { email } = req.body;
-
-    const token = await account.createEmailToken(
-      ID.unique(),
-      email
-    );
-
-    // return userId to client (needed for verification)
-    res.json({
+    return res.json({
       success: true,
-      userId: token.userId,
-      message: `OTP sent to ${email}`,
+      profileComplete: user.profileComplete,
+      user,
     });
   } catch (err) {
     next(err);
   }
 });
+
+app.post("/auth/complete-profile", async (req, res, next) => {
+  try {
+    const { appwriteUserId, name, password, prn, roll, division } = req.body;
+
+    const hash = await hashPassword(password);
+
+    const user = await prisma.user.update({
+      where: { appwriteUserId },
+      data: {
+        name,
+        passwordHash: hash,
+        passwordSet: true,
+        prn,
+        roll,
+        division,
+        profileComplete: true,
+      },
+    });
+
+    res.json({ success: true, user });
+  } catch (err) {
+    next(err);
+  }
+});
+
 
 app.post("/auth/otp/verify", async (req, res, next) => {
   try {

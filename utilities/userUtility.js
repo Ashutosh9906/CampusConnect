@@ -1,3 +1,5 @@
+import {hash, compare} from "bcryptjs";
+
 export const handleResponse = (res, status, message, data = null) => {
     res.status(status).json({
         message,

@@ -15,15 +15,16 @@ datasource db {
 }
 
 model User {
-  id             String   @id @default(uuid())
-  appwriteUserId String   @unique
-  email          String   @unique
-  name           String?
-  passwordHash   String?
-  passwordSet    Boolean  @default(false)
-  class          String?
-  rollNo         String?
-  prn            String?
-  type           String?
-  createdAt      DateTime @default(now())
+  id              String  @id @default(cuid())
+  appwriteUserId  String  @unique
+  email           String  @unique
+  name            String?
+  passwordHash    String?
+  passwordSet     Boolean @default(false)
+  prn             String?
+  roll            String?
+  division        String?
+  profileComplete Boolean @default(false)
 }
+
+

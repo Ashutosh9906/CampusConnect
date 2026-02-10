@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "../../styles/auth.css";
 import "../../styles/form.css";
+import { account } from "../../config/appwrite";
 
 function CompleteProfile() {
   const [showPassword, setShowPassword] = useState(false);
@@ -10,6 +11,38 @@ function CompleteProfile() {
   const [prn, setPrn] = useState("");
   const [roll, setRoll] = useState("");
   const [division, setDivision] = useState("");
+
+  const handleSubmit = async () => {
+  try {
+    const user = await account.get();
+
+    const res = await fetch("http://localhost:4000/auth/complete-profile", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        appwriteUserId: user.$id,
+        name,
+        password,
+        prn,
+        roll,
+        division,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      window.location.href = "/home";
+    } else {
+      alert("Failed to complete profile");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Something went wrong");
+  }
+};
 
   return (
     <div className="auth-page">
@@ -99,7 +132,10 @@ function CompleteProfile() {
             onChange={(e) => setDivision(e.target.value)}
           />
 
-          <button className="btn-primary">Create Account</button>
+          <button className="btn-primary" onClick={handleSubmit}>
+            Create Account
+          </button>
+
         </div>
       </div>
     </div>

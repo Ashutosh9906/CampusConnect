@@ -3,10 +3,12 @@ import { account } from "../../config/appwrite";
 
 function GoogleButton() {
   const handleGoogleLogin = () => {
-    account.createOAuth2Token(
+    const origin = window.location.origin;
+
+    account.createOAuth2Session(
       "google",
-      window.location.origin + "/auth/success",
-      window.location.origin + "/auth/failure"
+      origin + "/auth/success",
+      origin + "/auth/failure"
     );
   };
 

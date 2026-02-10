@@ -8,6 +8,18 @@ import GoogleSuccess from "./pages/auth/GoogleSuccess";
 
 import "./styles/App.css";
 
+function GoogleFailure() {
+  const params = new URLSearchParams(window.location.search);
+  const message = params.get("message");
+
+  return (
+    <div style={{ padding: "40px", fontSize: "18px" }}>
+      <h2>Google login failed</h2>
+      <p>{message}</p>
+    </div>
+  );
+}
+
 function App() {
   return (
     <BrowserRouter>
@@ -19,7 +31,7 @@ function App() {
 
         {/* Google OAuth routes */}
         <Route path="/auth/success" element={<GoogleSuccess />} />
-        <Route path="/auth/failure" element={<div>Google login failed</div>} />
+        <Route path="/auth/failure" element={<GoogleFailure />} />
       </Routes>
     </BrowserRouter>
   );
