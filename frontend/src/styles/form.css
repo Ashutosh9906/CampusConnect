@@ -1,0 +1,222 @@
+@import "./variables.css";
+
+/* =========================
+   HEADINGS
+========================= */
+
+.auth-right h3 {
+  margin-bottom: 25px;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+/* =========================
+   FORM GROUP
+========================= */
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  font-size: 13px;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* =========================
+   INPUTS
+========================= */
+
+.form-group input,
+.auth-right input {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border-light);
+  font-size: 15px;
+  margin-bottom: 16px;
+  background: #ffffff;
+  transition: all 0.25s ease;
+}
+
+.form-group input:focus,
+.auth-right input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+}
+
+/* =========================
+   FORGOT PASSWORD
+========================= */
+
+.forgot {
+  font-size: 13px;
+  text-align: right;
+  margin-bottom: 18px;
+  color: var(--primary);
+  cursor: pointer;
+}
+
+/* =========================
+   PRIMARY BUTTON
+========================= */
+
+.btn-primary {
+  width: 100%;
+  padding: 12px;
+  background: var(--primary);
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.25s ease;
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.35);
+}
+
+/* =========================
+   DIVIDER
+========================= */
+
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 22px 0;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #e2e8f0;
+}
+
+.divider span {
+  margin: 0 10px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* =========================
+   GOOGLE BUTTON
+========================= */
+
+.btn-google {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 1.5px solid var(--border-light);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.btn-google img {
+  width: 18px;
+}
+
+.btn-google:hover {
+  background: #f8fafc;
+  border-color: var(--primary);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+/* =========================
+   SIGNUP TEXT
+========================= */
+
+.signup-text {
+  margin-top: 18px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.signup-text span {
+  color: var(--primary);
+  cursor: pointer;
+}
+
+/* =========================
+   PASSWORD EYE ICON
+========================= */
+
+/* =========================
+   PASSWORD FIELD (EYE ICON)
+========================= */
+
+/* =========================
+   PASSWORD FIELD (PERFECT CENTER)
+========================= */
+
+.password-field {
+  position: relative;
+}
+
+.password-field input {
+  width: 100%;
+  padding-right: 48px;
+}
+
+/* Eye perfectly centered relative to input */
+.eye-btn {
+  position: absolute;
+  right: 14px;
+
+  top: 50%;
+  transform: translateY(-50%);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 22px;
+  height: 22px;
+
+  cursor: pointer;
+  color: #64748b;
+  opacity: 0.8;
+}
+
+.eye-btn:hover {
+  opacity: 1;
+}
+
+/* =========================
+   OTP TEXT
+========================= */
+
+.otp-subtext {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 22px;
+  line-height: 1.5;
+}
+
+.resend-text {
+  margin-top: 18px;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.resend-text span {
+  color: var(--primary);
+  cursor: pointer;
+  font-weight: 600;
+}
