@@ -1,0 +1,62 @@
+@import "./variables.css";
+
+/* =========================
+   COMPACT HERO
+   ========================= */
+.landing-hero {
+  max-width: 1200px;
+  margin: 60px auto 0;
+  padding: 40px 24px 70px; /* 🔥 compact height */
+
+  background: linear-gradient(
+    135deg,
+    rgba(37, 99, 235, 0.08),
+    rgba(37, 99, 235, 0.02)
+  );
+
+  border-radius: 28px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.landing-hero h1 {
+  font-size: 36px; /* 🔥 reduced */
+  font-weight: 800;
+  margin-bottom: 6px;
+  color: #0f172a;
+}
+
+.landing-hero p {
+  font-size: 14.5px; /* 🔥 reduced */
+  max-width: 520px;
+  margin: 0 auto;
+  line-height: 1.45;
+  color: #475569;
+}
+
+/* =========================
+   EVENTS SECTION (FOCUS)
+   ========================= */
+.featured-events {
+  margin-top: -110px; /* 🔥 pulls cards into view */
+  padding-bottom: 80px;
+  position: relative;
+  z-index: 3;
+}
+
+/* Badge above carousel */
+.events-meta {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.live-badge {
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.12);
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 600;
+}
