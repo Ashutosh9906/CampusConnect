@@ -13,7 +13,7 @@ const prisma = new PrismaClient();
 //custom imports
 import errorHandling from "./middlewares/errorHandler.js";
 import { account } from "./config/appWrite.js";
-import { handleResponse, hashPassword } from "./utilities/userUtility.js";
+import { comparePassword, handleResponse, hashPassword } from "./utilities/userUtility.js";
 
 //middlewares
 app.use(express.json());
@@ -77,7 +77,7 @@ app.post("/auth/otp/send", async (req, res, next) => {
   }
 });
 
-app.post("/auth/otp/verify", express.json(), async (req, res, next) => {
+app.post("/auth/otp/verify", async (req, res, next) => {
   try {
     const { userId, secret } = req.body;
 
@@ -93,7 +93,7 @@ app.post("/auth/otp/verify", express.json(), async (req, res, next) => {
   }
 });
 
-app.post("/auth/set-password", express.json(), async (req, res, next) => {
+app.post("/auth/set-password", async (req, res, next) => {
   try {
     const { appwriteUserId, password } = req.body;
 
@@ -112,6 +112,44 @@ app.post("/auth/set-password", express.json(), async (req, res, next) => {
     next(err);
   }
 });
+
+app.post("/auth/verify-password", async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+
+    // 1. Find user
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      return handleResponse(res, 404, "user not found")
+    }
+
+    // 2. Check if password is set
+    if (!user.passwordSet || !user.passwordHash) {
+      return handleResponse(res, 400, "Set password first or, perform continue with google")
+    }
+
+    // 3. Compare password
+    const isValid = comparePassword(password, user.passwordHash);
+
+    if (!isValid) {
+      return handleResponse(res, 401, "Invalid Email or password");
+    }
+
+    // 4. SUCCESS (you can also create session / JWT here)
+    handleResponse(res, 200, "Login successful", {
+      userId: user.appwriteUserId,
+      email: user.email,
+      name: user.name,
+    });
+
+  } catch (error) {
+    next(error);
+  }
+});
+
 
 
 //central error handlinf system
