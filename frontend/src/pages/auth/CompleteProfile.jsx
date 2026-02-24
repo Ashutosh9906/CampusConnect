@@ -12,37 +12,49 @@ function CompleteProfile() {
   const [roll, setRoll] = useState("");
   const [division, setDivision] = useState("");
 
+  // ROLE STATES
+  const [role, setRole] = useState("student"); // student | club
+  const [club, setClub] = useState("");
+
   const handleSubmit = async () => {
-  try {
-    const user = await account.get();
-
-    const res = await fetch("http://localhost:4000/auth/complete-profile", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        appwriteUserId: user.$id,
-        name,
-        password,
-        prn,
-        roll,
-        division,
-      }),
-    });
-
-    const data = await res.json();
-
-    if (data.success) {
-      window.location.href = "/home";
-    } else {
-      alert("Failed to complete profile");
+    // FRONTEND VALIDATION
+    if (role === "club" && !club) {
+      alert("Please select the club name");
+      return;
     }
-  } catch (err) {
-    console.error(err);
-    alert("Something went wrong");
-  }
-};
+
+    try {
+      const user = await account.get();
+
+      const res = await fetch("http://localhost:4000/auth/complete-profile", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          appwriteUserId: user.$id,
+          name,
+          password,
+          prn,
+          roll,
+          division,
+          role,
+          club: role === "club" ? club : null,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        window.location.href = "/home";
+      } else {
+        alert("Failed to complete profile");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong");
+    }
+  };
 
   return (
     <div className="auth-page">
@@ -65,7 +77,6 @@ function CompleteProfile() {
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? (
-                  /* OPEN EYE — visible */
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                     <path
                       d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"
@@ -81,7 +92,6 @@ function CompleteProfile() {
                     />
                   </svg>
                 ) : (
-                  /* SLASHED EYE — hidden */
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                     <path
                       d="M3 3l18 18"
@@ -132,10 +142,39 @@ function CompleteProfile() {
             onChange={(e) => setDivision(e.target.value)}
           />
 
-          <button className="btn-primary" onClick={handleSubmit}>
-            Create Account
-          </button>
+          {/* ROLE */}
+          <select
+            value={role}
+            onChange={(e) => {
+              setRole(e.target.value);
+              setClub("");
+            }}
+          >
+            <option value="student">Student</option>
+            <option value="club">Club Member</option>
+          </select>
 
+          {/* CLUB */}
+          {role === "club" && (
+            <select value={club} onChange={(e) => setClub(e.target.value)}>
+              <option value="">Select Club</option>
+              <option value="Coding Club">Coding Club</option>
+              <option value="Robotics Club">Robotics Club</option>
+              <option value="Dance Club">Dance Club</option>
+            </select>
+          )}
+
+          {/* BUTTON */}
+          <button
+            className="btn-primary"
+            onClick={handleSubmit}
+            disabled={role === "club" && !club}
+            title={
+              role === "club" && !club ? "Please select the club name" : ""
+            }
+          >
+            {role === "club" ? "Create Request" : "Create Account"}
+          </button>
         </div>
       </div>
     </div>
