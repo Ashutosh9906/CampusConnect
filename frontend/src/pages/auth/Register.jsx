@@ -57,6 +57,8 @@ function Register() {
   const [prn, setPrn] = useState("");
   const [roll, setRoll] = useState("");
   const [division, setDivision] = useState("");
+  const [role, setRole] = useState("student");
+  const [club, setClub] = useState("");
 
   return (
     <div className="auth-page">
@@ -138,7 +140,6 @@ function Register() {
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? (
-                      /* OPEN EYE — visible */
                       <svg
                         width="20"
                         height="20"
@@ -159,7 +160,6 @@ function Register() {
                         />
                       </svg>
                     ) : (
-                      /* SLASHED EYE — hidden */
                       <svg
                         width="20"
                         height="20"
@@ -215,7 +215,34 @@ function Register() {
                 onChange={(e) => setDivision(e.target.value)}
               />
 
-              <button className="btn-primary">Create Account</button>
+              {/* ROLE DROPDOWN */}
+              <select
+                value={role}
+                onChange={(e) => {
+                  setRole(e.target.value);
+                  setClub("");
+                }}
+              >
+                <option value="student">Student</option>
+                <option value="club">Club Member</option>
+              </select>
+
+              {/* CLUB DROPDOWN */}
+              {role === "club" && (
+                <select value={club} onChange={(e) => setClub(e.target.value)}>
+                  <option value="">Select Club</option>
+                  <option value="Coding Club">Coding Club</option>
+                  <option value="Robotics Club">Robotics Club</option>
+                  <option value="Dance Club">Dance Club</option>
+                </select>
+              )}
+
+              <button
+                className="btn-primary"
+                disabled={role === "club" && !club}
+              >
+                {role === "club" ? "Create Request" : "Create Account"}
+              </button>
             </>
           )}
         </div>
