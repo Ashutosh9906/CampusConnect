@@ -28,10 +28,15 @@ app.use(cors({
 app.post("/auth/google-login", async (req, res, next) => {
   try {
     const { appwriteUserId, email, name } = req.body;
+    console.log(req.body);
 
     let user = await prisma.user.findUnique({
-      where: { appwriteUserId },
+      where: { email },
     });
+
+    if(user){
+      return handleResponse(res, 409, "Email already exist");
+    }
 
     // If user doesn't exist → create
     if (!user) {
@@ -58,6 +63,7 @@ app.post("/auth/google-login", async (req, res, next) => {
 app.post("/auth/complete-profile", async (req, res, next) => {
   try {
     const { appwriteUserId, name, password, prn, roll, division } = req.body;
+    console.log(req.body);
 
     const hash = await hashPassword(password);
 
