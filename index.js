@@ -2,6 +2,7 @@
 import express from "express";
 import { configDotenv } from "dotenv";
 import { PrismaClient } from "@prisma/client";
+import { ID } from "node-appwrite";
 import cors from "cors";
 
 configDotenv();
@@ -13,8 +14,9 @@ const prisma = new PrismaClient();
 
 //custom imports
 import errorHandling from "./middlewares/errorHandler.js";
-import { account } from "./config/appWrite.js";
+import { users } from "./config/appWrite.js";
 import { comparePassword, handleResponse, hashPassword } from "./utilities/userUtility.js";
+import { account } from "./config/appWriteOtp.js";
 
 //middlewares
 app.use(express.json());
@@ -25,36 +27,47 @@ app.use(cors({
 
 
 //custom api
-app.post("/auth/google-login", async (req, res, next) => {
+app.get("/logout", async (req, res, next) => {
+  try {
+    await users.deleteSession("current");
+    return res.status(200).json({ success: true });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post("/auth/google-register", async (req, res, next) => {
   try {
     const { appwriteUserId, email, name } = req.body;
-    console.log(req.body);
 
-    let user = await prisma.user.findUnique({
+    // 🔍 Check by EMAIL (important)
+    const existingUser = await prisma.user.findUnique({
       where: { email },
     });
 
-    if(user){
-      return handleResponse(res, 409, "Email already exist");
-    }
-
-    // If user doesn't exist → create
-    if (!user) {
-      user = await prisma.user.create({
-        data: {
-          appwriteUserId,
-          email,
-          name,
-          profileComplete: false,
-        },
+    if (existingUser) {
+      return res.status(409).json({
+        success: false,
+        message: "Email already exists. Please use another email.",
       });
     }
 
-    return res.json({
+    // ✅ Create new user
+    const user = await prisma.user.create({
+      data: {
+        appwriteUserId,
+        email,
+        name,
+        profileComplete: false,
+      },
+    });
+
+    return res.status(201).json({
       success: true,
-      profileComplete: user.profileComplete,
+      message: "Registration successful",
       user,
     });
+
   } catch (err) {
     next(err);
   }
@@ -86,81 +99,38 @@ app.post("/auth/complete-profile", async (req, res, next) => {
   }
 });
 
-
-app.post("/auth/otp/verify", async (req, res, next) => {
+app.post("/club", async (req, res, next) => {
   try {
-    const { userId, secret } = req.body;
+    const { name, description, clubCordinator } = req.body;
 
-    await account.createSession(userId, secret);
+    let existingClub = await prisma.club.findUnique({
+      where: { name }
+    })
 
-    // SUCCESS
-    handleResponse(res, 200, "OTP verified successfully");
+    if (existingClub) {
+      return res.status(409).json({
+        success: false,
+        message: "Club already exists.",
+      });
+    }
 
-  } catch (err) {
-    // FAILURE
-    err.message = "Invalid or expired OTP";
-    next(err);
-  }
-});
-
-app.post("/auth/set-password", async (req, res, next) => {
-  try {
-    const { appwriteUserId, password } = req.body;
-
-    const hash = hashPassword(password);
-
-    await prisma.user.update({
-      where: { appwriteUserId },
+    const club = await prisma.club.create({
       data: {
-        passwordHash: hash,
-        passwordSet: true,
-      },
-    });
+        name,
+        description,
+        clubCordinator
+      }
+    })
 
-    res.json({ success: true });
-  } catch (err) {
-    next(err);
-  }
-});
-
-app.post("/auth/verify-password", async (req, res, next) => {
-  try {
-    const { email, password } = req.body;
-
-    // 1. Find user
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
-
-    if (!user) {
-      return handleResponse(res, 404, "user not found")
-    }
-
-    // 2. Check if password is set
-    if (!user.passwordSet || !user.passwordHash) {
-      return handleResponse(res, 400, "Set password first or, perform continue with google")
-    }
-
-    // 3. Compare password
-    const isValid = comparePassword(password, user.passwordHash);
-
-    if (!isValid) {
-      return handleResponse(res, 401, "Invalid Email or password");
-    }
-
-    // 4. SUCCESS (you can also create session / JWT here)
-    handleResponse(res, 200, "Login successful", {
-      userId: user.appwriteUserId,
-      email: user.email,
-      name: user.name,
-    });
-
+    return res.status(201).json({
+      success: true,
+      message: "Club added successful",
+      club,
+    });    
   } catch (error) {
     next(error);
   }
-});
-
-
+})
 
 //central error handlinf system
 app.use(errorHandling);

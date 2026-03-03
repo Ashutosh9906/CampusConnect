@@ -5,6 +5,7 @@ import Register from "./pages/auth/Register";
 import Landing from "./pages/landing/Landing";
 import CompleteProfile from "./pages/auth/CompleteProfile";
 import GoogleSuccess from "./pages/auth/GoogleSuccess";
+import VerifyOTP from "./pages/auth/VerifyOTP";
 
 import "./styles/App.css";
 
@@ -24,10 +25,11 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/complete-profile" element={<CompleteProfile />} />
-        <Route path="/home" element={<Landing />} />
+        <Route path="/" element={<Landing />} />
+        <Route path="/verify-otp" element={<VerifyOTP />} />
 
         {/* Google OAuth routes */}
         <Route path="/auth/success" element={<GoogleSuccess />} />

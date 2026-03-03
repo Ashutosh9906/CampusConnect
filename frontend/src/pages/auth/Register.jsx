@@ -1,69 +1,96 @@
-// import { useState } from "react";
-// import { useNavigate } from "react-router-dom";
-// import GoogleButton from "../../components/auth/GoogleButton";
-// import OTPInput from "../../components/auth/OTPInput";
-// import "../../styles/auth.css";
-// import "../../styles/form.css";
-
-// function Register() {
-//   const navigate = useNavigate();
-//   const [email, setEmail] = useState("");
-//   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-
-//   const handleVerifyOTP = () => {
-//     navigate("/complete-profile");
-//   };
-
-//   return (
-//     <div className="auth-container">
-//       <h2>Create your account</h2>
-
-//       <input
-//         type="email"
-//         placeholder="College Email"
-//         value={email}
-//         onChange={(e) => setEmail(e.target.value)}
-//       />
-
-//       <OTPInput otp={otp} setOtp={setOtp} />
-
-//       <button className="primary-btn" onClick={handleVerifyOTP}>
-//         Verify OTP
-//       </button>
-
-//       <div className="divider">or</div>
-
-//       <GoogleButton />
-//     </div>
-//   );
-// }
-
-// export default Register;
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { account } from "../../config/appwrite.js";
+import { ID } from "node-appwrite";
+
 import GoogleButton from "../../components/auth/GoogleButton";
 import OTPInput from "../../components/auth/OTPInput";
 import illustration from "../../assets/login-illustration.svg";
+
 import "../../styles/auth.css";
 import "../../styles/form.css";
 
 function Register() {
+  const navigate = useNavigate();
+
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [prn, setPrn] = useState("");
-  const [roll, setRoll] = useState("");
-  const [division, setDivision] = useState("");
-  const [role, setRole] = useState("student");
-  const [club, setClub] = useState("");
+  // 🔥 STEP 1 — SEND OTP (FRONTEND)
+  const handleSendOTP = async () => {
+    try {
+      if (!email) return alert("Enter your email");
+
+      setLoading(true);
+
+      const userId = ID.unique();
+
+      await account.createEmailToken(userId, email);
+
+      localStorage.setItem("otpUserId", userId);
+
+      setStep(2);
+    } catch (err) {
+      console.log(err);
+      alert("Failed to send OTP");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 🔥 STEP 2 — VERIFY OTP (FRONTEND)
+  const handleVerifyOTP = async () => {
+    try {
+      const otpValue = otp.join("");
+      const userId = localStorage.getItem("otpUserId");
+
+      if (otpValue.length !== 6) return alert("Enter full OTP");
+
+      setLoading(true);
+
+      // ✅ Verify OTP directly with Appwrite
+      await account.createSession(userId, otpValue);
+
+      // ✅ Get user info from Appwrite
+      const user = await account.get();
+
+      // ✅ Call backend register route
+      const res = await fetch("http://localhost:4000/auth/google-register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          appwriteUserId: user.$id,
+          email: user.email,
+          name: user.name || ""
+        })
+      });
+
+      const data = await res.json();
+
+      if (!data.success) {
+        alert(data.message);
+        navigate("/register");
+        return;
+      }
+
+      // ✅ Move to complete profile page
+      navigate("/complete-profile");
+
+    } catch (err) {
+      console.log(err);
+      alert("Invalid or expired OTP");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="auth-page">
       <div className="auth-card">
-        {/* LEFT PANEL — SAME AS LOGIN */}
+
+        {/* LEFT PANEL */}
         <div className="auth-left">
           <img src={illustration} alt="Campus Connect" />
           <h2>Campus Connect</h2>
@@ -72,22 +99,25 @@ function Register() {
 
         {/* RIGHT PANEL */}
         <div className="auth-right">
-          {/* STEP 1 — EMAIL */}
+
+          {/* STEP 1 */}
           {step === 1 && (
             <>
               <h3>Create your account</h3>
 
-              <div className="form-group">
-                <input
-                  type="email"
-                  placeholder="College Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
+              <input
+                type="email"
+                placeholder="College Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
 
-              <button className="btn-primary" onClick={() => setStep(2)}>
-                Send OTP
+              <button
+                className="btn-primary"
+                onClick={handleSendOTP}
+                disabled={loading}
+              >
+                {loading ? "Sending..." : "Send OTP"}
               </button>
 
               <div className="divider">
@@ -98,153 +128,27 @@ function Register() {
             </>
           )}
 
-          {/* STEP 2 — OTP */}
           {/* STEP 2 */}
           {step === 2 && (
             <>
               <h3>Email Verification</h3>
 
               <p className="otp-subtext">
-                We’ve sent a 6-digit verification code to your registered email
-                address.
+                Enter the 6-digit OTP sent to your email.
               </p>
 
               <OTPInput otp={otp} setOtp={setOtp} />
 
-              <button className="btn-primary" onClick={() => setStep(3)}>
-                Verify
-              </button>
-
-              <p className="resend-text">
-                Didn’t receive the code? <span>Resend OTP</span>
-              </p>
-            </>
-          )}
-          {/* STEP 3 — COMPLETE PROFILE */}
-          {step === 3 && (
-            <>
-              <h3>Complete your profile</h3>
-
-              {/* PASSWORD */}
-              <div className="form-group">
-                <div className="password-field">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Create Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-
-                  <span
-                    className="eye-btn"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? (
-                      <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                      >
-                        <path
-                          d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                        />
-                        <circle
-                          cx="12"
-                          cy="12"
-                          r="3"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                        />
-                      </svg>
-                    ) : (
-                      <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                      >
-                        <path
-                          d="M3 3l18 18"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                        />
-                        <path
-                          d="M10.58 10.58A3 3 0 0012 15a3 3 0 002.42-4.42"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                        />
-                        <path
-                          d="M2 12s3.5-7 10-7 10 7 10 7a18.5 18.5 0 01-3.5 4.5"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                        />
-                      </svg>
-                    )}
-                  </span>
-                </div>
-              </div>
-
-              <input
-                type="text"
-                placeholder="Student Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-
-              <input
-                type="text"
-                placeholder="PRN Number"
-                value={prn}
-                onChange={(e) => setPrn(e.target.value)}
-              />
-
-              <input
-                type="text"
-                placeholder="Roll Number"
-                value={roll}
-                onChange={(e) => setRoll(e.target.value)}
-              />
-
-              <input
-                type="text"
-                placeholder="Division"
-                value={division}
-                onChange={(e) => setDivision(e.target.value)}
-              />
-
-              {/* ROLE DROPDOWN */}
-              <select
-                value={role}
-                onChange={(e) => {
-                  setRole(e.target.value);
-                  setClub("");
-                }}
-              >
-                <option value="student">Student</option>
-                <option value="club">Club Member</option>
-              </select>
-
-              {/* CLUB DROPDOWN */}
-              {role === "club" && (
-                <select value={club} onChange={(e) => setClub(e.target.value)}>
-                  <option value="">Select Club</option>
-                  <option value="Coding Club">Coding Club</option>
-                  <option value="Robotics Club">Robotics Club</option>
-                  <option value="Dance Club">Dance Club</option>
-                </select>
-              )}
-
               <button
                 className="btn-primary"
-                disabled={role === "club" && !club}
+                onClick={handleVerifyOTP}
+                disabled={loading}
               >
-                {role === "club" ? "Create Request" : "Create Account"}
+                {loading ? "Verifying..." : "Verify"}
               </button>
             </>
           )}
+
         </div>
       </div>
     </div>

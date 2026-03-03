@@ -1,13 +1,18 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { account } from "../../config/appwrite";
 
 function GoogleSuccess() {
+  const hasRun = useRef(false);
+
   useEffect(() => {
+    if (hasRun.current) return;
+    hasRun.current = true;
+
     const processLogin = async () => {
       try {
         const user = await account.get();
 
-        const res = await fetch("http://localhost:4000/auth/google-login", {
+        const res = await fetch("http://localhost:4000/auth/google-register", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -20,9 +25,19 @@ function GoogleSuccess() {
         });
 
         const result = await res.json();
-        console.log("Backend result:", result);
 
-        const profileComplete = result?.data?.profileComplete;
+        // 🔥 If email already exists → redirect to login
+        if (res.status === 409) {
+          window.location.href = "/login?message=Account already exists. Please login.";
+          return;
+        }
+
+        if (!res.ok) {
+          window.location.href = `/auth/failure?message=${encodeURIComponent(result.message)}`;
+          return;
+        }
+
+        const profileComplete = result?.user?.profileComplete;
 
         if (profileComplete) {
           window.location.href = "/home";
@@ -31,7 +46,6 @@ function GoogleSuccess() {
         }
 
       } catch (err) {
-        console.error(err);
         const message = encodeURIComponent(err.message);
         window.location.href = `/auth/failure?message=${message}`;
       }

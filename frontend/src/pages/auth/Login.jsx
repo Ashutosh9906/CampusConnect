@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import "../../styles/auth.css";
 import "../../styles/form.css";
 import illustration from "../../assets/login-illustration.svg";
@@ -7,6 +7,11 @@ import googleIcon from "../../assets/google_logo.png";
 
 function Login() {
   const [showPassword, setShowPassword] = useState(false);
+
+  // ✅ Read message from query string
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const message = params.get("message");
 
   return (
     <div className="auth-page">
@@ -22,12 +27,27 @@ function Login() {
         <div className="auth-right">
           <h3>Sign In</h3>
 
+          {/* ✅ Show message if exists */}
+          {message && (
+            <div
+              style={{
+                background: "#ffe5e5",
+                color: "#b30000",
+                padding: "10px",
+                borderRadius: "6px",
+                marginBottom: "15px",
+                fontSize: "14px",
+              }}
+            >
+              {message}
+            </div>
+          )}
+
           <div className="form-group">
             <label>Email</label>
             <input type="email" />
           </div>
 
-          {/* PASSWORD WITH PERFECT CENTERED EYE */}
           <div className="form-group">
             <label>Password</label>
 
@@ -39,7 +59,6 @@ function Login() {
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? (
-                  /* OPEN EYE — visible */
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                     <path
                       d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"
@@ -55,7 +74,6 @@ function Login() {
                     />
                   </svg>
                 ) : (
-                  /* SLASHED EYE — hidden */
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                     <path
                       d="M3 3l18 18"

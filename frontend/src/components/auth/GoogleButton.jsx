@@ -8,7 +8,7 @@ function GoogleButton() {
     account.createOAuth2Session(
       "google",
       origin + "/auth/success",
-      origin + "/auth/failure"
+      origin + "/auth/success"   // 🔥 SAME AS SUCCESS
     );
   };
 

@@ -46,7 +46,7 @@ function CompleteProfile() {
       const data = await res.json();
 
       if (data.success) {
-        window.location.href = "/home";
+        window.location.href = "/";
       } else {
         alert("Failed to complete profile");
       }
