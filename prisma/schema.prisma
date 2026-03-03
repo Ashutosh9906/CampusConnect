@@ -8,7 +8,6 @@ generator client {
   provider = "prisma-client-js"
 }
 
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -25,6 +24,65 @@ model User {
   roll            String?
   division        String?
   profileComplete Boolean @default(false)
+
+  clubRoles        UserClubRole[]
+  clubJoinRequests ClubJoinRequest[] @relation("UserRequests")
+  reviewedRequests ClubJoinRequest[] @relation("ReviewedRequests")
 }
 
+model Club {
+  id             String @id @default(cuid())
+  name           String @unique
+  description    String
+  clubCoordinator String
 
+  members          UserClubRole[]
+  clubJoinRequests ClubJoinRequest[]
+}
+
+model UserClubRole {
+  id String @id @default(cuid())
+
+  userId String
+  clubId String
+  role   Role
+
+  user User @relation(fields: [userId], references: [id])
+  club Club @relation(fields: [clubId], references: [id])
+
+  @@unique([userId, clubId, role])
+}
+
+model ClubJoinRequest {
+  id String @id @default(cuid())
+
+  userId String
+  clubId String
+  role   Role
+
+  status RequestStatus @default(PENDING)
+
+  message String?
+
+  reviewedById String?
+  reviewedAt   DateTime?
+
+  createdAt DateTime @default(now())
+
+  user User @relation("UserRequests", fields: [userId], references: [id])
+  club Club @relation(fields: [clubId], references: [id])
+  reviewedBy User? @relation("ReviewedRequests", fields: [reviewedById], references: [id])
+
+  @@unique([userId, clubId, role])
+}
+
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum Role {
+  CLUB_MEMBER
+  CLUB_HEAD
+}
