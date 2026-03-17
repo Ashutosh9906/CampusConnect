@@ -33,6 +33,7 @@ function Login() {
       const data = await res.json();
 
       if (data.success) {
+        localStorage.setItem("user", JSON.stringify(data.user));
         window.location.href = "/";
       } else {
         alert(data.message);

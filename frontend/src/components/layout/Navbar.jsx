@@ -1,7 +1,5 @@
-import { account } from "../../config/appwrite";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { NavLink } from "react-router-dom";
+import { useNavigate, NavLink } from "react-router-dom";
 import logo from "../../assets/cc-logo.png";
 import "../../styles/navbar.css";
 
@@ -9,27 +7,21 @@ function Navbar() {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
+  // ✅ Get user from localStorage instead of Appwrite
   useEffect(() => {
-    const checkSession = async () => {
-      try {
-        const loggedUser = await account.get();
-        setUser(loggedUser);
-      } catch {
-        setUser(null);
-      }
-    };
-
-    checkSession();
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    } else {
+      setUser(null);
+    }
   }, []);
 
-  const handleLogout = async () => {
-    try {
-      await account.deleteSession("current");
-      setUser(null);
-      navigate("/");
-    } catch (err) {
-      console.error("Logout failed:", err);
-    }
+  // ✅ Logout clears localStorage
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    setUser(null);
+    navigate("/");
   };
 
   return (

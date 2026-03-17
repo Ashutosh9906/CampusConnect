@@ -17,6 +17,8 @@ import errorHandling from "./middlewares/errorHandler.js";
 import { users } from "./config/appWrite.js";
 import { comparePassword, handleResponse, hashPassword } from "./utilities/userUtility.js";
 import { account } from "./config/appWriteOtp.js";
+import { validateRequest } from "./middlewares/parseBody.js";
+import { completeProfileSchema, googleLoginSchema, googleRegisterSchema, loginSchema } from "./validators/validationSchema.js";
 
 //middlewares
 app.use(express.json());
@@ -36,9 +38,9 @@ app.get("/logout", async (req, res, next) => {
   }
 });
 
-app.post("/auth/google-login", async (req, res, next) => {
+app.post("/auth/google-login", validateRequest(googleLoginSchema), async (req, res, next) => {
   try {
-    const { email } = req.body;
+    const { email } = req.locals.validated.body;
 
     const user = await prisma.user.findUnique({
       where: { email },
@@ -64,9 +66,9 @@ app.post("/auth/google-login", async (req, res, next) => {
   }
 });
 
-app.post("/auth/google-register", async (req, res, next) => {
+app.post("/auth/google-register", validateRequest(googleRegisterSchema), async (req, res, next) => {
   try {
-    const { appwriteUserId, email, name } = req.body;
+    const { appwriteUserId, email, name } = req.locals.validated.body;
 
     // 🔍 Check if user exists
     let user = await prisma.user.findUnique({
@@ -106,9 +108,9 @@ app.post("/auth/google-register", async (req, res, next) => {
 });
 
 
-app.post("/auth/complete-profile", async (req, res, next) => {
+app.post("/auth/complete-profile", validateRequest(completeProfileSchema), async (req, res, next) => {
   try {
-    const { appwriteUserId, name, password, prn, roll, division, role, club } = req.body;
+    const { appwriteUserId, name, password, prn, roll, division, role, club } = req.locals.validated.body;
     console.log(req.body);
 
     const hash = await hashPassword(password);
@@ -167,9 +169,9 @@ app.post("/auth/complete-profile", async (req, res, next) => {
   }
 });
 
-app.post("/auth/login", async (req, res, next) => {
+app.post("/auth/login", validateRequest(loginSchema), async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, password } = res.locals.validated.body;
 
     const user = await prisma.user.findUnique({
       where: { email }

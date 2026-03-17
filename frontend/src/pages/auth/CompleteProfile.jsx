@@ -46,6 +46,7 @@ function CompleteProfile() {
       const data = await res.json();
 
       if (data.success) {
+        localStorage.setItem("user", JSON.stringify(data.user));
         window.location.href = "/";
       } else {
         alert("Failed to complete profile");

@@ -1,8 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { account } from "../../config/appwrite";
 
 function GoogleSuccessLogin() {
   const hasRun = useRef(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     if (hasRun.current) return;
@@ -25,12 +26,17 @@ function GoogleSuccessLogin() {
 
         const result = await res.json();
 
-        // ❌ User not found → logout + redirect to register
+        // ❌ User not found → show message instead of redirect
         if (res.status === 404) {
           await account.deleteSession("current");
 
-          window.location.href =
-            "/register?message=User does not exist. Please register first.";
+          setErrorMessage("Email does not exist. Please register first.");
+
+          // Optional: redirect after 3 sec
+          setTimeout(() => {
+            window.location.href = "/register";
+          }, 3000);
+
           return;
         }
 
@@ -42,6 +48,7 @@ function GoogleSuccessLogin() {
         }
 
         // ✅ Login success
+        localStorage.setItem("user", JSON.stringify(data.user));
         window.location.href = "/";
 
       } catch (err) {
@@ -53,7 +60,15 @@ function GoogleSuccessLogin() {
     processLogin();
   }, []);
 
-  return <p>Signing you in...</p>;
+  return (
+    <div>
+      {errorMessage ? (
+        <p style={{ color: "red" }}>{errorMessage}</p>
+      ) : (
+        <p>Signing you in...</p>
+      )}
+    </div>
+  );
 }
 
 export default GoogleSuccessLogin;
