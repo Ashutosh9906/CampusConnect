@@ -73,7 +73,7 @@ model ClubJoinRequest {
   club Club @relation(fields: [clubId], references: [id])
   reviewedBy User? @relation("ReviewedRequests", fields: [reviewedById], references: [id])
 
-  @@unique([userId, clubId, role])
+  @@unique([userId, clubId])
 }
 
 enum RequestStatus {

@@ -36,24 +36,55 @@ app.get("/logout", async (req, res, next) => {
   }
 });
 
+app.post("/auth/google-login", async (req, res, next) => {
+  try {
+    const { email } = req.body;
+
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    // ❌ USER NOT FOUND → REJECT
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User does not exist. Please register first.",
+      });
+    }
+
+    // ✅ USER EXISTS → LOGIN
+    return res.status(200).json({
+      success: true,
+      message: "Login successful",
+      user,
+    });
+
+  } catch (err) {
+    next(err);
+  }
+});
+
 app.post("/auth/google-register", async (req, res, next) => {
   try {
     const { appwriteUserId, email, name } = req.body;
 
-    // 🔍 Check by EMAIL (important)
-    const existingUser = await prisma.user.findUnique({
+    // 🔍 Check if user exists
+    let user = await prisma.user.findUnique({
       where: { email },
     });
 
-    if (existingUser) {
-      return res.status(409).json({
-        success: false,
-        message: "Email already exists. Please use another email.",
+    // ✅ EXISTING USER → LOGIN
+    if (user) {
+      return res.status(200).json({
+        success: true,
+        message: "Login successful",
+        user,
+        isNewUser: false,
       });
     }
 
-    // ✅ Create new user
-    const user = await prisma.user.create({
+    // ✅ NEW USER → REGISTER
+    user = await prisma.user.create({
       data: {
         appwriteUserId,
         email,
@@ -66,6 +97,7 @@ app.post("/auth/google-register", async (req, res, next) => {
       success: true,
       message: "Registration successful",
       user,
+      isNewUser: true,
     });
 
   } catch (err) {
@@ -73,9 +105,10 @@ app.post("/auth/google-register", async (req, res, next) => {
   }
 });
 
+
 app.post("/auth/complete-profile", async (req, res, next) => {
   try {
-    const { appwriteUserId, name, password, prn, roll, division } = req.body;
+    const { appwriteUserId, name, password, prn, roll, division, role, club } = req.body;
     console.log(req.body);
 
     const hash = await hashPassword(password);
@@ -93,15 +126,81 @@ app.post("/auth/complete-profile", async (req, res, next) => {
       },
     });
 
+    if(role == "club"){
+      const clubDetails = await prisma.club.findUnique({
+        where: { name: club }
+      });
+
+      if(!clubDetails){
+        return res.status(404).json({
+          message: "No such club exists"
+        })
+      }
+
+      const existingRequest = await prisma.clubJoinRequest.findFirst({
+        where: {
+          userId: user.id,
+          clubId: clubDetails.id,
+          role: "CLUB_MEMBER",
+          status: "PENDING"
+        }
+      });
+
+      if(existingRequest){
+        return res.status(400).json({
+          message: "You already have an pending request for this club"
+        })
+      }
+
+      await prisma.clubJoinRequest.create({
+        data: {
+          userId: user.id,
+          clubId: clubDetails.id,
+          role: "CLUB_MEMBER"
+        }
+      });
+    }
+
     res.json({ success: true, user });
   } catch (err) {
     next(err);
   }
 });
 
+app.post("/auth/login", async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await prisma.user.findUnique({
+      where: { email }
+    });
+
+    if(!user){
+      return res.status(404).json({
+        message: "User with such credentials does not exist"
+      })
+    }
+
+    if(!comparePassword(password, user.passwordHash)){
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Credentials"
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "User login successfully",
+      user
+    });
+  } catch (error) {
+    next(error);
+  }
+})
+
 app.post("/club", async (req, res, next) => {
   try {
-    const { name, description, clubCordinator } = req.body;
+    const { name, description, clubCoordinator } = req.body;
 
     let existingClub = await prisma.club.findUnique({
       where: { name }
@@ -118,7 +217,7 @@ app.post("/club", async (req, res, next) => {
       data: {
         name,
         description,
-        clubCordinator
+        clubCoordinator
       }
     })
 

@@ -4,7 +4,8 @@ import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import Landing from "./pages/landing/Landing";
 import CompleteProfile from "./pages/auth/CompleteProfile";
-import GoogleSuccess from "./pages/auth/GoogleSuccess";
+import GoogleSuccessLogin from "./pages/auth/GoogleSuccessLogin"; // ✅ NEW
+import GoogleSuccessRegister from "./pages/auth/GoogleSuccessRegister"; // ✅ NEW
 import VerifyOTP from "./pages/auth/VerifyOTP";
 
 import "./styles/App.css";
@@ -31,8 +32,9 @@ function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/verify-otp" element={<VerifyOTP />} />
 
-        {/* Google OAuth routes */}
-        <Route path="/auth/success" element={<GoogleSuccess />} />
+        {/* ✅ Google OAuth routes */}
+        <Route path="/auth/success-login" element={<GoogleSuccessLogin />} />
+        <Route path="/auth/success-register" element={<GoogleSuccessRegister />} />
         <Route path="/auth/failure" element={<GoogleFailure />} />
       </Routes>
     </BrowserRouter>

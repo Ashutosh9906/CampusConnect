@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { account } from "../../config/appwrite.js";
-import { ID } from "node-appwrite";
+import { ID } from "appwrite";
 
 import GoogleButton from "../../components/auth/GoogleButton";
 import OTPInput from "../../components/auth/OTPInput";
@@ -18,18 +18,17 @@ function Register() {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [loading, setLoading] = useState(false);
 
-  // 🔥 STEP 1 — SEND OTP (FRONTEND)
+  // 🔥 STEP 1 — SEND OTP
   const handleSendOTP = async () => {
     try {
       if (!email) return alert("Enter your email");
 
       setLoading(true);
 
-      const userId = ID.unique();
+      const response = await account.createEmailToken(ID.unique(), email);
 
-      await account.createEmailToken(userId, email);
-
-      localStorage.setItem("otpUserId", userId);
+      // ✅ store correct userId
+      localStorage.setItem("otpUserId", response.userId);
 
       setStep(2);
     } catch (err) {
@@ -40,26 +39,35 @@ function Register() {
     }
   };
 
-  // 🔥 STEP 2 — VERIFY OTP (FRONTEND)
+  // 🔥 STEP 2 — VERIFY OTP
   const handleVerifyOTP = async () => {
     try {
       const otpValue = otp.join("");
       const userId = localStorage.getItem("otpUserId");
 
-      if (otpValue.length !== 6) return alert("Enter full OTP");
+      if (!userId) {
+        alert("Session expired. Please resend OTP.");
+        setStep(1);
+        return;
+      }
+
+      if (otpValue.length !== 6) {
+        alert("Enter full 6-digit OTP");
+        return;
+      }
 
       setLoading(true);
 
-      // ✅ Verify OTP directly with Appwrite
+      // ✅ verify OTP
       await account.createSession(userId, otpValue);
 
-      // ✅ Get user info from Appwrite
       const user = await account.get();
 
-      // ✅ Call backend register route
+      // ✅ 🔥 IMPORTANT: call REGISTER route
       const res = await fetch("http://localhost:4000/auth/google-register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
           appwriteUserId: user.$id,
           email: user.email,
@@ -69,18 +77,33 @@ function Register() {
 
       const data = await res.json();
 
-      if (!data.success) {
-        alert(data.message);
-        navigate("/register");
+      // ❌ If already exists → redirect to login
+      if (res.status === 200 && !data.isNewUser) {
+        await account.deleteSession("current"); // 🔥 logout from Appwrite
+
+        navigate("/login?message=Account already exists. Please login.");
         return;
       }
 
-      // ✅ Move to complete profile page
+      if (!res.ok || !data.success) {
+        alert(data.message || "Registration failed");
+        return;
+      }
+
+      // ✅ clear temp data
+      localStorage.removeItem("otpUserId");
+
+      // ✅ redirect
       navigate("/complete-profile");
 
     } catch (err) {
       console.log(err);
-      alert("Invalid or expired OTP");
+
+      if (err.code === 401) {
+        alert("Invalid or expired OTP. Please try again.");
+      } else {
+        alert("Something went wrong");
+      }
     } finally {
       setLoading(false);
     }
@@ -124,7 +147,7 @@ function Register() {
                 <span>or</span>
               </div>
 
-              <GoogleButton />
+              <GoogleButton mode="register" />
             </>
           )}
 

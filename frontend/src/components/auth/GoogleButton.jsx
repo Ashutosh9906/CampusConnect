@@ -1,14 +1,19 @@
 import googleLogo from "../../assets/google_logo.png";
 import { account } from "../../config/appwrite";
 
-function GoogleButton() {
+function GoogleButton({ mode = "login" }) {
   const handleGoogleLogin = () => {
     const origin = window.location.origin;
 
+    const successUrl =
+      mode === "register"
+        ? origin + "/auth/success-register"
+        : origin + "/auth/success-login";
+
     account.createOAuth2Session(
       "google",
-      origin + "/auth/success",
-      origin + "/auth/success"   // 🔥 SAME AS SUCCESS
+      successUrl,
+      origin + "/auth/failure"
     );
   };
 
