@@ -11,6 +11,7 @@ function GoogleSuccessRegister() {
     const processRegister = async () => {
       try {
         const user = await account.get();
+        console.log("register user -> ",user);
 
         const res = await fetch("http://localhost:4000/auth/google-register", {
           method: "POST",
@@ -27,28 +28,25 @@ function GoogleSuccessRegister() {
 
         const result = await res.json();
 
-        // ❌ User already exists → logout + go to login
-        if (res.status === 200 && !result.isNewUser) {
+        if (res.status == 409 && !result.isNewUser) {
           await account.deleteSession("current");
-
           window.location.href =
             "/login?message=User already exists. Please login.";
           return;
         }
 
-        if (!res.ok) {
+        if(res.status == 500 && !result.success){
           window.location.href = `/auth/failure?message=${encodeURIComponent(
             result.message || "Registration failed"
           )}`;
           return;
         }
 
-        // ✅ New user → complete profile
         window.location.href = "/complete-profile";
 
       } catch (err) {
         console.error(err);
-        window.location.href = "/register";
+        window.location.href = `/register?message=${err.message}`;
       }
     };
 

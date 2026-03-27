@@ -30,14 +30,23 @@ function Login() {
         })
       });
 
-      const data = await res.json();
+      const result = await res.json();
 
-      if (data.success) {
-        localStorage.setItem("user", JSON.stringify(data.user));
-        window.location.href = "/";
-      } else {
-        alert(data.message);
+      if (res.status === 404 || res.status == 400) {
+        window.location.href = `/login?message=${result.message}`;
+        return;
       }
+
+      if (res.status == 500 && !result.success) {
+        window.location.href = `/auth/failure?message=${encodeURIComponent(
+          result.message || "Registration failed"
+        )}`;
+        return;
+      }
+
+      // ✅ Login success
+      localStorage.setItem("user", JSON.stringify(result.user));
+      window.location.href = "/";
 
     } catch (err) {
       console.error(err);

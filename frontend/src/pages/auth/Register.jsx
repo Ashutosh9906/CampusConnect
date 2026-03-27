@@ -62,6 +62,7 @@ function Register() {
       await account.createSession(userId, otpValue);
 
       const user = await account.get();
+      console.log(user);
 
       // ✅ 🔥 IMPORTANT: call REGISTER route
       const res = await fetch("http://localhost:4000/auth/google-register", {
@@ -70,8 +71,7 @@ function Register() {
         credentials: "include",
         body: JSON.stringify({
           appwriteUserId: user.$id,
-          email: user.email,
-          name: user.name || ""
+          email: user.email
         })
       });
 

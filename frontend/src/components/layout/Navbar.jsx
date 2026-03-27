@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import { useNavigate, NavLink } from "react-router-dom";
 import logo from "../../assets/cc-logo.png";
 import "../../styles/navbar.css";
+import { account } from "../../config/appwrite";
 
 function Navbar() {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
-  // ✅ Get user from localStorage instead of Appwrite
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -17,10 +17,16 @@ function Navbar() {
     }
   }, []);
 
-  // ✅ Logout clears localStorage
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await account.deleteSession("current");
+    } catch (err) {
+      console.log("No active session or already logged out");
+    }
+
     localStorage.removeItem("user");
     setUser(null);
+
     navigate("/");
   };
 
@@ -48,13 +54,19 @@ function Navbar() {
 
               <div className="profile-dropdown">
                 <NavLink to="/profile">View Profile</NavLink>
-                <button onClick={handleLogout}>Sign Out</button>
+                
+                <button onClick={handleLogout}>
+                  Sign Out
+                </button>
+
               </div>
             </div>
           ) : (
-            <NavLink to="/login" className="login-btn">
-              Login
-            </NavLink>
+            <>
+              <NavLink to="/login" className="login-btn">
+                Login
+              </NavLink>
+            </>
           )}
         </div>
 

@@ -12,6 +12,7 @@ function GoogleSuccessLogin() {
     const processLogin = async () => {
       try {
         const user = await account.get();
+        console.log(user);
 
         const res = await fetch("http://localhost:4000/auth/google-login", {
           method: "POST",
@@ -29,31 +30,24 @@ function GoogleSuccessLogin() {
         // ❌ User not found → show message instead of redirect
         if (res.status === 404) {
           await account.deleteSession("current");
-
-          setErrorMessage("Email does not exist. Please register first.");
-
-          // Optional: redirect after 3 sec
-          setTimeout(() => {
-            window.location.href = "/register";
-          }, 3000);
-
+          window.location.href = `/login?message=${result.message}`;
           return;
         }
 
-        if (!res.ok) {
+        if(res.status == 500 && !result.success){
           window.location.href = `/auth/failure?message=${encodeURIComponent(
-            result.message || "Login failed"
+            result.message || "Registration failed"
           )}`;
           return;
         }
 
         // ✅ Login success
-        localStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.setItem("user", JSON.stringify(result.user));
         window.location.href = "/";
 
       } catch (err) {
         console.error(err);
-        window.location.href = "/login";
+        window.location.href = `/login?message=${err.message}`;
       }
     };
 

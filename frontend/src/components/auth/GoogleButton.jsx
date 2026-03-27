@@ -1,7 +1,7 @@
 import googleLogo from "../../assets/google_logo.png";
 import { account } from "../../config/appwrite";
 
-function GoogleButton({ mode = "login" }) {
+function GoogleButton({ mode }) {
   const handleGoogleLogin = () => {
     const origin = window.location.origin;
 

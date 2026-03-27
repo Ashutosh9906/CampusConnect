@@ -23,6 +23,7 @@ model User {
   prn             String?
   roll            String?
   division        String?
+  role            String?
   profileComplete Boolean @default(false)
 
   clubRoles        UserClubRole[]
@@ -31,9 +32,9 @@ model User {
 }
 
 model Club {
-  id             String @id @default(cuid())
-  name           String @unique
-  description    String
+  id              String @id @default(cuid())
+  name            String @unique
+  description     String
   clubCoordinator String
 
   members          UserClubRole[]
@@ -69,8 +70,8 @@ model ClubJoinRequest {
 
   createdAt DateTime @default(now())
 
-  user User @relation("UserRequests", fields: [userId], references: [id])
-  club Club @relation(fields: [clubId], references: [id])
+  user       User  @relation("UserRequests", fields: [userId], references: [id])
+  club       Club  @relation(fields: [clubId], references: [id])
   reviewedBy User? @relation("ReviewedRequests", fields: [reviewedById], references: [id])
 
   @@unique([userId, clubId])

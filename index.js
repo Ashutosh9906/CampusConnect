@@ -15,10 +15,11 @@ const prisma = new PrismaClient();
 //custom imports
 import errorHandling from "./middlewares/errorHandler.js";
 import { users } from "./config/appWrite.js";
-import { comparePassword, handleResponse, hashPassword } from "./utilities/userUtility.js";
+import { comparePassword, createTokenUser, handleResponse, hashPassword } from "./utilities/userUtility.js";
 import { account } from "./config/appWriteOtp.js";
 import { validateRequest } from "./middlewares/parseBody.js";
 import { completeProfileSchema, googleLoginSchema, googleRegisterSchema, loginSchema } from "./validators/validationSchema.js";
+import { success } from "zod";
 
 //middlewares
 app.use(express.json());
@@ -40,13 +41,12 @@ app.get("/logout", async (req, res, next) => {
 
 app.post("/auth/google-login", validateRequest(googleLoginSchema), async (req, res, next) => {
   try {
-    const { email } = req.locals.validated.body;
+    const { email } = res.locals.validated.body;
 
     const user = await prisma.user.findUnique({
       where: { email },
     });
 
-    // ❌ USER NOT FOUND → REJECT
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -54,7 +54,6 @@ app.post("/auth/google-login", validateRequest(googleLoginSchema), async (req, r
       });
     }
 
-    // ✅ USER EXISTS → LOGIN
     return res.status(200).json({
       success: true,
       message: "Login successful",
@@ -62,25 +61,30 @@ app.post("/auth/google-login", validateRequest(googleLoginSchema), async (req, r
     });
 
   } catch (err) {
-    next(err);
+    console.error("Google Register Error:", err);
+
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong. Please try again later.",
+    });
   }
 });
 
 app.post("/auth/google-register", validateRequest(googleRegisterSchema), async (req, res, next) => {
   try {
-    const { appwriteUserId, email, name } = req.locals.validated.body;
+    const { appwriteUserId, email } = res.locals.validated.body;
+    console.log(res.locals.validated.body);
 
     // 🔍 Check if user exists
     let user = await prisma.user.findUnique({
-      where: { email },
+      where: { email, appwriteUserId },
     });
 
     // ✅ EXISTING USER → LOGIN
     if (user) {
-      return res.status(200).json({
-        success: true,
-        message: "Login successful",
-        user,
+      return res.status(409).json({
+        success: false,
+        message: "User Already Exist, Try Login",
         isNewUser: false,
       });
     }
@@ -90,7 +94,6 @@ app.post("/auth/google-register", validateRequest(googleRegisterSchema), async (
       data: {
         appwriteUserId,
         email,
-        name,
         profileComplete: false,
       },
     });
@@ -103,15 +106,21 @@ app.post("/auth/google-register", validateRequest(googleRegisterSchema), async (
     });
 
   } catch (err) {
-    next(err);
+    // next(err);
+    console.error("Google Register Error:", err);
+
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong. Please try again later.",
+    });
   }
 });
 
 
 app.post("/auth/complete-profile", validateRequest(completeProfileSchema), async (req, res, next) => {
   try {
-    const { appwriteUserId, name, password, prn, roll, division, role, club } = req.locals.validated.body;
-    console.log(req.body);
+    const { appwriteUserId, name, password, prn, roll, division, role, club } = res.locals.validated.body;
+    console.log(res.body);
 
     const hash = await hashPassword(password);
 
@@ -124,16 +133,17 @@ app.post("/auth/complete-profile", validateRequest(completeProfileSchema), async
         prn,
         roll,
         division,
+        role,
         profileComplete: true,
       },
     });
 
-    if(role == "club"){
+    if (role == "club") {
       const clubDetails = await prisma.club.findUnique({
         where: { name: club }
       });
 
-      if(!clubDetails){
+      if (!clubDetails) {
         return res.status(404).json({
           message: "No such club exists"
         })
@@ -148,7 +158,7 @@ app.post("/auth/complete-profile", validateRequest(completeProfileSchema), async
         }
       });
 
-      if(existingRequest){
+      if (existingRequest) {
         return res.status(400).json({
           message: "You already have an pending request for this club"
         })
@@ -163,9 +173,18 @@ app.post("/auth/complete-profile", validateRequest(completeProfileSchema), async
       });
     }
 
-    res.json({ success: true, user });
+    res.status(201).json({
+      success: true,
+      message: "user register successfully",
+      user
+    });
   } catch (err) {
-    next(err);
+    console.error("Google Register Error:", err);
+
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong. Please try again later.",
+    });
   }
 });
 
@@ -176,14 +195,16 @@ app.post("/auth/login", validateRequest(loginSchema), async (req, res, next) => 
     const user = await prisma.user.findUnique({
       where: { email }
     });
+    console.log(user);
 
-    if(!user){
+    
+    if (!user) {
       return res.status(404).json({
-        message: "User with such credentials does not exist"
+        message: "Invalid credentials"
       })
     }
 
-    if(!comparePassword(password, user.passwordHash)){
+    if (!comparePassword(password, user.passwordHash)) {
       return res.status(400).json({
         success: false,
         message: "Invalid Credentials"
@@ -196,7 +217,12 @@ app.post("/auth/login", validateRequest(loginSchema), async (req, res, next) => 
       user
     });
   } catch (error) {
-    next(error);
+    console.error("Google Register Error:", err);
+
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong. Please try again later.",
+    });
   }
 })
 
@@ -227,7 +253,7 @@ app.post("/club", async (req, res, next) => {
       success: true,
       message: "Club added successful",
       club,
-    });    
+    });
   } catch (error) {
     next(error);
   }

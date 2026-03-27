@@ -13,12 +13,12 @@ function CompleteProfile() {
   const [division, setDivision] = useState("");
 
   // ROLE STATES
-  const [role, setRole] = useState("student"); // student | club
+  const [role, setRole] = useState("STUDENT");
   const [club, setClub] = useState("");
 
   const handleSubmit = async () => {
     // FRONTEND VALIDATION
-    if (role === "club" && !club) {
+    if (role === "CLUB_MEMBER" && !club) {
       alert("Please select the club name");
       return;
     }
@@ -39,18 +39,27 @@ function CompleteProfile() {
           roll,
           division,
           role,
-          club: role === "club" ? club : null,
+          club: role === "CLUB_MEMBER" ? club : undefined,
         }),
       });
 
-      const data = await res.json();
+      const result = await res.json();
 
-      if (data.success) {
-        localStorage.setItem("user", JSON.stringify(data.user));
-        window.location.href = "/";
-      } else {
-        alert("Failed to complete profile");
+      if (res.status == 400 || res.status == 404) {
+        window.location.href =
+          `/login?message=${result.message}`;
+        return;
       }
+
+      if (res.status == 500 && !result.success) {
+        window.location.href = `/auth/failure?message=${encodeURIComponent(
+          result.message || "Registration failed"
+        )}`;
+        return;
+      }
+
+      localStorage.setItem("user", JSON.stringify(result.user));
+      window.location.href = "/";
     } catch (err) {
       console.error(err);
       alert("Something went wrong");
@@ -151,12 +160,12 @@ function CompleteProfile() {
               setClub("");
             }}
           >
-            <option value="student">Student</option>
-            <option value="club">Club Member</option>
+            <option value="STUDENT">Student</option>
+            <option value="CLUB_MEMBER">Club Member</option>
           </select>
 
           {/* CLUB */}
-          {role === "club" && (
+          {role === "CLUB_MEMBER" && (
             <select value={club} onChange={(e) => setClub(e.target.value)}>
               <option value="">Select Club</option>
               <option value="Coding Club">Coding Club</option>
@@ -169,12 +178,12 @@ function CompleteProfile() {
           <button
             className="btn-primary"
             onClick={handleSubmit}
-            disabled={role === "club" && !club}
+            disabled={role === "CLUB_MEMBER" && !club}
             title={
-              role === "club" && !club ? "Please select the club name" : ""
+              role === "CLUB_MEMBER" && !club ? "Please select the club name" : ""
             }
           >
-            {role === "club" ? "Create Request" : "Create Account"}
+            {role === "CLUB_MEMBER" ? "Create Request" : "Create Account"}
           </button>
         </div>
       </div>

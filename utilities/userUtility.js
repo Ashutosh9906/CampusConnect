@@ -1,4 +1,5 @@
-import {hash, compare} from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { hash, compare } from "bcryptjs";
 
 export const handleResponse = (res, status, message, data = null) => {
     res.status(status).json({
@@ -16,4 +17,13 @@ export async function hashPassword(password) {
 export async function comparePassword(userPass, hashPass) {
     const isMatch = await compare(userPass, hashPass);
     return isMatch;
+}
+
+export function createTokenUser(id, role) {
+    const token = jwt.sign(
+        { id, role },
+        process.env.SECRET,
+        { expiresIn: "30m" } // 🔥 change here
+    );
+    return token;
 }

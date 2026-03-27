@@ -1,6 +1,8 @@
 import { z } from "zod";
 
-const googleLoginBody = z.string().email("Invalid email format");
+const googleLoginBody = z.object({
+  email: z.string().email("Invalid email format"),
+});
 
 export const googleLoginSchema = z.object({
   body: googleLoginBody,
@@ -9,19 +11,11 @@ export const googleLoginSchema = z.object({
 }).strict();
 
 const googleRegisterBody = z.object({
-  appwriteId: z
-    .string()
-    .regex(/^[a-z0-9]{20}$/, "Invalid Appwrite ID format"),
+  appwriteUserId: z.string().min(1),
 
   email: z
     .string()
-    .min(1, "Email is required")
     .email("Invalid email address"),
-
-  name: z
-    .string()
-    .min(2, "Name must be at least 2 characters")
-    .max(50, "Name too long"),
 });
 
 export const googleRegisterSchema = z.object({
@@ -30,8 +24,11 @@ export const googleRegisterSchema = z.object({
   query: z.object({}).optional(),
 }).strict();
 
-const RoleEnum = z.enum(["CLUB_MEMBER", "CLUB_HEAD"]);
-const ClubEnum = z.enum(["CSI", "IEEE", "PICTOREAL"]);
+const RoleEnum = z.enum(["STUDENT", "CLUB_MEMBER", "CLUB_HEAD"]);
+const ClubEnum = z
+  .enum(["CSI", "IEEE", "PICTOREAL"])
+  .or(z.literal(""))
+  .optional()
 
 const completeProfileBody = z.object({
   appwriteUserId: z
