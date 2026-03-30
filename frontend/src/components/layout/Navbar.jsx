@@ -19,7 +19,10 @@ function Navbar() {
 
   const handleLogout = async () => {
     try {
-      await account.deleteSession("current");
+      await fetch("http://localhost:4000/auth/logout", {
+        method: "POST",
+        credentials: "include"
+      });
     } catch (err) {
       console.log("No active session or already logged out");
     }

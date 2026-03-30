@@ -19,11 +19,20 @@ export async function comparePassword(userPass, hashPass) {
     return isMatch;
 }
 
-export function createTokenUser(id, role) {
+export function createTokenUser(id) {
     const token = jwt.sign(
-        { id, role },
+        { id },
         process.env.SECRET,
-        { expiresIn: "30m" } // 🔥 change here
+        { expiresIn: "30m" }
     );
     return token;
+}
+
+export function clubUpdateFilter(body){
+    const updateBody = {};
+    if(body.name) updateBody.name = body.name;
+    if(body.description) updateBody.description = body.description;
+    if(body.clubCoordinator) updateBody.clubCoordinator = body.clubCoordinator;
+
+    return updateBody;
 }

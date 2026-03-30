@@ -58,13 +58,12 @@ function Register() {
 
       setLoading(true);
 
-      // ✅ verify OTP
+      // ✅ Create Appwrite session
       await account.createSession(userId, otpValue);
 
       const user = await account.get();
-      console.log(user);
 
-      // ✅ 🔥 IMPORTANT: call REGISTER route
+      // ✅ Call backend
       const res = await fetch("http://localhost:4000/auth/google-register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -77,23 +76,25 @@ function Register() {
 
       const data = await res.json();
 
-      // ❌ If already exists → redirect to login
-      if (res.status === 200 && !data.isNewUser) {
-        await account.deleteSession("current"); // 🔥 logout from Appwrite
+      // ❌ User already exists
+      if (!data.isNewUser) {
+        await account.deleteSession("current");
 
         navigate("/login?message=Account already exists. Please login.");
         return;
       }
 
+      // ❌ Backend failure
       if (!res.ok || !data.success) {
+        await account.deleteSession("current"); // 🔥 IMPORTANT FIX
         alert(data.message || "Registration failed");
         return;
       }
 
-      // ✅ clear temp data
+      // ✅ Success
       localStorage.removeItem("otpUserId");
 
-      // ✅ redirect
+      // 🔥 KEEP session (needed for complete-profile)
       navigate("/complete-profile");
 
     } catch (err) {

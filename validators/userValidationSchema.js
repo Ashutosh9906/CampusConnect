@@ -24,7 +24,6 @@ export const googleRegisterSchema = z.object({
   query: z.object({}).optional(),
 }).strict();
 
-const RoleEnum = z.enum(["STUDENT", "CLUB_MEMBER", "CLUB_HEAD"]);
 const ClubEnum = z
   .enum(["CSI", "IEEE", "PICTOREAL"])
   .or(z.literal(""))
@@ -59,8 +58,6 @@ const completeProfileBody = z.object({
   division: z
     .string()
     .max(5, "Division must be at most 5 characters"),
-
-  role: RoleEnum,
 
   club: ClubEnum,
 });

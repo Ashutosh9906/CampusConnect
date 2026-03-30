@@ -11,7 +11,7 @@ function GoogleSuccessRegister() {
     const processRegister = async () => {
       try {
         const user = await account.get();
-        console.log("register user -> ",user);
+        console.log("register user -> ", user);
 
         const res = await fetch("http://localhost:4000/auth/google-register", {
           method: "POST",
@@ -35,7 +35,7 @@ function GoogleSuccessRegister() {
           return;
         }
 
-        if(res.status == 500 && !result.success){
+        if (res.status == 500 && !result.success) {
           window.location.href = `/auth/failure?message=${encodeURIComponent(
             result.message || "Registration failed"
           )}`;

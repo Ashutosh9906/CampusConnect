@@ -23,7 +23,6 @@ model User {
   prn             String?
   roll            String?
   division        String?
-  role            String?
   profileComplete Boolean @default(false)
 
   clubRoles        UserClubRole[]

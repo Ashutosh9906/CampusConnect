@@ -27,22 +27,31 @@ function GoogleSuccessLogin() {
 
         const result = await res.json();
 
-        // ❌ User not found → show message instead of redirect
+        // ❌ User not found
         if (res.status === 404) {
-          await account.deleteSession("current");
+          await account.deleteSession("current"); // cleanup
           window.location.href = `/login?message=${result.message}`;
           return;
         }
 
-        if(res.status == 500 && !result.success){
+        // ❌ Server error
+        if (res.status === 500 && !result.success) {
           window.location.href = `/auth/failure?message=${encodeURIComponent(
             result.message || "Registration failed"
           )}`;
           return;
         }
 
-        // ✅ Login success
+        // ✅ SUCCESS → now safe to delete Appwrite session
+        try {
+          await account.deleteSession("current");
+        } catch (err) {
+          console.log("Session cleanup failed (safe to ignore)");
+        }
+
+        // ✅ Store user
         localStorage.setItem("user", JSON.stringify(result.user));
+
         window.location.href = "/";
 
       } catch (err) {
