@@ -1,36 +1,69 @@
-import { NavLink } from "react-router-dom";
-import logo from "../../assets/cc-logo.png";
+import { Link, NavLink } from "react-router-dom";
 import "../../styles/navbar.css";
 
 function Navbar() {
-  const isLoggedIn = false; // mock login
-
   return (
-    <nav className="navbar-container">
-      <div className="navbar-pill-full">
-        {/* Logo */}
-        <div className="navbar-logo-wrap">
-          <img src={logo} alt="Campus Connect" />
+    <nav className="navbar">
+      <div className="navbar-container">
+        {/* LEFT - BRAND */}
+        <div className="navbar-brand">
+          <Link to="/">Campus Connect</Link>
         </div>
 
-        {/* Links */}
-        <div className="navbar-links">
-          <NavLink to="/home">Home</NavLink>
-          <NavLink to="/events">Events</NavLink>
-          <NavLink to="/about">About</NavLink>
-          <NavLink to="/contact">Contact</NavLink>
-        </div>
+        {/* CENTER - LINKS */}
+        <ul className="navbar-links">
+          <li>
+            <NavLink to="/" className="nav-link">
+              Home
+            </NavLink>
+          </li>
 
-        {/* Profile */}
-        <div className="navbar-action">
-          <div className="profile-wrapper">
-            <span className="profile-btn">My Profile</span>
+          <li>
+            <NavLink to="/events" className="nav-link">
+              Events
+            </NavLink>
+          </li>
 
-            <div className="profile-dropdown">
-              <NavLink to="/profile">View Profile</NavLink>
-              <button>Sign Out</button>
-            </div>
-          </div>
+          <li>
+            <a
+              href="#about"
+              className="nav-link"
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById("about").scrollIntoView({
+                  behavior: "smooth",
+                });
+              }}
+            >
+              About
+            </a>
+          </li>
+          {localStorage.getItem("role") === "organizer" && (
+            <a href="/create-event" className="nav-link">
+              Add Event
+            </a>
+          )}
+          <li>
+            <a
+              href="#contact"
+              className="nav-link"
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById("contact").scrollIntoView({
+                  behavior: "smooth",
+                });
+              }}
+            >
+              Contact
+            </a>
+          </li>
+        </ul>
+
+        {/* RIGHT - LOGIN BUTTON */}
+        <div className="navbar-auth">
+          <a href="http://localhost:5173/login" className="login-btn">
+            Sign In
+          </a>
         </div>
       </div>
     </nav>

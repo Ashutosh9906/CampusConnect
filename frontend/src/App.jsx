@@ -1,10 +1,13 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
+import Navbar from "./components/layout/Navbar";
 import Landing from "./pages/landing/Landing";
 import CompleteProfile from "./pages/auth/CompleteProfile";
 import GoogleSuccess from "./pages/auth/GoogleSuccess";
+import ListEvent from "./pages/events/ListEvent";
+import EventDetails from "./components/events/EventDetails.jsx";
 
 import "./styles/App.css";
 
@@ -22,18 +25,37 @@ function GoogleFailure() {
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/complete-profile" element={<CompleteProfile />} />
-        <Route path="/home" element={<Landing />} />
+    <Routes>
+      {/* HOME / LANDING */}
+      <Route
+        path="/"
+        element={
+          <>
+            <Navbar />
+            <Landing />
+          </>
+        }
+      />
 
-        {/* Google OAuth routes */}
-        <Route path="/auth/success" element={<GoogleSuccess />} />
-        <Route path="/auth/failure" element={<GoogleFailure />} />
-      </Routes>
-    </BrowserRouter>
+      {/* AUTH PAGES (NO NAVBAR) */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/complete-profile" element={<CompleteProfile />} />
+
+      {/* GOOGLE AUTH */}
+      <Route path="/auth/success" element={<GoogleSuccess />} />
+      <Route path="/auth/failure" element={<GoogleFailure />} />
+      <Route path="/event/:id" element={<EventDetails />} />
+      <Route
+        path="/create-event"
+        element={
+          <>
+            <Navbar />
+            <ListEvent />
+          </>
+        }
+      />
+    </Routes>
   );
 }
 

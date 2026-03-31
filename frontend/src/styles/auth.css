@@ -3,8 +3,9 @@
 /* PAGE */
 
 .auth-page {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #f4f7ff, #eef2ff);
+  position: fixed;
+  inset: 0;
+  background: var(--bg-main);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -13,7 +14,7 @@
 /* CARD */
 
 .auth-card {
-  width: 950px;
+  width: 900px;
   min-height: 520px;
   background: #ffffff;
   border-radius: 22px;
@@ -100,7 +101,10 @@
   font-size: 13px;
   color: #64748b;
 }
-
+body {
+  margin: 0;
+  padding: 0;
+}
 /* MOBILE */
 
 @media (max-width: 900px) {

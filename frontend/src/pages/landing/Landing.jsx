@@ -1,100 +1,158 @@
-import { useState } from "react";
-import Navbar from "../../components/layout/Navbar";
-import EventCard from "../../components/events/EventCard";
 import "../../styles/landing.css";
-import "../../styles/carousel3d.css";
-
-const events = [
-  {
-    id: 1,
-    title: "Web Dev Bootcamp",
-    image: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d",
-  },
-  {
-    id: 2,
-    title: "Career Guidance",
-    image: "https://images.unsplash.com/photo-1551836022-d5d88e9218df",
-  },
-  {
-    id: 3,
-    title: "AI & ML Workshop",
-    image: "https://images.unsplash.com/photo-1581090700227-1e37b190418e",
-  },
-  {
-    id: 4,
-    title: "Cyber Security Seminar",
-    image: "https://images.unsplash.com/photo-1600267165503-1f7e5e6a1c4d",
-  },
-  {
-    id: 5,
-    title: "Startup Talk",
-    image: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7",
-  },
-];
+import EventCard from "../../components/events/EventCard";
 
 function Landing() {
-  const [active, setActive] = useState(2);
-
-  const prev = () => {
-    setActive((i) => (i === 0 ? events.length - 1 : i - 1));
-  };
-
-  const next = () => {
-    setActive((i) => (i === events.length - 1 ? 0 : i + 1));
-  };
-
-  const getPosition = (index) => {
-    const diff = index - active;
-    if (diff === 0) return "center";
-    if (diff === -1 || diff === events.length - 1) return "left";
-    if (diff === 1 || diff === -(events.length - 1)) return "right";
-    if (diff === -2 || diff === events.length - 2) return "far-left";
-    if (diff === 2 || diff === -(events.length - 2)) return "far-right";
-    return "far-right";
-  };
-
   return (
-    <>
-      <Navbar />
+    <div className="landing">
+      {/* HERO SECTION */}
+      <section className="hero">
+        <div className="hero-content">
+          <h1>Discover Campus Events Effortlessly</h1>
+          <p>
+            Explore live and upcoming college events. Register instantly and
+            never miss an opportunity.
+          </p>
 
-      {/* COMPACT HERO */}
-      <section className="landing-hero">
-        <h1>
-          One Platform.
-          <br />
-          All Campus Events.
-        </h1>
-        <p>
-          Campus Connect helps students discover, register, and track college
-          events, expert sessions, and club activities — all in one place.
-        </p>
+          <div className="hero-buttons">
+            <button
+              className="primary-btn"
+              onClick={() =>
+                document.getElementById("events").scrollIntoView({
+                  behavior: "smooth",
+                })
+              }
+            >
+              Explore Events
+            </button>
+          </div>
+        </div>
       </section>
 
-      {/* EVENTS (PRIMARY FOCUS) */}
-      <section className="featured-events">
-        <div className="events-meta">
-          <span className="live-badge">LIVE / FEATURED EVENTS</span>
-        </div>
+      {/*EVENTS */}
+      <section className="events-section" id="events">
+        <h2>Events</h2>
 
         <div className="carousel-wrapper">
-          <button className="carousel-btn left" onClick={prev}>
+          {/* LEFT ARROW */}
+          <button
+            className="carousel-arrow left"
+            onClick={() =>
+              document.getElementById("live-carousel").scrollBy({
+                left: -300,
+                behavior: "smooth",
+              })
+            }
+          >
             ‹
           </button>
 
-          {events.map((event, index) => (
-            <EventCard
-              key={event.id}
-              event={event}
-              position={getPosition(index)}
-            />
-          ))}
+          {/* CAROUSEL */}
+          <div className="events-carousel" id="live-carousel">
+            <EventCard />
+            <EventCard />
+            <EventCard />
+            <EventCard />
+            <EventCard />
+            <EventCard />
+            <EventCard />
+            <EventCard />
+            <EventCard />
+            <EventCard />
+          </div>
 
-          <button className="carousel-btn right" onClick={next}>
+          {/* RIGHT ARROW */}
+          <button
+            className="carousel-arrow right"
+            onClick={() =>
+              document.getElementById("live-carousel").scrollBy({
+                left: 300,
+                behavior: "smooth",
+              })
+            }
+          >
             ›
           </button>
         </div>
       </section>
-    </>
+
+      {/* WHY CAMPUS CONNECT */}
+      <section className="why-us">
+        <h2>Why Campus Connect?</h2>
+
+        <div className="why-grid">
+          <div className="why-card">Centralized Event Platform</div>
+          <div className="why-card">Instant Registration</div>
+          <div className="why-card">Live Updates</div>
+          <div className="why-card">Student Friendly</div>
+        </div>
+      </section>
+      {/* ABOUT US */}
+      <section className="about-us" id="about">
+        <h2>About Us</h2>
+        <p>
+          Campus Connect is a platform built for students to easily discover,
+          explore, and register for college events. We aim to simplify event
+          management and participation by bringing everything into one place.
+        </p>
+      </section>
+      {/* CONTACT US */}
+      <section className="contact-us" id="contact">
+        <div className="contact-box">
+          <h2>Contact Us</h2>
+          <p>
+            Feel free to contact us and we will get back to you as soon as
+            possible.
+          </p>
+
+          <form
+            className="contact-form"
+            onSubmit={(e) => {
+              e.preventDefault();
+
+              const formData = {
+                name: e.target.name.value,
+                phone: e.target.phone.value,
+                email: e.target.email.value,
+                message: e.target.message.value,
+              };
+
+              fetch("http://localhost:5000/contact", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData),
+              })
+                .then((res) => res.json())
+                .then(() => {
+                  alert("Message sent!");
+                  e.target.reset();
+                });
+            }}
+          >
+            <input type="text" name="name" placeholder="Name" required />
+            <input
+              type="tel"
+              name="phone"
+              placeholder="Phone Number"
+              required
+            />
+            <input type="email" name="email" placeholder="Email" required />
+            <textarea name="message" placeholder="Message" rows="4" required />
+
+            <button type="submit" className="primary-btn">
+              Send Message
+            </button>
+          </form>
+        </div>
+      </section>
+      {/* SIMPLE FOOTER */}
+      <footer className="footer">
+        <div className="footer-bottom">
+          <p>
+            © {new Date().getFullYear()} Campus Connect. All rights reserved.
+          </p>
+        </div>
+      </footer>
+    </div>
   );
 }
 

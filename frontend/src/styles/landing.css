@@ -1,62 +1,255 @@
-@import "./variables.css";
+.landing {
+  width: 100%;
+}
 
-/* =========================
-   COMPACT HERO
-   ========================= */
-.landing-hero {
-  max-width: 1200px;
-  margin: 60px auto 0;
-  padding: 40px 24px 70px; /* 🔥 compact height */
-
-  background: linear-gradient(
-    135deg,
-    rgba(37, 99, 235, 0.08),
-    rgba(37, 99, 235, 0.02)
-  );
-
-  border-radius: 28px;
+/* HERO */
+.navbar-brand a {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+.hero {
+  background: linear-gradient(to right, #f5f9ff, #eef4ff);
+  padding: 80px 20px;
   text-align: center;
-  position: relative;
-  z-index: 1;
 }
 
-.landing-hero h1 {
-  font-size: 36px; /* 🔥 reduced */
-  font-weight: 800;
-  margin-bottom: 6px;
-  color: #0f172a;
+.hero-content {
+  max-width: 700px;
+  margin: auto;
 }
 
-.landing-hero p {
-  font-size: 14.5px; /* 🔥 reduced */
-  max-width: 520px;
-  margin: 0 auto;
-  line-height: 1.45;
-  color: #475569;
+.hero h1 {
+  font-size: 42px;
+  color: #1f2933;
+  margin-bottom: 16px;
 }
 
-/* =========================
-   EVENTS SECTION (FOCUS)
-   ========================= */
-.featured-events {
-  margin-top: -110px; /* 🔥 pulls cards into view */
-  padding-bottom: 80px;
-  position: relative;
-  z-index: 3;
+.hero p {
+  font-size: 18px;
+  color: #4b5563;
+  margin-bottom: 32px;
 }
 
-/* Badge above carousel */
-.events-meta {
+.hero-buttons {
   display: flex;
   justify-content: center;
-  margin-bottom: 12px;
+  gap: 20px;
 }
 
-.live-badge {
-  padding: 6px 14px;
-  border-radius: 999px;
-  background: rgba(37, 99, 235, 0.12);
-  color: var(--primary);
-  font-size: 12px;
-  font-weight: 600;
+.primary-btn {
+  background-color: #2563eb;
+  color: #fff;
+  padding: 12px 26px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.secondary-btn {
+  background-color: transparent;
+  color: #2563eb;
+  padding: 12px 26px;
+  border-radius: 8px;
+  border: 1px solid #2563eb;
+  cursor: pointer;
+}
+
+/* EVENTS */
+
+.events-section {
+  padding: 60px 20px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.events-section h2 {
+  font-size: 28px;
+  margin-bottom: 30px;
+  color: #1f2933;
+}
+
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+}
+
+/* WHY US */
+
+.why-us {
+  background-color: #f8fafc;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.why-us h2 {
+  font-size: 28px;
+  margin-bottom: 30px;
+}
+
+.why-grid {
+  max-width: 900px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 24px;
+}
+
+.why-card {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  font-weight: 500;
+}
+/* WRAPPER */
+
+.carousel-wrapper {
+  position: relative;
+}
+
+/* CAROUSEL */
+
+.events-carousel {
+  display: flex;
+  gap: 24px;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+.events-carousel > * {
+  min-width: 260px;
+}
+
+/* ARROWS */
+
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #2563eb;
+  color: white;
+  border: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+
+.carousel-arrow.left {
+  left: -20px;
+}
+
+.carousel-arrow.right {
+  right: -20px;
+}
+
+.carousel-arrow:hover {
+  background-color: #1e4fd8;
+}
+/* ================= ABOUT US ================= */
+
+.about-us {
+  padding: 60px 20px;
+  text-align: center;
+  background: #ffffff;
+}
+
+.about-us h2 {
+  font-size: 28px;
+  margin-bottom: 15px;
+  color: #1f2933;
+}
+
+.about-us p {
+  max-width: 700px;
+  margin: auto;
+  font-size: 16px;
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+.footer {
+  background-color: #0f172a;
+  padding: 30px 20px;
+  text-align: center;
+}
+
+.footer-bottom p {
+  color: #cbd5f5;
+  font-size: 14px;
+}
+/* ================= CONTACT US (BALANCED RECTANGLE) ================= */
+
+.contact-us {
+  padding: 70px 20px;
+  background: #f8fafc;
+}
+
+/* PERFECT SIZE (not too big, not too small) */
+.contact-box {
+  max-width: 700px; /* 🔥 ideal width */
+  margin: auto;
+  background: #ffffff;
+  padding: 35px 40px; /* balanced spacing */
+  border-radius: 10px;
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.06);
+}
+
+/* HEADING */
+
+.contact-box h2 {
+  font-size: 26px;
+  margin-bottom: 8px;
+  color: #1f2933;
+  text-align: center;
+}
+
+.contact-box p {
+  text-align: center;
+  color: #6b7280;
+  margin-bottom: 25px;
+  font-size: 14px;
+}
+
+/* FORM */
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* INPUTS */
+
+.contact-form input,
+.contact-form textarea {
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  transition: 0.2s;
+}
+
+/* FOCUS */
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+  border-color: #2563eb;
+}
+
+/* BUTTON */
+
+.contact-form button {
+  width: 100%;
+  padding: 11px;
+  margin-top: 5px;
 }

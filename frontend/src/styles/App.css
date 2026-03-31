@@ -1,4 +1,4 @@
-.auth-container {
+/* .auth-container {
   width: 360px;
   margin: 80px auto;
   padding: 30px;
@@ -43,4 +43,15 @@
 .auth-text a {
   color: #2563eb;
   text-decoration: none;
+} */
+/* App.css */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Inter", sans-serif;
 }
