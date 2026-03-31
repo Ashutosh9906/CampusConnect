@@ -5,6 +5,7 @@ import Register from "./pages/auth/Register";
 import Navbar from "./components/layout/Navbar";
 import Landing from "./pages/landing/Landing";
 import CompleteProfile from "./pages/auth/CompleteProfile";
+import Clubs from "./pages/clubs/Clubs";
 
 import GoogleSuccessLogin from "./pages/auth/GoogleSuccessLogin";
 import GoogleSuccessRegister from "./pages/auth/GoogleSuccessRegister";
@@ -41,22 +42,20 @@ function App() {
         }
       />
 
-      {/* AUTH */}
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/complete-profile" element={<CompleteProfile />} />
-      <Route path="/verify-otp" element={<VerifyOTP />} />
-
-      {/* GOOGLE AUTH */}
-      <Route path="/auth/success-login" element={<GoogleSuccessLogin />} />
+      {/* CLUBS */}
       <Route
-        path="/auth/success-register"
-        element={<GoogleSuccessRegister />}
+        path="/clubs"
+        element={
+          <>
+            <Navbar />
+            <Clubs />
+          </>
+        }
       />
-      <Route path="/auth/failure" element={<GoogleFailure />} />
 
       {/* EVENTS */}
       <Route path="/event/:id" element={<EventDetails />} />
+
       <Route
         path="/create-event"
         element={
@@ -66,8 +65,21 @@ function App() {
           </>
         }
       />
+
+      {/* AUTH (NO NAVBAR) */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/complete-profile" element={<CompleteProfile />} />
+      <Route path="/verify-otp" element={<VerifyOTP />} />
+
+      {/* GOOGLE */}
+      <Route path="/auth/success-login" element={<GoogleSuccessLogin />} />
+      <Route
+        path="/auth/success-register"
+        element={<GoogleSuccessRegister />}
+      />
+      <Route path="/auth/failure" element={<GoogleFailure />} />
     </Routes>
   );
 }
-
 export default App;

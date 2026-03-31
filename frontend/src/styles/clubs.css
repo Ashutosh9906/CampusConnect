@@ -1,0 +1,258 @@
+/* PAGE */
+.clubs-page {
+  max-width: 1100px;
+  margin: auto;
+  padding: 50px 20px;
+}
+
+/* HEADING */
+.clubs-page h2 {
+  font-size: 30px;
+  margin-bottom: 25px;
+  color: #1f2933;
+  text-align: center;
+}
+
+/* ================= TABS ================= */
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 35px;
+}
+
+.tabs button {
+  padding: 8px 20px;
+  border-radius: 20px;
+  border: none;
+  background: #e5e7eb;
+  color: #374151;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.25s;
+}
+
+.tabs button.active {
+  background: #2563eb;
+  color: white;
+}
+
+.tabs button:hover {
+  background: #2563eb;
+  color: white;
+}
+
+/* ================= GRID ================= */
+.club-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px;
+}
+
+/* ================= CLUB CARD ================= */
+.club-card {
+  background: white;
+  padding: 25px;
+  border-radius: 14px;
+  text-align: center;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  transition: 0.3s;
+}
+
+.club-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
+}
+
+.club-card h3 {
+  margin-bottom: 15px;
+  color: #1f2933;
+}
+
+/* BUTTON */
+.club-card button {
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  color: white;
+  padding: 8px 18px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.club-card button:hover {
+  box-shadow: 0 5px 14px rgba(37, 99, 235, 0.3);
+}
+
+/* ================= REQUEST ================= */
+.open-request-btn {
+  display: block;
+  margin: 0 auto 20px;
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.open-request-btn:hover {
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+}
+
+/* REQUEST BOX */
+.request-box {
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* REQUEST CARD */
+.request-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  border-radius: 8px;
+  background: #f9fbff;
+  margin-bottom: 10px;
+  transition: 0.2s;
+}
+
+.request-card:hover {
+  background: #eef4ff;
+}
+
+.request-card span {
+  color: #1f2933;
+}
+
+/* REQUEST BUTTON */
+.request-card button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.request-card button:hover {
+  background: #1e4fd8;
+}
+
+/* CLOSE BUTTON */
+.close-btn {
+  margin-top: 10px;
+  background: #ef4444;
+  color: white;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* ================= HISTORY ================= */
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.history-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+}
+
+/* STATUS */
+.status {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  text-transform: capitalize;
+}
+
+/* COLORS */
+.status.pending {
+  background: #f59e0b;
+  color: white;
+}
+
+.status.approved {
+  background: #10b981;
+  color: white;
+}
+
+.status.expired {
+  background: #ef4444;
+  color: white;
+}
+/* MODAL */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-box {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  width: 350px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal-box input {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.modal-actions button {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.modal-actions button:first-child {
+  background: #2563eb;
+  color: white;
+}
+
+.cancel-btn {
+  background: red;
+  color: white;
+}
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+  .tabs {
+    flex-wrap: wrap;
+  }
+
+  .club-card {
+    padding: 20px;
+  }
+}
