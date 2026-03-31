@@ -21,13 +21,13 @@ function Login() {
       const res = await fetch("http://localhost:4000/auth/login", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         credentials: "include",
         body: JSON.stringify({
           email,
-          password
-        })
+          password,
+        }),
       });
 
       const result = await res.json();
@@ -39,7 +39,7 @@ function Login() {
 
       if (res.status == 500 && !result.success) {
         window.location.href = `/auth/failure?message=${encodeURIComponent(
-          result.message || "Registration failed"
+          result.message || "Registration failed",
         )}`;
         return;
       }
@@ -47,7 +47,6 @@ function Login() {
       // ✅ Login success
       localStorage.setItem("user", JSON.stringify(result.user));
       window.location.href = "/";
-
     } catch (err) {
       console.error(err);
       alert("Login failed");
@@ -57,7 +56,6 @@ function Login() {
   return (
     <div className="auth-page">
       <div className="auth-card">
-
         {/* LEFT PANEL */}
         <div className="auth-left">
           <img src={illustration} alt="Campus Connect" />
@@ -125,7 +123,11 @@ function Login() {
                   </svg>
                 ) : (
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path d="M3 3l18 18" stroke="currentColor" strokeWidth="2" />
+                    <path
+                      d="M3 3l18 18"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    />
                     <path
                       d="M10.58 10.58A3 3 0 0012 15a3 3 0 002.42-4.42"
                       stroke="currentColor"

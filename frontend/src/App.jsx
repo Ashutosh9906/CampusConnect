@@ -1,12 +1,17 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
+import Navbar from "./components/layout/Navbar";
 import Landing from "./pages/landing/Landing";
 import CompleteProfile from "./pages/auth/CompleteProfile";
-import GoogleSuccessLogin from "./pages/auth/GoogleSuccessLogin"; // ✅ NEW
-import GoogleSuccessRegister from "./pages/auth/GoogleSuccessRegister"; // ✅ NEW
+
+import GoogleSuccessLogin from "./pages/auth/GoogleSuccessLogin";
+import GoogleSuccessRegister from "./pages/auth/GoogleSuccessRegister";
 import VerifyOTP from "./pages/auth/VerifyOTP";
+
+import ListEvent from "./pages/events/ListEvent";
+import EventDetails from "./components/events/EventDetails.jsx";
 
 import "./styles/App.css";
 
@@ -24,20 +29,44 @@ function GoogleFailure() {
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/complete-profile" element={<CompleteProfile />} />
-        <Route path="/" element={<Landing />} />
-        <Route path="/verify-otp" element={<VerifyOTP />} />
+    <Routes>
+      {/* HOME */}
+      <Route
+        path="/"
+        element={
+          <>
+            <Navbar />
+            <Landing />
+          </>
+        }
+      />
 
-        {/* ✅ Google OAuth routes */}
-        <Route path="/auth/success-login" element={<GoogleSuccessLogin />} />
-        <Route path="/auth/success-register" element={<GoogleSuccessRegister />} />
-        <Route path="/auth/failure" element={<GoogleFailure />} />
-      </Routes>
-    </BrowserRouter>
+      {/* AUTH */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/complete-profile" element={<CompleteProfile />} />
+      <Route path="/verify-otp" element={<VerifyOTP />} />
+
+      {/* GOOGLE AUTH */}
+      <Route path="/auth/success-login" element={<GoogleSuccessLogin />} />
+      <Route
+        path="/auth/success-register"
+        element={<GoogleSuccessRegister />}
+      />
+      <Route path="/auth/failure" element={<GoogleFailure />} />
+
+      {/* EVENTS */}
+      <Route path="/event/:id" element={<EventDetails />} />
+      <Route
+        path="/create-event"
+        element={
+          <>
+            <Navbar />
+            <ListEvent />
+          </>
+        }
+      />
+    </Routes>
   );
 }
 
