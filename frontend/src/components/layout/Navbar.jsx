@@ -1,69 +1,73 @@
-import { Link, NavLink } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, NavLink } from "react-router-dom";
+import logo from "../../assets/cc-logo.png";
 import "../../styles/navbar.css";
 
 function Navbar() {
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    } else {
+      setUser(null);
+    }
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await fetch("http://localhost:4000/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch (err) {
+      console.log("No active session or already logged out");
+    }
+
+    localStorage.removeItem("user");
+    setUser(null);
+    navigate("/");
+  };
+
   return (
-    <nav className="navbar">
-      <div className="navbar-container">
-        {/* LEFT - BRAND */}
-        <div className="navbar-brand">
-          <Link to="/">Campus Connect</Link>
+    <nav className="navbar-container">
+      <div className="navbar-pill-full">
+        {/* LOGO */}
+        <div className="navbar-logo-wrap">
+          <img src={logo} alt="Campus Connect" />
         </div>
 
-        {/* CENTER - LINKS */}
-        <ul className="navbar-links">
-          <li>
-            <NavLink to="/" className="nav-link">
-              Home
-            </NavLink>
-          </li>
+        {/* LINKS */}
+        <div className="navbar-links">
+          <NavLink to="/home">Home</NavLink>
+          <NavLink to="/events">Events</NavLink>
+          <NavLink to="/about">About</NavLink>
+          <NavLink to="/contact">Contact</NavLink>
 
-          <li>
-            <NavLink to="/events" className="nav-link">
-              Events
-            </NavLink>
-          </li>
-
-          <li>
-            <a
-              href="#about"
-              className="nav-link"
-              onClick={(e) => {
-                e.preventDefault();
-                document.getElementById("about").scrollIntoView({
-                  behavior: "smooth",
-                });
-              }}
-            >
-              About
-            </a>
-          </li>
+          {/* YOUR ADD EVENT FEATURE (kept) */}
           {localStorage.getItem("role") === "organizer" && (
-            <a href="/create-event" className="nav-link">
-              Add Event
-            </a>
+            <NavLink to="/create-event">Add Event</NavLink>
           )}
-          <li>
-            <a
-              href="#contact"
-              className="nav-link"
-              onClick={(e) => {
-                e.preventDefault();
-                document.getElementById("contact").scrollIntoView({
-                  behavior: "smooth",
-                });
-              }}
-            >
-              Contact
-            </a>
-          </li>
-        </ul>
+        </div>
 
-        {/* RIGHT - LOGIN BUTTON */}
-        <div className="navbar-auth">
-          <a href="http://localhost:5173/login" className="login-btn">
-            Sign In
-          </a>
+        {/* AUTH SECTION */}
+        <div className="navbar-action">
+          {user ? (
+            <div className="profile-wrapper">
+              <span className="profile-btn">{user.name || "My Profile"}</span>
+
+              <div className="profile-dropdown">
+                <NavLink to="/profile">View Profile</NavLink>
+                <button onClick={handleLogout}>Sign Out</button>
+              </div>
+            </div>
+          ) : (
+            <NavLink to="/login" className="login-btn">
+              Login
+            </NavLink>
+          )}
         </div>
       </div>
     </nav>

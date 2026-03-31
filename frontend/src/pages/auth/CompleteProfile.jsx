@@ -12,14 +12,10 @@ function CompleteProfile() {
   const [roll, setRoll] = useState("");
   const [division, setDivision] = useState("");
 
-  // ROLE STATES
-  const [role, setRole] = useState("student"); // student | club
-  const [club, setClub] = useState("");
-
   const handleSubmit = async () => {
-    // FRONTEND VALIDATION
-    if (role === "club" && !club) {
-      alert("Please select the club name");
+    // Basic validation
+    if (!name || !password || !prn || !roll || !division) {
+      alert("Please fill all fields");
       return;
     }
 
@@ -28,6 +24,7 @@ function CompleteProfile() {
 
       const res = await fetch("http://localhost:4000/auth/complete-profile", {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -38,18 +35,32 @@ function CompleteProfile() {
           prn,
           roll,
           division,
-          role,
-          club: role === "club" ? club : null,
         }),
       });
 
-      const data = await res.json();
+      const result = await res.json();
 
-      if (data.success) {
-        window.location.href = "/home";
-      } else {
-        alert("Failed to complete profile");
+      if (res.status === 400 || res.status === 404) {
+        window.location.href = `/login?message=${result.message}`;
+        return;
       }
+
+      if (res.status === 500 && !result.success) {
+        window.location.href = `/auth/failure?message=${encodeURIComponent(
+          result.message || "Registration failed"
+        )}`;
+        return;
+      }
+
+      try {
+        await account.deleteSession("current");
+      } catch (err) {
+        console.log("Session cleanup failed (safe to ignore)");
+      }
+
+      // Success
+      localStorage.setItem("user", JSON.stringify(result.user));
+      window.location.href = "/";
     } catch (err) {
       console.error(err);
       alert("Something went wrong");
@@ -114,6 +125,7 @@ function CompleteProfile() {
             </div>
           </div>
 
+          {/* NAME */}
           <input
             type="text"
             placeholder="Student Name"
@@ -121,6 +133,7 @@ function CompleteProfile() {
             onChange={(e) => setName(e.target.value)}
           />
 
+          {/* PRN */}
           <input
             type="text"
             placeholder="PRN Number"
@@ -128,6 +141,7 @@ function CompleteProfile() {
             onChange={(e) => setPrn(e.target.value)}
           />
 
+          {/* ROLL */}
           <input
             type="text"
             placeholder="Roll Number"
@@ -135,6 +149,7 @@ function CompleteProfile() {
             onChange={(e) => setRoll(e.target.value)}
           />
 
+          {/* DIVISION */}
           <input
             type="text"
             placeholder="Division"
@@ -142,38 +157,12 @@ function CompleteProfile() {
             onChange={(e) => setDivision(e.target.value)}
           />
 
-          {/* ROLE */}
-          <select
-            value={role}
-            onChange={(e) => {
-              setRole(e.target.value);
-              setClub("");
-            }}
-          >
-            <option value="student">Student</option>
-            <option value="club">Club Member</option>
-          </select>
-
-          {/* CLUB */}
-          {role === "club" && (
-            <select value={club} onChange={(e) => setClub(e.target.value)}>
-              <option value="">Select Club</option>
-              <option value="Coding Club">Coding Club</option>
-              <option value="Robotics Club">Robotics Club</option>
-              <option value="Dance Club">Dance Club</option>
-            </select>
-          )}
-
           {/* BUTTON */}
           <button
             className="btn-primary"
             onClick={handleSubmit}
-            disabled={role === "club" && !club}
-            title={
-              role === "club" && !club ? "Please select the club name" : ""
-            }
           >
-            {role === "club" ? "Create Request" : "Create Account"}
+            Create Account
           </button>
         </div>
       </div>

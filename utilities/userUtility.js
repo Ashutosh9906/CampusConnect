@@ -1,4 +1,5 @@
-import {hash, compare} from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { hash, compare } from "bcryptjs";
 
 export const handleResponse = (res, status, message, data = null) => {
     res.status(status).json({
@@ -16,4 +17,22 @@ export async function hashPassword(password) {
 export async function comparePassword(userPass, hashPass) {
     const isMatch = await compare(userPass, hashPass);
     return isMatch;
+}
+
+export function createTokenUser(id) {
+    const token = jwt.sign(
+        { id },
+        process.env.SECRET,
+        { expiresIn: "30m" }
+    );
+    return token;
+}
+
+export function clubUpdateFilter(body){
+    const updateBody = {};
+    if(body.name) updateBody.name = body.name;
+    if(body.description) updateBody.description = body.description;
+    if(body.clubCoordinator) updateBody.clubCoordinator = body.clubCoordinator;
+
+    return updateBody;
 }

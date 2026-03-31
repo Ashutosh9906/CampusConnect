@@ -5,7 +5,11 @@ import Register from "./pages/auth/Register";
 import Navbar from "./components/layout/Navbar";
 import Landing from "./pages/landing/Landing";
 import CompleteProfile from "./pages/auth/CompleteProfile";
-import GoogleSuccess from "./pages/auth/GoogleSuccess";
+
+import GoogleSuccessLogin from "./pages/auth/GoogleSuccessLogin";
+import GoogleSuccessRegister from "./pages/auth/GoogleSuccessRegister";
+import VerifyOTP from "./pages/auth/VerifyOTP";
+
 import ListEvent from "./pages/events/ListEvent";
 import EventDetails from "./components/events/EventDetails.jsx";
 
@@ -26,7 +30,7 @@ function GoogleFailure() {
 function App() {
   return (
     <Routes>
-      {/* HOME / LANDING */}
+      {/* HOME */}
       <Route
         path="/"
         element={
@@ -37,14 +41,21 @@ function App() {
         }
       />
 
-      {/* AUTH PAGES (NO NAVBAR) */}
+      {/* AUTH */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/complete-profile" element={<CompleteProfile />} />
+      <Route path="/verify-otp" element={<VerifyOTP />} />
 
       {/* GOOGLE AUTH */}
-      <Route path="/auth/success" element={<GoogleSuccess />} />
+      <Route path="/auth/success-login" element={<GoogleSuccessLogin />} />
+      <Route
+        path="/auth/success-register"
+        element={<GoogleSuccessRegister />}
+      />
       <Route path="/auth/failure" element={<GoogleFailure />} />
+
+      {/* EVENTS */}
       <Route path="/event/:id" element={<EventDetails />} />
       <Route
         path="/create-event"

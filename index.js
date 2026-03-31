@@ -2,6 +2,7 @@
 import express from "express";
 import { configDotenv } from "dotenv";
 import { PrismaClient } from "@prisma/client";
+import { ID } from "node-appwrite";
 import cors from "cors";
 
 configDotenv();
@@ -13,8 +14,10 @@ const prisma = new PrismaClient();
 
 //custom imports
 import errorHandling from "./middlewares/errorHandler.js";
-import { account } from "./config/appWrite.js";
-import { comparePassword, handleResponse, hashPassword } from "./utilities/userUtility.js";
+import { clubUpdateFilter, comparePassword, createTokenUser, handleResponse, hashPassword } from "./utilities/userUtility.js";
+import { validateRequest } from "./middlewares/parseBody.js";
+import { completeProfileSchema, googleLoginSchema, googleRegisterSchema, loginSchema } from "./validators/userValidationSchema.js";
+import { clubIdSchema, clubPostSchema } from "./validators/clubValidationSchema.js";
 
 //middlewares
 app.use(express.json());
@@ -25,39 +28,106 @@ app.use(cors({
 
 
 //custom api
-app.post("/auth/google-login", async (req, res, next) => {
+app.post("/auth/google-login", validateRequest(googleLoginSchema), async (req, res, next) => {
   try {
-    const { appwriteUserId, email, name } = req.body;
+    const { email } = res.locals.validated.body;
 
-    let user = await prisma.user.findUnique({
-      where: { appwriteUserId },
+    const user = await prisma.user.findUnique({
+      where: { email },
     });
 
-    // If user doesn't exist → create
     if (!user) {
-      user = await prisma.user.create({
-        data: {
-          appwriteUserId,
-          email,
-          name,
-          profileComplete: false,
-        },
+      return res.status(404).json({
+        success: false,
+        message: "User does not exist. Please register first.",
       });
     }
 
-    return res.json({
+    const token = createTokenUser(user.id);
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",     //while worling with frontend else use "strict"
+      maxAge: 30 * 60 * 1000,
+      path: "/"         //implifies that the created cookie can be accessied through all routes
+    });
+
+    return res.status(200).json({
       success: true,
-      profileComplete: user.profileComplete,
+      message: "Login successful",
       user,
     });
+
   } catch (err) {
-    next(err);
+    console.error("Google Register Error:", err);
+
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong. Please try again later.",
+    });
   }
 });
 
-app.post("/auth/complete-profile", async (req, res, next) => {
+app.post("/auth/google-register", validateRequest(googleRegisterSchema), async (req, res, next) => {
   try {
-    const { appwriteUserId, name, password, prn, roll, division } = req.body;
+    const { appwriteUserId, email } = res.locals.validated.body;
+    console.log(res.locals.validated.body);
+
+    // 🔍 Check if user exists
+    let user = await prisma.user.findUnique({
+      where: { email, appwriteUserId },
+    });
+
+    // ✅ EXISTING USER → LOGIN
+    if (user) {
+      return res.status(409).json({
+        success: false,
+        message: "User Already Exist, Try Login",
+        isNewUser: false,
+      });
+    }
+
+    // ✅ NEW USER → REGISTER
+    user = await prisma.user.create({
+      data: {
+        appwriteUserId,
+        email,
+        profileComplete: false,
+      },
+    });
+
+    const token = createTokenUser(user.id);
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",     //while worling with frontend else use "strict"
+      maxAge: 30 * 60 * 1000,
+      path: "/"         //implifies that the created cookie can be accessied through all routes
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "Registration successful",
+      user,
+      isNewUser: true,
+    });
+
+  } catch (err) {
+    // next(err);
+    console.error("Google Register Error:", err);
+
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong. Please try again later.",
+    });
+  }
+});
+
+
+app.post("/auth/complete-profile", validateRequest(completeProfileSchema), async (req, res, next) => {
+  try {
+    const { appwriteUserId, name, password, prn, roll, division } = res.locals.validated.body;
+    console.log(res.body);
 
     const hash = await hashPassword(password);
 
@@ -74,87 +144,254 @@ app.post("/auth/complete-profile", async (req, res, next) => {
       },
     });
 
-    res.json({ success: true, user });
-  } catch (err) {
-    next(err);
-  }
-});
-
-
-app.post("/auth/otp/verify", async (req, res, next) => {
-  try {
-    const { userId, secret } = req.body;
-
-    await account.createSession(userId, secret);
-
-    // SUCCESS
-    handleResponse(res, 200, "OTP verified successfully");
-
-  } catch (err) {
-    // FAILURE
-    err.message = "Invalid or expired OTP";
-    next(err);
-  }
-});
-
-app.post("/auth/set-password", async (req, res, next) => {
-  try {
-    const { appwriteUserId, password } = req.body;
-
-    const hash = hashPassword(password);
-
-    await prisma.user.update({
-      where: { appwriteUserId },
-      data: {
-        passwordHash: hash,
-        passwordSet: true,
-      },
+    const token = createTokenUser(user.id);
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",     //while worling with frontend else use "strict"
+      maxAge: 30 * 60 * 1000,
+      path: "/"         //implifies that the created cookie can be accessied through all routes
     });
 
-    res.json({ success: true });
+    res.status(201).json({
+      success: true,
+      message: "user register successfully",
+      user
+    });
   } catch (err) {
-    next(err);
+    console.error("Google Register Error:", err);
+
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong. Please try again later.",
+    });
   }
 });
 
-app.post("/auth/verify-password", async (req, res, next) => {
+app.post("/auth/login", validateRequest(loginSchema), async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, password } = res.locals.validated.body;
 
-    // 1. Find user
     const user = await prisma.user.findUnique({
-      where: { email },
+      where: { email }
     });
+    console.log(user);
+
 
     if (!user) {
-      return handleResponse(res, 404, "user not found")
+      return res.status(404).json({
+        message: "Invalid credentials"
+      })
     }
 
-    // 2. Check if password is set
-    if (!user.passwordSet || !user.passwordHash) {
-      return handleResponse(res, 400, "Set password first or, perform continue with google")
+    if (!comparePassword(password, user.passwordHash)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Credentials"
+      });
     }
 
-    // 3. Compare password
-    const isValid = comparePassword(password, user.passwordHash);
-
-    if (!isValid) {
-      return handleResponse(res, 401, "Invalid Email or password");
-    }
-
-    // 4. SUCCESS (you can also create session / JWT here)
-    handleResponse(res, 200, "Login successful", {
-      userId: user.appwriteUserId,
-      email: user.email,
-      name: user.name,
+    const token = createTokenUser(user.id);
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",     //while worling with frontend else use "strict"
+      maxAge: 30 * 60 * 1000,
+      path: "/"         //implifies that the created cookie can be accessied through all routes
     });
 
+    return res.status(200).json({
+      success: true,
+      message: "User login successfully",
+      user
+    });
   } catch (error) {
-    next(error);
+    console.error("Google Register Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong. Please try again later.",
+    });
   }
-});
+})
 
+app.post("/auth/logout", (req, res) => {
+  try {
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/"
+    })
 
+    console.log("User logout successful");
+    return res.status(200).json({
+      success: true,
+      message: "Logged out successfully"
+    });
+  } catch (error) {
+    console.error("Enable to delete auth cookie", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong. Please try again later.",
+    });
+  }
+})
+
+app.get("/club", async (req, res, next) => {
+  try {
+    const clubDetails = await prisma.club.findMany();
+    return res.status(200).json({
+      success: true,
+      message: "Club details fetchedd successfully",
+      clubDetails
+    });
+  } catch (error) {
+    console.error("Getting club details failed", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong. Please try again later.",
+    });
+  }
+})
+
+app.get("/club/:id", validateRequest(clubIdSchema), async (req, res, next) => {
+  try {
+    const clubId = res.locals.validated.params.id;
+
+    const clubDetails = await prisma.club.findUnique({
+      where: { id: clubId }
+    })
+
+    if (!clubDetails) {
+      return res.status(409).json({
+        success: false,
+        message: "Club already exists.",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Club details fetched successfully",
+      clubDetails
+    });
+  } catch (error) {
+    console.error("Getting club details by ID failed", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong. Please try again later.",
+    });
+  }
+})
+
+app.post("/club", validateRequest(clubPostSchema), async (req, res, next) => {
+  try {
+    const { name, description, clubCoordinator } = res.locals.validated.body;
+
+    const existingClub = await prisma.club.findUnique({
+      where: { name }
+    })
+
+    if (existingClub) {
+      return res.status(409).json({
+        success: false,
+        message: "Club already exists.",
+      });
+    }
+
+    const club = await prisma.club.create({
+      data: {
+        name,
+        description,
+        clubCoordinator
+      }
+    })
+
+    return res.status(201).json({
+      success: true,
+      message: "Club added successful",
+      club,
+    });
+  } catch (error) {
+    console.error("Club insertion failed", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong. Please try again later.",
+    });
+  }
+})
+
+app.patch("/club/:id", validateRequest(clubIdSchema), async (req, res, next) => {
+  try {
+    const clubId = res.locals.validated.params.id;
+
+    const clubExist = await prisma.club.findUnique({
+      where: { id: clubId }
+    });
+    if(!clubExist){
+      return res.status(404).json({
+        success: false,
+        message: "Invalid club ID",
+      })
+    }
+
+    const updateBody = clubUpdateFilter(req.body);
+
+    const updatedClub = await prisma.club.update({
+      where: { id: clubId },
+      data: updateBody
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Club details updated successful",
+      updatedClub,
+    })
+  } catch (error) {
+    console.error("Club updation failed", error);
+    
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong. Please try again later.",
+    });
+  }
+})
+
+app.delete("/club/:id", validateRequest(clubIdSchema), async (req, res, next) => {
+  try {
+    const clubId = res.locals.validated.params.id;
+
+    const clubExist = await prisma.club.findUnique({
+      where: { id: clubId }
+    });
+    if(!clubExist){
+      return res.status(404).json({
+        success: false,
+        message: "Invalid club ID",
+      })
+    }
+
+    await prisma.club.delete({
+      where: { id: clubId }
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Club details deleted successfully"
+    });
+  } catch (error) {
+    console.error("Club updation failed", error);
+    
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong. Please try again later.",
+    });
+  }
+})
 
 //central error handlinf system
 app.use(errorHandling);
