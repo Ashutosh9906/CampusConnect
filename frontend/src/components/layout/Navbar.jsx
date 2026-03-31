@@ -7,27 +7,40 @@ function Navbar() {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
+  // Load user
+  const loadUser = () => {
     const storedUser = localStorage.getItem("user");
+
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     } else {
       setUser(null);
     }
+  };
+
+  useEffect(() => {
+    loadUser();
+
+    window.addEventListener("storage", loadUser);
+
+    return () => {
+      window.removeEventListener("storage", loadUser);
+    };
   }, []);
 
   const handleLogout = async () => {
     try {
-      await fetch("http://localhost:4000/auth/logout", {
+      await fetch(`${import.meta.env.VITE_API_URL}/auth/logout`, {
         method: "POST",
         credentials: "include",
       });
     } catch (err) {
-      console.log("No active session or already logged out");
+      console.log("No active session");
     }
 
     localStorage.removeItem("user");
-    setUser(null);
+
+    loadUser();
     navigate("/");
   };
 
@@ -41,18 +54,42 @@ function Navbar() {
 
         {/* LINKS */}
         <div className="navbar-links">
-          <NavLink to="/home">Home</NavLink>
+          <NavLink to="/" end>
+            Home
+          </NavLink>
           <NavLink to="/events">Events</NavLink>
-          <NavLink to="/about">About</NavLink>
-          <NavLink to="/contact">Contact</NavLink>
 
-          {/* YOUR ADD EVENT FEATURE (kept) */}
-          {localStorage.getItem("role") === "organizer" && (
-            <NavLink to="/create-event">Add Event</NavLink>
-          )}
+          {/* ABOUT */}
+          <a
+            href="#about"
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById("about")?.scrollIntoView({
+                behavior: "smooth",
+              });
+            }}
+          >
+            About
+          </a>
+
+          {/* CONTACT */}
+          <a
+            href="#contact"
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById("contact")?.scrollIntoView({
+                behavior: "smooth",
+              });
+            }}
+          >
+            Contact
+          </a>
+
+          {/* ✅ ONLY AFTER LOGIN */}
+          {user && <NavLink to="/clubs">Clubs</NavLink>}
         </div>
 
-        {/* AUTH SECTION */}
+        {/* AUTH */}
         <div className="navbar-action">
           {user ? (
             <div className="profile-wrapper">

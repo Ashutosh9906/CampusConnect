@@ -1,9 +1,21 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import "../../styles/listEvent.css";
 import uploadIcon from "../../assets/upload.png";
 
 function CreateEvent() {
-  const [role, setRole] = useState("");
+  // 🔥 GET CLUB FROM URL
+  const params = new URLSearchParams(window.location.search);
+  const clubFromURL = params.get("club");
+
+  // ❌ BLOCK ACCESS IF NOT FROM CLUBS PAGE
+  if (!clubFromURL) {
+    return (
+      <div className="no-access">
+        <h2>Access Denied</h2>
+        <p>Please select a club from My Clubs to host an event.</p>
+      </div>
+    );
+  }
 
   const [formData, setFormData] = useState({
     name: "",
@@ -13,42 +25,24 @@ function CreateEvent() {
     venue: "",
     duration: "",
     description: "",
-    club: "",
+    club: clubFromURL, // ✅ AUTO-FILLED
     speaker: "",
     email: "",
     phones: [""],
     brochure: null,
-
-    // NEW
     linkedin: "",
     github: "",
     showLinkedIn: false,
     showGithub: false,
   });
 
-  // ✅ GET USER ROLE (simple demo using localStorage)
-  useEffect(() => {
-    const userRole = localStorage.getItem("role");
-    setRole(userRole);
-  }, []);
-
-  // ❌ BLOCK ACCESS
-  if (role !== "organizer") {
-    return (
-      <div className="no-access">
-        <h2>Access Denied</h2>
-        <p>Only organizers can add events.</p>
-      </div>
-    );
-  }
-
-  // HANDLE INPUT
+  // INPUT HANDLER
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  // HANDLE PHONE
+  // PHONE HANDLER
   const handlePhoneChange = (index, value) => {
     const updated = [...formData.phones];
     updated[index] = value;
@@ -59,7 +53,7 @@ function CreateEvent() {
     setFormData({ ...formData, phones: [...formData.phones, ""] });
   };
 
-  // FILE
+  // FILE HANDLER
   const handleFile = (e) => {
     setFormData({ ...formData, brochure: e.target.files[0] });
   };
@@ -78,12 +72,14 @@ function CreateEvent() {
       }
     });
 
-    fetch("http://localhost:5000/events", {
+    const API = import.meta.env.VITE_API_URL;
+
+    fetch(`${API}/events`, {
       method: "POST",
       body: data,
     })
       .then((res) => res.json())
-      .then(() => alert("Event Created!"))
+      .then(() => alert("Event Created Successfully!"))
       .catch((err) => console.log(err));
   };
 
@@ -92,12 +88,11 @@ function CreateEvent() {
       <h2>Create Event</h2>
 
       <form onSubmit={handleSubmit} className="event-form">
+        {/* FILE */}
         <label className="file-upload">
           <input type="file" onChange={handleFile} required />
-
           <div className="upload-content">
             <img src={uploadIcon} alt="upload" className="upload-icon" />
-
             <span>
               {formData.brochure
                 ? formData.brochure.name
@@ -105,34 +100,44 @@ function CreateEvent() {
             </span>
           </div>
         </label>
+
+        {/* BASIC DETAILS */}
         <input
           name="name"
           placeholder="Event Name"
           onChange={handleChange}
           required
         />
+
         <input
           name="host"
           placeholder="Host Name"
           onChange={handleChange}
           required
         />
+
         <input type="date" name="date" onChange={handleChange} required />
         <input type="time" name="time" onChange={handleChange} required />
+
         <input
           name="venue"
           placeholder="Venue"
           onChange={handleChange}
           required
         />
+
         <input name="duration" placeholder="Duration" onChange={handleChange} />
+
         <textarea
           name="description"
           placeholder="Description"
           onChange={handleChange}
         />
-        <input name="club" placeholder="Club Name" onChange={handleChange} />
-        {/* SPEAKER DETAILS */}
+
+        {/* ✅ CLUB AUTO-FILLED */}
+        <input name="club" value={formData.club} readOnly />
+
+        {/* SPEAKER */}
         <div className="speaker-section">
           <h3>Speaker Details (Optional)</h3>
 
@@ -160,12 +165,10 @@ function CreateEvent() {
             </button>
           </div>
 
-          {/* CONDITIONAL INPUTS */}
-
           {formData.showLinkedIn && (
             <input
               name="linkedin"
-              placeholder="LinkedIn Profile URL"
+              placeholder="LinkedIn URL"
               onChange={handleChange}
             />
           )}
@@ -173,17 +176,20 @@ function CreateEvent() {
           {formData.showGithub && (
             <input
               name="github"
-              placeholder="GitHub Profile URL"
+              placeholder="GitHub URL"
               onChange={handleChange}
             />
           )}
         </div>
+
+        {/* CONTACT */}
         <input
           type="email"
           name="email"
           placeholder="Contact Email"
           onChange={handleChange}
         />
+
         {/* MULTIPLE PHONES */}
         {formData.phones.map((phone, index) => (
           <input
@@ -193,9 +199,12 @@ function CreateEvent() {
             onChange={(e) => handlePhoneChange(index, e.target.value)}
           />
         ))}
+
         <button type="button" onClick={addPhone}>
           + Add Phone
         </button>
+
+        {/* SUBMIT */}
         <button type="submit" className="primary-btn">
           Create Event
         </button>
