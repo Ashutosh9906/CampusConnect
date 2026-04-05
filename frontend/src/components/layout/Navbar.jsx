@@ -5,6 +5,7 @@ import "../../styles/navbar.css";
 
 function Navbar() {
   const [user, setUser] = useState(null);
+  const [activeSection, setActiveSection] = useState("");
   const navigate = useNavigate();
 
   // Load user
@@ -17,14 +18,38 @@ function Navbar() {
       setUser(null);
     }
   };
-
   useEffect(() => {
     loadUser();
 
+    const handleScrollSpy = () => {
+      const sections = ["about", "contact"];
+
+      for (let sec of sections) {
+        const element = document.getElementById(sec);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+
+          if (rect.top <= 150 && rect.bottom >= 150) {
+            setActiveSection(sec);
+            break;
+          }
+        }
+      }
+    };
+
+    // 🔥 NEW: listen for profile updates
+    const handleUserUpdate = () => {
+      loadUser();
+    };
+
+    window.addEventListener("scroll", handleScrollSpy);
     window.addEventListener("storage", loadUser);
+    window.addEventListener("userUpdated", handleUserUpdate); // ✅ ADD THIS
 
     return () => {
+      window.removeEventListener("scroll", handleScrollSpy);
       window.removeEventListener("storage", loadUser);
+      window.removeEventListener("userUpdated", handleUserUpdate); // ✅ ADD THIS
     };
   }, []);
 
@@ -43,13 +68,27 @@ function Navbar() {
     loadUser();
     navigate("/");
   };
+  const handleScroll = (id) => {
+    navigate(`/?scroll=${id}`);
+  };
+  const getInitials = (name) => {
+    if (!name) return "U";
 
+    return name
+      .trim()
+      .split(" ")
+      .map((w) => w[0])
+      .join("")
+      .toUpperCase();
+  };
   return (
     <nav className="navbar-container">
       <div className="navbar-pill-full">
         {/* LOGO */}
         <div className="navbar-logo-wrap">
-          <img src={logo} alt="Campus Connect" />
+          <NavLink to="/">
+            <img src={logo} alt="Campus Connect" />
+          </NavLink>
         </div>
 
         {/* LINKS */}
@@ -58,9 +97,9 @@ function Navbar() {
             Home
           </NavLink>
           <NavLink to="/events">Events</NavLink>
-
+          <NavLink to="/club-requests">Requests</NavLink>
           {/* ABOUT */}
-          <a
+          {/* <a
             href="#about"
             onClick={(e) => {
               e.preventDefault();
@@ -70,10 +109,17 @@ function Navbar() {
             }}
           >
             About
-          </a>
+          </a> */}
+          {/* <NavLink to="/?scroll=about">About</NavLink> */}
+          <span
+            className={activeSection === "about" ? "active-link" : ""}
+            onClick={() => handleScroll("about")}
+          >
+            About
+          </span>
 
           {/* CONTACT */}
-          <a
+          {/* <a
             href="#contact"
             onClick={(e) => {
               e.preventDefault();
@@ -83,7 +129,14 @@ function Navbar() {
             }}
           >
             Contact
-          </a>
+          </a> */}
+          {/* <NavLink to="/?scroll=contact">Contact</NavLink> */}
+          <span
+            className={activeSection === "contact" ? "active-link" : ""}
+            onClick={() => handleScroll("contact")}
+          >
+            Contact
+          </span>
 
           {/* ✅ ONLY AFTER LOGIN */}
           {user && <NavLink to="/clubs">Clubs</NavLink>}
@@ -93,7 +146,15 @@ function Navbar() {
         <div className="navbar-action">
           {user ? (
             <div className="profile-wrapper">
-              <span className="profile-btn">{user.name || "My Profile"}</span>
+              <div className="profile-btn">
+                <div className="profile-avatar">
+                  {getInitials(user?.name || "")}
+                </div>
+
+                <span className="profile-name">
+                  {user?.name || "My Profile"}
+                </span>
+              </div>
 
               <div className="profile-dropdown">
                 <NavLink to="/profile">View Profile</NavLink>

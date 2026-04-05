@@ -34,6 +34,7 @@ function CreateEvent() {
     github: "",
     showLinkedIn: false,
     showGithub: false,
+    registrationLink: "",
   });
 
   // INPUT HANDLER
@@ -132,6 +133,12 @@ function CreateEvent() {
           name="description"
           placeholder="Description"
           onChange={handleChange}
+        />
+        <input
+          name="registrationLink"
+          placeholder="Registration Link"
+          onChange={handleChange}
+          type="url"
         />
 
         {/* ✅ CLUB AUTO-FILLED */}
