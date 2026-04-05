@@ -2,7 +2,7 @@ import { Router } from "express";
 import { validateRequest } from "../middlewares/parseBody.js";
 import { completeProfileSchema, googleLoginSchema, googleRegisterSchema, loginSchema } from "../validators/userValidationSchema.js";
 import { checkAuthentication } from "../middlewares/auth.js";
-import { handleCompleteProfile, handleGetClub, handleGoogleLogin, handleGoogleRegister, handleLogin, handleLogout, handleSelectClub } from "../controllers/authControllers.js";
+import { getUserClubs, handleCompleteProfile, handleGoogleLogin, handleGoogleRegister, handleLogin, handleLogout, handleSelectClub } from "../controllers/authControllers.js";
 
 const router = Router();
 
@@ -17,5 +17,7 @@ router.post("/login", validateRequest(loginSchema), handleLogin)
 router.post("/logout", handleLogout)
 
 router.post("/select-club", checkAuthentication, handleSelectClub)
+
+router.get("/my-clubs", checkAuthentication, getUserClubs);
 
 export default router;

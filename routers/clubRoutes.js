@@ -20,7 +20,7 @@ router.post("/request", checkAuthentication, handleCreateClubRequest)
 
 router.get("/request", checkAuthentication, checkAuthorizatioon("CLUB_HEAD"), handleGetClubRequest)
 
-router.post("/request/handle", checkAuthentication, authorizeClub("CLUB_HEAD"), handleClubRequest);
+router.post("/request/handle", checkAuthentication, checkAuthorizatioon("CLUB_HEAD"), handleClubRequest);
 
 router.delete("/request/:requestId", checkAuthentication, handleDeleteClubRequest);
 

@@ -251,3 +251,20 @@ export const handleSelectClub = async (req, res) => {
     return handleResponse(res, 500, "Failed to select club", false);
   }
 }
+
+export const getUserClubs = async (req, res) => {
+  try {
+    const userId = res.locals.user.userId;
+
+    const clubs = await prisma.userClubRole.findMany({
+      where: { userId },
+      include: {
+        club: true
+      }
+    });
+
+    return handleResponse(res, 200, "Clubs fetched", true, clubs);
+  } catch (error) {
+    return handleResponse(res, 500, "Error fetching clubs", false);
+  }
+};
