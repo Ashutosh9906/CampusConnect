@@ -1,7 +1,22 @@
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import "../../styles/landing.css";
 import EventCard from "../../components/events/EventCard";
 
 function Landing() {
+  const location = useLocation();
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const section = params.get("scroll");
+
+    if (section) {
+      setTimeout(() => {
+        document.getElementById(section)?.scrollIntoView({
+          behavior: "smooth",
+        });
+      }, 100);
+    }
+  }, [location]);
   return (
     <div className="landing">
       {/* HERO SECTION */}
@@ -144,14 +159,6 @@ function Landing() {
           </form>
         </div>
       </section>
-      {/* SIMPLE FOOTER */}
-      <footer className="footer">
-        <div className="footer-bottom">
-          <p>
-            © {new Date().getFullYear()} Campus Connect. All rights reserved.
-          </p>
-        </div>
-      </footer>
     </div>
   );
 }
