@@ -1,66 +1,70 @@
-/* .auth-container {
-  width: 360px;
-  margin: 80px auto;
-  padding: 30px;
-  background: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  text-align: center;
+/* ============================================================
+   GLOBAL RESET & BASE
+   ============================================================ */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
 }
-
-.auth-container h2 {
-  margin-bottom: 20px;
-  color: #111827;
-}
-
-.auth-container input {
-  width: 100%;
-  padding: 10px;
-  margin: 10px 0;
-  border: 1px solid #e5e7eb;
-  border-radius: 5px;
-}
-
-.auth-container button {
-  width: 100%;
-  padding: 10px;
-  background: #2563eb;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.auth-container button:hover {
-  background: #1e40af;
-}
-
-.auth-text {
-  margin-top: 15px;
-  font-size: 14px;
-}
-
-.auth-text a {
-  color: #2563eb;
-  text-decoration: none;
-} */
-/* App.css */
 
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  margin: 0;
-  padding: 0;
   font-family: "Inter", sans-serif;
 }
+
+/* ============================================================
+   APP WRAPPER — flex column for sticky footer
+   ============================================================ */
+.app-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+/* ============================================================
+   CONTENT — fills all space between navbar and footer
+   ============================================================ */
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* ============================================================
+   PAGE-LEVEL FIX — kills rogue min-height: 100vh on pages
+   ============================================================ */
+.clubs-page,
+.home-page,
+.events-page,
+.requests-page,
+.about-page,
+.contact-page,
+.profile-page {
+  flex: 1;
+  width: 100%;
+  min-height: unset; /* ADDED — prevents pages from overriding flex layout */
+}
+
+/* ============================================================
+   FOOTER — always pinned to bottom, never overlaps
+   ============================================================ */
 .footer {
   background-color: #020810 !important;
   padding: 16px 10px;
   text-align: center;
   border-top: 1px solid var(--border-glass);
-  margin-top: 10px;
+  margin-top: 0;
+  flex-shrink: 0;
+  width: 100%;
 }
 
 .footer-bottom p {
@@ -69,13 +73,25 @@ body {
   letter-spacing: 0.3px;
 }
 
-.app-wrapper {
-  min-height: 100vh;
+/* ============================================================
+   RESPONSIVE — mobile & tablet
+   ============================================================ */
+@media (max-width: 768px) {
+  .app-wrapper {
+    min-height: 100dvh;
+  }
+
+  .content {
+    overflow-x: hidden;
+  }
+
+  .footer {
+    padding: 12px 10px;
+  }
 }
 
-.content {
-  flex: 1;
-}
-.content > *:last-child {
-  margin-bottom: 30px;
+@media (max-width: 480px) {
+  .app-wrapper {
+    min-height: 100dvh;
+  }
 }
