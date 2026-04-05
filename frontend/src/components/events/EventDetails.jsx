@@ -20,6 +20,7 @@ function EventDetails() {
       category: "Technical",
       description:
         "National level technical festival featuring workshops, competitions and guest lectures.",
+      registrationLink: "https://forms.gle/example123",
       organizer: {
         name: "Coding Club - ABC College",
         email: "codingclub@college.edu",
@@ -122,8 +123,20 @@ function EventDetails() {
                 <span>Venue</span>
                 <span>{event.venue}</span>
               </div>
-
-              <button className="register-btn">Register Now</button>
+              {event.registrationLink ? (
+                <a
+                  href={event.registrationLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="register-btn"
+                >
+                  Register Now
+                </a>
+              ) : (
+                <button className="register-btn disabled">
+                  Registration Closed
+                </button>
+              )}
             </div>
           </div>
         </div>

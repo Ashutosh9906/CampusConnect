@@ -18,6 +18,7 @@ function Clubs() {
     name: "",
     email: "",
     phone: "",
+    description: "",
   });
 
   // LOAD DATA
@@ -236,7 +237,7 @@ function Clubs() {
       {showForm && (
         <div className="modal-overlay">
           <div className="modal-box">
-            <h3>Request to join {selectedClub?.name}</h3>
+            <h3>Request to List {selectedClub?.name} Event</h3>
 
             <input
               name="name"
@@ -258,7 +259,12 @@ function Clubs() {
               value={formData.phone}
               onChange={handleInput}
             />
-
+            <textarea
+              name="description"
+              placeholder="Event Description"
+              value={formData.description}
+              onChange={handleInput}
+            />
             <div className="modal-actions">
               <button onClick={handleRequestSubmit}>Submit Request</button>
 

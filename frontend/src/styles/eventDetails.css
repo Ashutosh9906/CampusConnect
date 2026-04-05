@@ -1,33 +1,67 @@
+/* ============================================================
+   DARK THEME — Event Detail Page
+   Matches landing-dark.css + navbar-dark.css + event-card-dark.css
+   Deep navy base, glassmorphism boxes, gradient accents,
+   cinematic banner with enhanced overlay, sticky register card.
+   ============================================================ */
+
+/* ============================================================
+   PAGE BASE
+   ============================================================ */
 .event-page {
-  background: #f8fafc;
+  background: #050c1a; /* --bg-base */
+  min-height: 100vh;
 }
 
-/* Banner */
-
-/* Banner Container */
-
+/* ============================================================
+   BANNER
+   — Cinematic ratio kept. Overlay deepened for dark theme.
+     A subtle bottom-blur blends the banner into the dark page.
+   ============================================================ */
 .event-banner {
   width: 100%;
-  aspect-ratio: 16 / 6; /* cinematic banner ratio */
+  aspect-ratio: 16 / 6;
   overflow: hidden;
   background: #000;
   position: relative;
 }
-
-/* Image */
-
+h3 {
+  color: aliceblue;
+}
 .event-banner img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* crops, never stretches */
+  object-fit: cover;
   object-position: center;
+
+  /* Slight desaturate so the photo reads as "editorial" on dark pages */
+  filter: brightness(0.8) saturate(1.15);
+  transition: filter 0.6s ease;
 }
 
-/* Layout */
+/* Layered gradient overlay:
+   top tint → transparent mid → strong dark fade at bottom.
+   The bottom fade lets the overlapping .box float naturally above it. */
+.event-banner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(5, 12, 26, 0.3) 0%,
+    rgba(5, 12, 26, 0.1) 40%,
+    rgba(5, 12, 26, 0.65) 80%,
+    rgba(5, 12, 26, 0.92) 100%
+  );
+  pointer-events: none;
+}
 
+/* ============================================================
+   LAYOUT GRID
+   ============================================================ */
 .event-layout {
   max-width: 1200px;
-  margin: 0 auto 60px;
+  margin: 0 auto 80px;
   padding: 0 20px;
 
   display: grid;
@@ -35,32 +69,87 @@
   gap: 30px;
 }
 
-/* Boxes */
-
+/* ============================================================
+   BOX — glassmorphism content cards
+   ============================================================ */
 .box {
-  background: #ffffff;
-  padding: 26px;
-  border-radius: 14px;
+  /* Glassmorphism surface */
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+
+  padding: 28px 30px;
+  border-radius: 16px;
   margin-bottom: 24px;
 
   box-shadow:
-    0 10px 25px rgba(0, 0, 0, 0.05),
-    0 4px 10px rgba(0, 0, 0, 0.04);
+    0 8px 32px rgba(0, 0, 0, 0.45),
+    0 2px 8px rgba(0, 0, 0, 0.3);
+
+  /* Entrance animation */
+  animation: boxFadeUp 0.55s cubic-bezier(0.4, 0, 0.2, 1) both;
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
+.box:hover {
+  border-color: rgba(96, 165, 250, 0.18);
+  box-shadow:
+    0 16px 48px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(96, 165, 250, 0.1);
+}
+
+@keyframes boxFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Stagger left-column boxes */
+.event-left .box:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.event-left .box:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.event-left .box:nth-child(3) {
+  animation-delay: 0.25s;
+}
+.event-left .box:nth-child(4) {
+  animation-delay: 0.35s;
+}
+
+/* ── Main title ── */
 .box h1 {
-  font-size: 32px;
-  font-weight: 600;
-  letter-spacing: -0.3px;
+  font-family: "Syne", sans-serif;
+  font-size: clamp(24px, 4vw, 34px);
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+
+  /* Gradient text — same token as hero h1 */
+  background: linear-gradient(120deg, #60a5fa 0%, #a78bfa 60%, #f472b6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-/* .box h2 {
-  font-size: 20px;
-  margin-bottom: 10px;
-} */
+/* ── Section headings with animated gradient underline ── */
 .box h2 {
+  font-family: "Syne", sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #e8f0fe; /* --text-primary */
   position: relative;
-  padding-bottom: 8px;
+  padding-bottom: 10px;
+  margin-bottom: 16px;
 }
 
 .box h2::after {
@@ -70,87 +159,216 @@
   bottom: 0;
   width: 40px;
   height: 3px;
-  background: #2563eb;
+  /* Gradient underline instead of flat blue */
+  background: linear-gradient(90deg, #3b82f6, #7c3aed);
   border-radius: 3px;
+  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
-/* Meta */
 
+/* Underline expands to full width on box hover */
+.box:hover h2::after {
+  width: 100%;
+}
+
+/* ── Body text inside boxes ── */
+.box p,
+.box li,
+.box span {
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  color: #8b9ab8; /* --text-muted */
+  line-height: 1.7;
+}
+
+/* ============================================================
+   META ROW — date / location / category chips
+   ============================================================ */
 .meta-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
-  color: #4b5563;
+  gap: 12px;
+  color: #8b9ab8;
+  margin-top: 6px;
 }
 
-/* Social */
+/* Each meta item gets a subtle pill treatment */
+.meta-row span,
+.meta-row div {
+  font-family: "DM Sans", sans-serif;
+  font-size: 13px;
+  color: #8b9ab8;
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  border-radius: 20px;
+  padding: 4px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease;
+}
 
+.meta-row span:hover,
+.meta-row div:hover {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: rgba(96, 165, 250, 0.35);
+  color: #e8f0fe;
+}
+
+/* ============================================================
+   SOCIAL LINKS
+   ============================================================ */
 .social-links {
   display: flex;
-  gap: 16px;
-  margin-top: 10px;
+  gap: 14px;
+  margin-top: 12px;
+  flex-wrap: wrap;
 }
 
 .social-links a {
   text-decoration: none;
-  color: #2563eb;
+  font-family: "DM Sans", sans-serif;
+  font-size: 13px;
   font-weight: 500;
+  color: #60a5fa; /* --accent-bright */
+
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 8px;
+  padding: 6px 14px;
+
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease,
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
-/* Register Card */
+.social-links a:hover {
+  background: rgba(59, 130, 246, 0.18);
+  border-color: rgba(96, 165, 250, 0.45);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(59, 130, 246, 0.22);
+  color: #e8f0fe;
+}
 
+/* ============================================================
+   REGISTER CARD — sticky sidebar card
+   ============================================================ */
 .register-card {
-  background: #ffffff;
-  padding: 24px;
-  border-radius: 12px;
+  /* Stronger glass — this is the most important UI element on the page */
+  background: rgba(10, 22, 40, 0.85);
+  border: 1px solid rgba(96, 165, 250, 0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+
+  padding: 28px 26px;
+  border-radius: 16px;
   position: sticky;
   top: 100px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(96, 165, 250, 0.08);
+
+  animation: boxFadeUp 0.55s 0.2s cubic-bezier(0.4, 0, 0.2, 1) both;
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
+.register-card:hover {
+  border-color: rgba(96, 165, 250, 0.28);
+  box-shadow:
+    0 20px 56px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(96, 165, 250, 0.15);
+}
+
+/* Price / info rows inside the card */
 .reg-row {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin-bottom: 14px;
-  color: #374151;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  color: #8b9ab8; /* --text-muted */
 }
 
+.reg-row:last-of-type {
+  border-bottom: none;
+  margin-bottom: 20px;
+}
+
+/* Right-side value (price, date, seats) */
+.reg-row span:last-child,
+.reg-row strong {
+  color: #e8f0fe; /* --text-primary */
+  font-weight: 600;
+}
+
+/* ── REGISTER BUTTON — the most prominent CTA on the page ── */
 .register-btn {
   width: 100%;
-  padding: 12px;
-  background: #2563eb;
-  color: #ffffff;
+  padding: 14px;
   border: none;
-  border-radius: 8px;
-  font-size: 16px;
+  border-radius: 10px;
   cursor: pointer;
+
+  /* Gradient matching primary-btn / login-btn / event-btn */
+  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+  color: #ffffff;
+
+  font-family: "Syne", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+
+  box-shadow: 0 6px 24px rgba(59, 130, 246, 0.38);
+
+  /* Pulse animation draws the eye to the primary CTA */
+  animation: ctaPulse 3s ease-in-out infinite;
+
+  transition:
+    transform 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .register-btn:hover {
-  background: #1e4fd8;
+  transform: translateY(-3px);
+  box-shadow: 0 14px 36px rgba(59, 130, 246, 0.55);
+  animation-play-state: paused; /* stops pulsing mid-hover — feels intentional */
 }
 
-.event-banner {
-  position: relative;
+@keyframes ctaPulse {
+  0%,
+  100% {
+    box-shadow: 0 6px 24px rgba(59, 130, 246, 0.38);
+  }
+  50% {
+    box-shadow: 0 6px 36px rgba(59, 130, 246, 0.6);
+  }
 }
 
-.event-banner::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.15),
-    rgba(0, 0, 0, 0.35)
-  );
-}
-
+/* ============================================================
+   HERO OVERLAP — first box floats above banner
+   ============================================================ */
 .event-left .box:first-child {
   margin-top: -60px;
   position: relative;
   z-index: 2;
-}
-/* Responsive */
 
+  /* Slightly more opaque so the text is readable over the banner fade */
+  background: rgba(10, 22, 40, 0.88);
+  border-color: rgba(96, 165, 250, 0.18);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
 @media (max-width: 900px) {
   .event-layout {
     grid-template-columns: 1fr;
@@ -158,5 +376,27 @@
 
   .register-card {
     position: static;
+  }
+
+  .event-left .box:first-child {
+    margin-top: -40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .event-banner {
+    aspect-ratio: 16 / 8; /* slightly taller on mobile for impact */
+  }
+
+  .box {
+    padding: 20px 18px;
+  }
+
+  .register-card {
+    padding: 20px 18px;
+  }
+
+  .box h1 {
+    font-size: 24px;
   }
 }

@@ -55,3 +55,27 @@ body {
   padding: 0;
   font-family: "Inter", sans-serif;
 }
+.footer {
+  background-color: #020810 !important;
+  padding: 16px 10px;
+  text-align: center;
+  border-top: 1px solid var(--border-glass);
+  margin-top: 10px;
+}
+
+.footer-bottom p {
+  color: var(--text-faint) !important;
+  font-size: 13px;
+  letter-spacing: 0.3px;
+}
+
+.app-wrapper {
+  min-height: 100vh;
+}
+
+.content {
+  flex: 1;
+}
+.content > *:last-child {
+  margin-bottom: 30px;
+}
