@@ -1,0 +1,231 @@
+@import "./variables.css";
+
+/* =========================
+   INPUTS & SELECTS
+========================= */
+
+.auth-right input,
+.auth-right select {
+  width: 100%;
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1.5px solid #dbe3f0;
+  background: #ffffff;
+  font-size: 14px;
+  color: #0f172a;
+  margin-bottom: 14px;
+  transition:
+    border 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.auth-right input::placeholder {
+  color: #9aa4b2;
+}
+
+.auth-right input:focus,
+.auth-right select:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+}
+
+/* =========================
+   PASSWORD FIELD
+========================= */
+
+.password-field {
+  position: relative;
+}
+
+.password-field input {
+  padding-right: 44px;
+}
+
+.eye-btn {
+  position: absolute;
+  right: 12px;
+  top: 38.5%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  color: #94a3b8;
+  cursor: pointer;
+}
+
+.eye-btn:hover {
+  color: #4f46e5;
+}
+
+/* =========================
+   PRIMARY BUTTON
+========================= */
+
+.btn-primary {
+  width: 100%;
+  height: 46px;
+  margin-top: 6px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #4f46e5, #2563eb);
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(79, 70, 229, 0.35);
+}
+
+/* =========================
+   DIVIDER
+========================= */
+
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 16px 0;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #e5eaf5;
+}
+
+.divider span {
+  margin: 0 10px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+/* =========================
+   GOOGLE BUTTON (POLISHED)
+========================= */
+
+.btn-google {
+  width: 100%;
+  height: 44px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-google:hover {
+  background: #ffffff;
+  border-color: #4f46e5;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
+}
+
+.btn-google img {
+  width: 18px;
+  height: 18px;
+}
+/* Make Google button same everywhere */
+
+.google-auth-btn {
+  width: 100%;
+  height: 44px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.google-auth-btn:hover {
+  background: #ffffff;
+  border-color: #4f46e5;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
+}
+
+.google-auth-btn img {
+  width: 18px;
+  height: 18px;
+}
+/* =========================
+   FOOTER TEXT
+========================= */
+
+.signup-text,
+.resend-text {
+  margin-top: 14px;
+  font-size: 13px;
+  color: #64748b;
+  text-align: center;
+}
+
+.signup-text span,
+.resend-text span {
+  color: #4f46e5;
+  font-weight: 600;
+  cursor: pointer;
+}
+/* =========================
+   STYLISH DROPDOWN (SELECT)
+========================= */
+
+.auth-right select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  background-color: #ffffff;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%236b7280' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 18px;
+
+  padding-right: 44px; /* space for arrow */
+  cursor: pointer;
+}
+
+/* Hover effect */
+
+.auth-right select:hover {
+  border-color: #4f46e5;
+}
+
+/* Focus */
+
+.auth-right select:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+}
+
+/* Dropdown option styling */
+
+.auth-right option {
+  padding: 10px;
+  font-size: 14px;
+}
+.btn-primary:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+  box-shadow: none;
+}

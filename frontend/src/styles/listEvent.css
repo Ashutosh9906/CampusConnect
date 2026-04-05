@@ -1,0 +1,440 @@
+/* ============================================================
+   DARK THEME — Create Event Page
+   Matches landing.css design system.
+   Glassmorphism form, animated background orbs, gradient inputs,
+   speaker section, social buttons, and premium file upload zone.
+   ============================================================ */
+
+/* ============================================================
+   1. PAGE BASE
+   ============================================================ */
+.create-event-page {
+  min-height: 100vh;
+  padding-bottom: 80px;
+
+  /* Deep navy base — replaces the light blue gradient */
+  background: var(--bg-base) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── DECORATIVE BACKGROUND ORBS (replace the bg images) ──
+   The light-theme used faint PNG watermarks. In dark mode we swap
+   those for glowing radial orbs that match the hero section style. */
+
+/* Left orb — blue */
+.create-event-page::before {
+  content: "";
+  position: absolute;
+  top: 80px;
+  left: -140px;
+  width: 420px;
+  height: 420px;
+  background: radial-gradient(
+    circle,
+    rgba(59, 130, 246, 0.18) 0%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  animation: float 10s ease-in-out infinite;
+  animation-delay: 0s;
+}
+
+/* Right orb — violet */
+.create-event-page::after {
+  content: "";
+  position: absolute;
+  bottom: 60px;
+  right: -140px;
+  width: 380px;
+  height: 380px;
+  background: radial-gradient(
+    circle,
+    rgba(124, 58, 237, 0.16) 0%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  animation: float 10s ease-in-out infinite;
+  animation-delay: -5s;
+}
+
+/* Centre orb — replaces the .create-event-wrapper::before bg image */
+.create-event-wrapper {
+  position: relative;
+}
+
+.create-event-wrapper::before {
+  content: "";
+  position: absolute;
+  top: 40%;
+  left: 10%;
+  width: 260px;
+  height: 260px;
+  background: radial-gradient(
+    circle,
+    rgba(96, 165, 250, 0.08) 0%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  filter: blur(60px);
+  pointer-events: none;
+  animation: float 14s ease-in-out infinite;
+  animation-delay: -3s;
+}
+
+/* ============================================================
+   2. PAGE HEADING
+   ============================================================ */
+.create-event h2 {
+  font-family: "Syne", sans-serif;
+  font-size: clamp(24px, 4vw, 32px);
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 30px;
+  letter-spacing: -0.4px;
+
+  /* Gradient text — same token as hero h1 */
+  background: var(--gradient-text);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+
+  animation: fadeUp 0.7s ease both;
+}
+
+/* ============================================================
+   3. FORM CARD — glassmorphism shell
+   ============================================================ */
+.event-form {
+  max-width: 700px;
+  margin: auto;
+
+  /* Glassmorphism */
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+
+  padding: 40px 44px;
+  border-radius: 20px;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
+
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  position: relative;
+  z-index: 1;
+  animation: fadeUp 0.65s 0.1s cubic-bezier(0.4, 0, 0.2, 1) both;
+
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition);
+}
+
+.event-form:hover {
+  border-color: rgba(96, 165, 250, 0.14);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+}
+
+/* ============================================================
+   4. INPUTS & TEXTAREA
+   ============================================================ */
+.event-form input,
+.event-form textarea {
+  width: 100%;
+  padding: 13px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--text-faint); /* #3e527a — subtle dark border  */
+  background: rgba(255, 255, 255, 0.04) !important;
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  color: var(--text-primary) !important;
+  outline: none;
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition),
+    background var(--transition);
+}
+
+.event-form input::placeholder,
+.event-form textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 0.65;
+}
+
+/* Premium blue glow on focus — same pattern as contact form */
+.event-form input:focus,
+.event-form textarea:focus {
+  border-color: var(--accent);
+  background: rgba(59, 130, 246, 0.06) !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
+}
+
+/* File input — keep borderless / padding-free */
+.event-form input[type="file"] {
+  border: none !important;
+  background: transparent !important;
+  padding: 0;
+  color: var(--text-muted);
+}
+
+/* ============================================================
+   5. BUTTONS
+   ============================================================ */
+.event-form button {
+  padding: 13px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  transition:
+    transform var(--transition),
+    box-shadow var(--transition),
+    background var(--transition);
+}
+
+/* ── ADD PHONE / secondary action button ── */
+.event-form button[type="button"] {
+  background: rgba(255, 255, 255, 0.07) !important;
+  color: var(--text-muted) !important;
+  border: 1px solid var(--border-glass) !important;
+  letter-spacing: 0.2px;
+}
+
+.event-form button[type="button"]:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: var(--text-primary) !important;
+  border-color: rgba(96, 165, 250, 0.25) !important;
+  transform: translateY(-1px);
+}
+
+/* ── SUBMIT / primary button ── */
+.event-form .primary-btn {
+  background: var(--gradient-btn) !important; /* blue → violet gradient      */
+  color: #ffffff !important;
+  box-shadow: 0 6px 22px rgba(59, 130, 246, 0.35);
+  animation: pulseGlow 3s ease-in-out infinite;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.event-form .primary-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(59, 130, 246, 0.52);
+  animation-play-state: paused;
+}
+
+/* ============================================================
+   6. SPEAKER SECTION
+   ============================================================ */
+.speaker-section {
+  margin-top: 12px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border-glass); /* subtle glass divider line   */
+}
+
+.speaker-section h3 {
+  font-family: "Syne", sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--text-primary) !important;
+  position: relative;
+  padding-bottom: 8px;
+}
+
+/* Gradient underline under the speaker heading */
+.speaker-section h3::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 32px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-bright));
+  border-radius: 2px;
+  transition: width var(--transition);
+}
+
+.speaker-section:hover h3::after {
+  width: 100%;
+}
+
+/* ============================================================
+   7. SOCIAL BUTTONS
+   ============================================================ */
+.social-buttons {
+  display: flex;
+  gap: 14px;
+  margin: 12px 0 18px;
+  flex-wrap: wrap;
+}
+
+.social-btn {
+  flex: 1;
+  min-width: 120px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-family: "DM Sans", sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+
+  /* Gradient fill — same system token as every other primary button */
+  background: var(--gradient-btn) !important;
+  color: #ffffff !important;
+  border: none !important;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.28);
+  transition:
+    transform var(--transition),
+    box-shadow var(--transition);
+}
+
+.social-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.46) !important;
+  /* Keep gradient but slightly brighter — achieved via filter */
+  filter: brightness(1.1);
+}
+
+/* ============================================================
+   8. FILE UPLOAD ZONE — premium drag-and-drop area
+   ============================================================ */
+.file-upload {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 26px 18px;
+
+  /* Dashed border with blue glow — glass background */
+  border: 2px dashed rgba(59, 130, 246, 0.4);
+  border-radius: 14px;
+  cursor: pointer;
+  background: rgba(59, 130, 246, 0.04) !important;
+
+  transition:
+    border-color var(--transition),
+    background var(--transition),
+    box-shadow var(--transition);
+}
+
+.file-upload:hover {
+  border-color: var(--accent-bright);
+  background: rgba(59, 130, 246, 0.09) !important;
+  box-shadow:
+    0 0 0 4px rgba(59, 130, 246, 0.1),
+    inset 0 0 30px rgba(59, 130, 246, 0.05);
+}
+
+/* Hidden native file input */
+.file-upload input {
+  display: none;
+}
+
+/* Upload content — icon + label */
+.upload-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: var(--accent-bright) !important;
+  font-family: "DM Sans", sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  transition: color var(--transition);
+}
+
+.file-upload:hover .upload-content {
+  color: var(--text-primary) !important;
+}
+
+/* Upload icon */
+.upload-icon {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  /* Tint the icon to match accent colour */
+  filter: brightness(0) saturate(100%) invert(55%) sepia(80%) saturate(400%)
+    hue-rotate(195deg);
+  transition:
+    transform var(--transition),
+    filter var(--transition);
+}
+
+.file-upload:hover .upload-icon {
+  transform: translateY(-3px) scale(1.08);
+  filter: brightness(0) saturate(100%) invert(75%) sepia(40%) saturate(300%)
+    hue-rotate(195deg);
+}
+
+/* ============================================================
+   9. ACCESS DENIED
+   ============================================================ */
+.no-access {
+  text-align: center;
+  padding: 120px 20px;
+
+  /* Gradient text for the denied heading */
+  color: var(--text-muted) !important;
+  font-family: "DM Sans", sans-serif;
+  font-size: 16px;
+  animation: fadeUp 0.6s ease both;
+}
+
+.no-access h2,
+.no-access h3 {
+  font-family: "Syne", sans-serif;
+  font-weight: 700;
+  background: var(--gradient-text);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 16px;
+}
+
+/* ============================================================
+   10. RESPONSIVE
+   ============================================================ */
+@media (max-width: 768px) {
+  .event-form {
+    padding: 28px 20px;
+    border-radius: 16px;
+  }
+
+  .social-buttons {
+    flex-direction: column;
+  }
+
+  .social-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .create-event h2 {
+    font-size: 24px;
+  }
+
+  .event-form {
+    padding: 22px 16px;
+    gap: 14px;
+  }
+
+  .file-upload {
+    padding: 20px 14px;
+  }
+}
