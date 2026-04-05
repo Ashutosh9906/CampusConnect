@@ -669,3 +669,19 @@
     width: 100%;
   }
 }
+
+/* ============================================================
+   10. ADDED — Confirm modal text (new classes only)
+   ============================================================ */
+.confirm-text {
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.confirm-text strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}

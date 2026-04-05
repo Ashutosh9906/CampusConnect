@@ -12,14 +12,8 @@ function Clubs() {
   const [history, setHistory] = useState([]);
 
   const [selectedClub, setSelectedClub] = useState(null);
-  const [showForm, setShowForm] = useState(false);
-
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    description: "",
-  });
+  const [showRequestModal, setShowRequestModal] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   // LOAD DATA
   useEffect(() => {
@@ -69,7 +63,6 @@ function Clubs() {
             ],
       );
     } catch {
-      // fallback
       setMyClubs([
         { id: 1, name: "Tech Club" },
         { id: 2, name: "Music Club" },
@@ -93,15 +86,16 @@ function Clubs() {
     window.location.href = `/create-event?club=${club.name}`;
   };
 
-  // INPUT
-  const handleInput = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+  // STEP 1 — Open first modal
+  const handleOpenRequestModal = (club) => {
+    setSelectedClub(club);
+    setShowRequestModal(true);
+    setShowConfirmModal(false);
   };
 
-  // SUBMIT REQUEST
-  const handleRequestSubmit = async () => {
-    // 🚫 PREVENT DUPLICATE
+  // STEP 2 — Move to second confirmation modal (no API call yet)
+  const handleSubmitRequest = () => {
+    // DUPLICATE CHECK
     const alreadyRequested = history.some(
       (item) => item.club === selectedClub.name && item.status === "pending",
     );
@@ -111,34 +105,47 @@ function Clubs() {
       return;
     }
 
+    // Close first modal, open second
+    setShowRequestModal(false);
+    setShowConfirmModal(true);
+  };
+
+  // STEP 3 — Actually call API
+  const handleConfirmRequest = async () => {
     try {
       await fetch(`${API}/clubs/request`, {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           clubId: selectedClub.id,
-          ...formData,
         }),
       });
 
-      alert("Request sent successfully!");
-
-      // ✅ ADD TO HISTORY
+      // ADD TO HISTORY
       setHistory((prev) => [
         { club: selectedClub.name, status: "pending" },
         ...prev,
       ]);
 
-      setShowForm(false);
-      setFormData({ name: "", email: "", phone: "" });
+      // CLOSE ALL MODALS
+      setShowConfirmModal(false);
+      setSelectedClub(null);
 
-      // 🔥 SWITCH TAB
+      // SWITCH TAB
       setActiveTab("history");
     } catch (err) {
       console.log(err);
     }
+  };
+
+  // CLOSE ALL MODALS
+  const handleCloseAll = () => {
+    setShowRequestModal(false);
+    setShowConfirmModal(false);
+    setSelectedClub(null);
   };
 
   return (
@@ -181,7 +188,7 @@ function Clubs() {
         </div>
       )}
 
-      {/* REQUEST */}
+      {/* REQUEST TAB */}
       {activeTab === "request" && (
         <div>
           <button
@@ -198,13 +205,7 @@ function Clubs() {
               {availableClubs.map((club) => (
                 <div className="request-card" key={club.id}>
                   <span>{club.name}</span>
-
-                  <button
-                    onClick={() => {
-                      setSelectedClub(club);
-                      setShowForm(true);
-                    }}
-                  >
+                  <button onClick={() => handleOpenRequestModal(club)}>
                     Create Request
                   </button>
                 </div>
@@ -221,7 +222,7 @@ function Clubs() {
         </div>
       )}
 
-      {/* HISTORY */}
+      {/* HISTORY TAB */}
       {activeTab === "history" && (
         <div className="history-list">
           {history.map((item, index) => (
@@ -233,43 +234,43 @@ function Clubs() {
         </div>
       )}
 
-      {/* MODAL */}
-      {showForm && (
+      {/* MODAL STEP 1 — Send Request */}
+      {showRequestModal && (
         <div className="modal-overlay">
           <div className="modal-box">
-            <h3>Request to List {selectedClub?.name} Event</h3>
-
-            <input
-              name="name"
-              placeholder="Your Name"
-              value={formData.name}
-              onChange={handleInput}
-            />
-
-            <input
-              name="email"
-              placeholder="Your Email"
-              value={formData.email}
-              onChange={handleInput}
-            />
-
-            <input
-              name="phone"
-              placeholder="Phone Number"
-              value={formData.phone}
-              onChange={handleInput}
-            />
-            <textarea
-              name="description"
-              placeholder="Event Description"
-              value={formData.description}
-              onChange={handleInput}
-            />
+            <h3>Send Request</h3>
+            <p className="confirm-text">
+              Send request to join <strong>{selectedClub?.name}</strong>?
+            </p>
             <div className="modal-actions">
-              <button onClick={handleRequestSubmit}>Submit Request</button>
-
-              <button className="cancel-btn" onClick={() => setShowForm(false)}>
+              <button onClick={handleSubmitRequest}>Submit Request</button>
+              <button className="cancel-btn" onClick={handleCloseAll}>
                 Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL STEP 2 — Confirm Request */}
+      {showConfirmModal && (
+        <div className="modal-overlay">
+          <div className="modal-box">
+            <h3>Confirm Request</h3>
+            <p className="confirm-text">
+              Press confirm to send request to club head for{" "}
+              <strong>{selectedClub?.name}</strong>.
+            </p>
+            <div className="modal-actions">
+              <button onClick={handleConfirmRequest}>Confirm Request</button>
+              <button
+                className="cancel-btn"
+                onClick={() => {
+                  setShowConfirmModal(false);
+                  setShowRequestModal(true);
+                }}
+              >
+                Back
               </button>
             </div>
           </div>
