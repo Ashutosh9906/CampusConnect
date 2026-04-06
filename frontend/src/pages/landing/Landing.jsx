@@ -1,10 +1,13 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react"; // ✅ added useState
 import { useLocation } from "react-router-dom";
 import "../../styles/landing.css";
 import EventCard from "../../components/events/EventCard";
 
 function Landing() {
   const location = useLocation();
+
+  const [events, setEvents] = useState([]); // ✅ added state
+
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const section = params.get("scroll");
@@ -16,7 +19,21 @@ function Landing() {
         });
       }, 100);
     }
+
+    // ✅ FETCH EVENTS (added)
+    const API = import.meta.env.VITE_API_URL;
+
+    fetch(`${API}/event`)
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.success) {
+          setEvents(res.data);
+        }
+      })
+      .catch((err) => console.log(err));
+
   }, [location]);
+
   return (
     <div className="landing">
       {/* HERO SECTION */}
@@ -63,16 +80,13 @@ function Landing() {
 
           {/* CAROUSEL */}
           <div className="events-carousel" id="live-carousel">
-            <EventCard />
-            <EventCard />
-            <EventCard />
-            <EventCard />
-            <EventCard />
-            <EventCard />
-            <EventCard />
-            <EventCard />
-            <EventCard />
-            <EventCard />
+            {events.map((event) => (
+              <EventCard
+                key={event.id}
+                id={event.id}
+                title={event.name}
+              />
+            ))}
           </div>
 
           {/* RIGHT ARROW */}
@@ -101,6 +115,7 @@ function Landing() {
           <div className="why-card">Student Friendly</div>
         </div>
       </section>
+
       {/* ABOUT US */}
       <section className="about-us" id="about">
         <h2>About Us</h2>
@@ -110,6 +125,7 @@ function Landing() {
           management and participation by bringing everything into one place.
         </p>
       </section>
+
       {/* CONTACT US */}
       <section className="contact-us" id="contact">
         <div className="contact-box">

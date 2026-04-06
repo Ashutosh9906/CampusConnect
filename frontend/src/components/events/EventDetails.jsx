@@ -7,34 +7,51 @@ function EventDetails() {
   const { id } = useParams();
   const [event, setEvent] = useState(null);
 
-  // Later: replace with API call
   useEffect(() => {
-    const mockEvent = {
-      id: id,
-      title: "Tech Fest 2026",
-      bannerUrl:
-        "https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&w=1400&q=80",
-      date: "28 March 2026",
-      time: "10:00 AM",
-      venue: "Main Auditorium",
-      category: "Technical",
-      description:
-        "National level technical festival featuring workshops, competitions and guest lectures.",
-      registrationLink: "https://forms.gle/example123",
-      organizer: {
-        name: "Coding Club - ABC College",
-        email: "codingclub@college.edu",
-      },
-      speaker: {
-        name: "John Doe",
-        role: "Senior Software Engineer",
-        linkedin: "https://linkedin.com",
-        github: "https://github.com",
-        leetcode: "https://leetcode.com",
-      },
-    };
+    const API = import.meta.env.VITE_API_URL;
 
-    setEvent(mockEvent);
+    fetch(`${API}/event/${id}`)
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.success) {
+          const e = res.data;
+
+          // 🔥 map backend → frontend structure
+          const mappedEvent = {
+            id: e.id,
+            title: e.name,
+            bannerUrl:
+              "https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&w=1400&q=80",
+
+            date: new Date(e.date).toLocaleDateString(),
+            time: new Date(e.date).toLocaleTimeString(),
+
+            venue: e.venue,
+            category: e.club?.name || "Event",
+
+            description: e.description,
+            registrationLink: e.registrationLink,
+
+            organizer: {
+              name: e.club?.name || "Club",
+              email: e.contactEmail,
+            },
+
+            // 🔥 handle speakers (array → single for UI)
+            speaker: e.speakers?.length
+              ? {
+                  name: e.speakers[0].name,
+                  role: "Speaker",
+                  linkedin: e.speakers[0].linkedin,
+                  github: e.speakers[0].github,
+                }
+              : null,
+          };
+
+          setEvent(mappedEvent);
+        }
+      })
+      .catch((err) => console.log(err));
   }, [id]);
 
   if (!event) {
@@ -94,11 +111,6 @@ function EventDetails() {
                       GitHub
                     </a>
                   )}
-                  {event.speaker.leetcode && (
-                    <a href={event.speaker.leetcode} target="_blank">
-                      LeetCode
-                    </a>
-                  )}
                 </div>
               </div>
             )}
@@ -123,6 +135,7 @@ function EventDetails() {
                 <span>Venue</span>
                 <span>{event.venue}</span>
               </div>
+
               {event.registrationLink ? (
                 <a
                   href={event.registrationLink}

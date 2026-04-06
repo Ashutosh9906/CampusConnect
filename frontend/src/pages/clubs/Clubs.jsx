@@ -22,62 +22,42 @@ function Clubs() {
 
   const loadData = async () => {
     try {
-      const myRes = await fetch(`${API}/clubs/my`, { credentials: "include" });
-      const my = await myRes.json();
-
-      const availRes = await fetch(`${API}/clubs/available`, {
+      // ✅ MY CLUBS
+      const myRes = await fetch(`${API}/club/joined`, {
+        method: "get",
         credentials: "include",
       });
-      const available = await availRes.json();
+      const myData = await myRes.json();
+      const my = myData?.data || myData || [];
 
-      const histRes = await fetch(`${API}/clubs/history`, {
+      // ✅ AVAILABLE CLUBS
+      const availRes = await fetch(`${API}/club/available`, {
+        method: "get",
         credentials: "include",
       });
-      const hist = await histRes.json();
+      const availData = await availRes.json();
+      const available = availData?.data || availData || [];
 
-      setMyClubs(
-        my?.length
-          ? my
-          : [
-              { id: 1, name: "Tech Club" },
-              { id: 2, name: "Music Club" },
-            ],
-      );
+      // ✅ HISTORY
+      const histRes = await fetch(`${API}/club/history`, {
+        method: "get",
+        credentials: "include",
+      });
+      const histData = await histRes.json();
+      console.log(histData);
+      const hist = histData?.data || histData || [];
 
-      setAvailableClubs(
-        available?.length
-          ? available
-          : [
-              { id: 3, name: "Dance Club" },
-              { id: 4, name: "Drama Club" },
-            ],
-      );
+      setMyClubs(my);
+      setAvailableClubs(available);
+      setHistory(hist);
 
-      setHistory(
-        hist?.length
-          ? hist
-          : [
-              { club: "Dance Club", status: "pending" },
-              { club: "Drama Club", status: "approved" },
-              { club: "Art Club", status: "expired" },
-            ],
-      );
-    } catch {
-      setMyClubs([
-        { id: 1, name: "Tech Club" },
-        { id: 2, name: "Music Club" },
-      ]);
+    } catch (err) {
+      console.log("Error loading data:", err);
 
-      setAvailableClubs([
-        { id: 3, name: "Dance Club" },
-        { id: 4, name: "Drama Club" },
-      ]);
-
-      setHistory([
-        { club: "Dance Club", status: "pending" },
-        { club: "Drama Club", status: "approved" },
-        { club: "Art Club", status: "expired" },
-      ]);
+      // fallback (optional)
+      setMyClubs([]);
+      setAvailableClubs([]);
+      setHistory([]);
     }
   };
 
@@ -93,11 +73,12 @@ function Clubs() {
     setShowConfirmModal(false);
   };
 
-  // STEP 2 — Move to second confirmation modal (no API call yet)
+  // STEP 2 — Move to second confirmation modal
   const handleSubmitRequest = () => {
-    // DUPLICATE CHECK
     const alreadyRequested = history.some(
-      (item) => item.club === selectedClub.name && item.status === "pending",
+      (item) =>
+        item.club === selectedClub.name &&
+        item.status === "pending"
     );
 
     if (alreadyRequested) {
@@ -105,15 +86,14 @@ function Clubs() {
       return;
     }
 
-    // Close first modal, open second
     setShowRequestModal(false);
     setShowConfirmModal(true);
   };
 
-  // STEP 3 — Actually call API
+  // STEP 3 — Call API
   const handleConfirmRequest = async () => {
     try {
-      await fetch(`${API}/clubs/request`, {
+      const res = await fetch(`${API}/club/request`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -124,24 +104,30 @@ function Clubs() {
         }),
       });
 
-      // ADD TO HISTORY
+      const data = await res.json();
+
+      if (!data.success) {
+        alert(data.message || "Failed to send request");
+        return;
+      }
+
+      // ✅ update history instantly
       setHistory((prev) => [
         { club: selectedClub.name, status: "pending" },
         ...prev,
       ]);
 
-      // CLOSE ALL MODALS
       setShowConfirmModal(false);
       setSelectedClub(null);
-
-      // SWITCH TAB
       setActiveTab("history");
+
     } catch (err) {
       console.log(err);
+      alert("Something went wrong");
     }
   };
 
-  // CLOSE ALL MODALS
+  // CLOSE MODALS
   const handleCloseAll = () => {
     setShowRequestModal(false);
     setShowConfirmModal(false);
@@ -179,12 +165,18 @@ function Clubs() {
       {/* MY CLUBS */}
       {activeTab === "my" && (
         <div className="club-grid">
-          {myClubs.map((club) => (
-            <div className="club-card" key={club.id}>
-              <h3>{club.name}</h3>
-              <button onClick={() => handleHostEvent(club)}>Host Event</button>
-            </div>
-          ))}
+          {myClubs.length > 0 ? (
+            myClubs.map((club) => (
+              <div className="club-card" key={club.id}>
+                <h3>{club.name}</h3>
+                <button onClick={() => handleHostEvent(club)}>
+                  Host Event
+                </button>
+              </div>
+            ))
+          ) : (
+            <p>No clubs joined yet</p>
+          )}
         </div>
       )}
 
@@ -202,14 +194,18 @@ function Clubs() {
             <div className="request-box">
               <h3>Available Clubs</h3>
 
-              {availableClubs.map((club) => (
-                <div className="request-card" key={club.id}>
-                  <span>{club.name}</span>
-                  <button onClick={() => handleOpenRequestModal(club)}>
-                    Create Request
-                  </button>
-                </div>
-              ))}
+              {availableClubs.length > 0 ? (
+                availableClubs.map((club) => (
+                  <div className="request-card" key={club.id}>
+                    <span>{club.name}</span>
+                    <button onClick={() => handleOpenRequestModal(club)}>
+                      Create Request
+                    </button>
+                  </div>
+                ))
+              ) : (
+                <p>No clubs available</p>
+              )}
 
               <button
                 className="close-btn"
@@ -225,25 +221,34 @@ function Clubs() {
       {/* HISTORY TAB */}
       {activeTab === "history" && (
         <div className="history-list">
-          {history.map((item, index) => (
-            <div className="history-card" key={index}>
-              <h4>{item.club}</h4>
-              <span className={`status ${item.status}`}>{item.status}</span>
-            </div>
-          ))}
+          {history.length > 0 ? (
+            history.map((item, index) => (
+              <div className="history-card" key={index}>
+                <h4>{item.club}</h4>
+                <span className={`status ${item.status}`}>
+                  {item.status}
+                </span>
+              </div>
+            ))
+          ) : (
+            <p>No requests yet</p>
+          )}
         </div>
       )}
 
-      {/* MODAL STEP 1 — Send Request */}
+      {/* MODAL STEP 1 */}
       {showRequestModal && (
         <div className="modal-overlay">
           <div className="modal-box">
             <h3>Send Request</h3>
             <p className="confirm-text">
-              Send request to join <strong>{selectedClub?.name}</strong>?
+              Send request to join{" "}
+              <strong>{selectedClub?.name}</strong>?
             </p>
             <div className="modal-actions">
-              <button onClick={handleSubmitRequest}>Submit Request</button>
+              <button onClick={handleSubmitRequest}>
+                Submit Request
+              </button>
               <button className="cancel-btn" onClick={handleCloseAll}>
                 Cancel
               </button>
@@ -252,7 +257,7 @@ function Clubs() {
         </div>
       )}
 
-      {/* MODAL STEP 2 — Confirm Request */}
+      {/* MODAL STEP 2 */}
       {showConfirmModal && (
         <div className="modal-overlay">
           <div className="modal-box">
@@ -262,7 +267,9 @@ function Clubs() {
               <strong>{selectedClub?.name}</strong>.
             </p>
             <div className="modal-actions">
-              <button onClick={handleConfirmRequest}>Confirm Request</button>
+              <button onClick={handleConfirmRequest}>
+                Confirm Request
+              </button>
               <button
                 className="cancel-btn"
                 onClick={() => {

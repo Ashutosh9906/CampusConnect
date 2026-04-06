@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import "../../styles/profile.css";
 
-const ROLE_OPTIONS = ["Student", "Coding Club", "Dance Club", "AI Club"];
+const API = import.meta.env.VITE_API_URL;
+
+let ROLE_OPTIONS = ["Student"]; // 🔥 will be updated dynamically
 
 const ROLE_ICONS = {
   Student: (
@@ -80,7 +82,43 @@ export default function Profile() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [saveFlash, setSaveFlash] = useState(false);
 
-  // ── Edit profile ────────────────────────────────────────────────────────────
+  const [roleMap, setRoleMap] = useState({}); // 🔥 label -> clubId map
+
+  // ✅ Fetch roles dynamically
+  useEffect(() => {
+    async function fetchRoles() {
+      try {
+        const res = await fetch(`${API}/auth/my-clubs`, {
+          credentials: "include"
+        });
+
+        const data = await res.json();
+        const clubs = data?.data || [];
+
+        const map = {};
+        const roles = ["Student"];
+
+        clubs.forEach((item) => {
+          roles.push(item.club.name);
+          map[item.club.name] = item.club.id;
+        });
+
+        map["Student"] = null;
+
+        ROLE_OPTIONS = roles; // 🔥 mutate global (keeps JSX same)
+        setRoleMap(map);
+
+      } catch (err) {
+        console.error(err);
+        ROLE_OPTIONS = ["Student"];
+        setRoleMap({ Student: null });
+      }
+    }
+
+    fetchRoles();
+  }, []);
+
+  // ── Edit profile ──
   function handleEditClick() {
     setEditForm({
       name: user.name,
@@ -110,17 +148,40 @@ export default function Profile() {
     setEditMode(false);
   }
 
-  // ── Role change ─────────────────────────────────────────────────────────────
+  // ── Role change ──
   function handleRoleSelect(role) {
-    if (role === user.role) return;
+    if (role === user.role) return; // 🔥 HARD CHECK
     setPendingRole(role);
     setShowConfirm(true);
   }
 
-  function handleConfirmRole() {
-    const updated = { ...user, role: pendingRole };
-    setUser(updated);
-    localStorage.setItem("user", JSON.stringify(updated));
+  async function handleConfirmRole() {
+    // 🔥 DOUBLE CHECK (security)
+    if (pendingRole === user.role) {
+      setShowConfirm(false);
+      return;
+    }
+
+    try {
+      await fetch(`${API}/auth/select-club`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          clubId: roleMap[pendingRole] // 🔥 correct mapping
+        })
+      });
+
+      const updated = { ...user, role: pendingRole };
+      setUser(updated);
+      localStorage.setItem("user", JSON.stringify(updated));
+
+    } catch (err) {
+      console.error(err);
+    }
+
     setShowConfirm(false);
     setShowRoleList(false);
     setPendingRole("");
