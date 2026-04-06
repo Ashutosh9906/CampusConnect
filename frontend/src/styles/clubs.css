@@ -416,7 +416,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 18px 22px;
+  padding: 16px 18px;
+  gap: 12px; /*added*/
 
   background: var(--bg-glass) !important;
   border: 1px solid var(--border-glass);
@@ -430,7 +431,17 @@
     box-shadow var(--transition),
     transform var(--transition);
 }
-
+/*added*/
+.history-card-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+/*added*/
+.delete-btn {
+  align-self: flex-end;
+  white-space: nowrap;
+}
 .history-card:hover {
   transform: translateX(4px);
   border-color: rgba(96, 165, 250, 0.22);
@@ -453,14 +464,29 @@
 }
 
 /* ── STATUS CHIPS ── */
-.status {
-  padding: 5px 14px;
+/* .status {
+  padding: 3px 10px;
   border-radius: 20px;
-  font-size: 11px;
+  font-size: 6px;
   font-family: "DM Sans", sans-serif;
   font-weight: 600;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.4px;
   text-transform: uppercase;
+} */
+.status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 2px 8px; /* smaller */
+  font-size: 10px; /* clean */
+  font-weight: 500; /* lighter */
+  border-radius: 999px;
+
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+
+  border: 1px solid transparent; /* thinner feel */
 }
 
 /* Pending — amber glass */
@@ -620,7 +646,21 @@
   border-color: rgba(239, 68, 68, 0.5) !important;
   transform: translateY(-1px);
 }
+.delete-btn {
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
 
+.delete-btn:hover {
+  background: rgba(239, 68, 68, 0.22);
+  transform: translateY(-1px);
+}
 /* ============================================================
    9. RESPONSIVE
    ============================================================ */
@@ -645,9 +685,12 @@
   .history-card {
     flex-direction: column;
     align-items: flex-start;
-    gap: 10px;
+    /* gap: 10px; */
   }
-
+  .delete-btn {
+    width: 100%;
+    text-align: center;
+  }
   .modal-actions {
     flex-direction: column;
   }

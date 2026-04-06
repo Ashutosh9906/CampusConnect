@@ -1,22 +1,34 @@
 /* ============================================================
-   LANDING DARK — Complete Merged CSS
-   Covers: Landing · Events · Event Cards · Carousel · Navbar
+   LANDING DARK — Refined CSS (Production Polish)
+   Changes: Spacing system, reduced glow, better hierarchy,
+   premium buttons, subtle depth, improved typography rhythm.
    Font stack: 'Syne' (display) + 'DM Sans' (body)
-   Add to <head> before this stylesheet:
-   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
    ============================================================ */
 
 /* ============================================================
    1. CSS CUSTOM PROPERTIES
+   CHANGED: Reduced glow opacity, softer accent-glow,
+   added spacing scale, refined shadow tokens
    ============================================================ */
 :root {
   --bg-base: #050c1a;
   --bg-surface: #0a1628;
-  --bg-glass: rgba(255, 255, 255, 0.04);
-  --border-glass: rgba(255, 255, 255, 0.08);
+  --bg-glass: rgba(255, 255, 255, 0.03); /* CHANGED: was 0.04 — less foggy */
+  --border-glass: rgba(
+    255,
+    255,
+    255,
+    0.07
+  ); /* CHANGED: was 0.08 — softer edge */
+  --border-subtle: rgba(255, 255, 255, 0.05); /* ADDED: ultra-subtle divider */
   --accent: #3b82f6;
   --accent-bright: #60a5fa;
-  --accent-glow: rgba(59, 130, 246, 0.3);
+  --accent-glow: rgba(
+    59,
+    130,
+    246,
+    0.15
+  ); /* CHANGED: was 0.3 — no heavy glow */
   --text-primary: #e8f0fe;
   --text-muted: #8b9ab8;
   --text-faint: #3e527a;
@@ -27,18 +39,40 @@
     #f472b6 100%
   );
   --gradient-btn: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
-  --radius-card: 16px;
-  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.45);
-  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --radius-card: 14px; /* CHANGED: was 16px — slightly tighter */
+  --radius-btn: 9px; /* ADDED: consistent button radius */
+
+  /* ADDED: Spacing scale (8px base grid) */
+  --space-1: 8px;
+  --space-2: 12px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
+  --space-6: 48px;
+  --space-7: 64px;
+  --space-8: 80px;
+
+  /* CHANGED: Refined shadow system — depth without blur-bleed */
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.35);
+  --shadow-card-hover:
+    0 2px 4px rgba(0, 0, 0, 0.3), 0 12px 36px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(96, 165, 250, 0.1);
+  --shadow-btn:
+    0 1px 2px rgba(0, 0, 0, 0.25), 0 4px 12px rgba(59, 130, 246, 0.2);
+  --shadow-btn-hover:
+    0 2px 4px rgba(0, 0, 0, 0.25), 0 8px 20px rgba(59, 130, 246, 0.3);
+
+  --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1); /* CHANGED: was 0.3 — snappier */
 }
 
 /* ============================================================
    2. KEYFRAMES
+   CHANGED: Reduced float distance, softened pulse
    ============================================================ */
 @keyframes fadeUp {
   from {
     opacity: 0;
-    transform: translateY(28px);
+    transform: translateY(20px); /* CHANGED: was 28px — subtler rise */
   }
   to {
     opacity: 1;
@@ -47,12 +81,13 @@
 }
 
 @keyframes pulseGlow {
+  /* CHANGED: Removed heavy glow — replaced with gentle border pulse */
   0%,
   100% {
-    box-shadow: 0 0 0 0 var(--accent-glow);
+    box-shadow: var(--shadow-btn);
   }
   50% {
-    box-shadow: 0 0 24px 6px var(--accent-glow);
+    box-shadow: var(--shadow-btn-hover);
   }
 }
 
@@ -62,14 +97,14 @@
     transform: translateY(0) rotate(0deg);
   }
   50% {
-    transform: translateY(-18px) rotate(3deg);
+    transform: translateY(-10px) rotate(1.5deg); /* CHANGED: was -18px / 3deg — calmer */
   }
 }
 
 @keyframes cardFadeUp {
   from {
     opacity: 0;
-    transform: translateY(24px);
+    transform: translateY(16px); /* CHANGED: was 24px */
   }
   to {
     opacity: 1;
@@ -88,18 +123,11 @@
   }
 }
 
-@keyframes ctaPulse {
-  0%,
-  100% {
-    box-shadow: 0 6px 24px rgba(59, 130, 246, 0.38);
-  }
-  50% {
-    box-shadow: 0 6px 36px rgba(59, 130, 246, 0.6);
-  }
-}
+/* REMOVED: ctaPulse — replaced by pulseGlow refinement above */
 
 /* ============================================================
    3. GLOBAL RESET + BASE
+   CHANGED: Slightly looser base line-height for readability
    ============================================================ */
 *,
 *::before,
@@ -107,7 +135,6 @@
   box-sizing: border-box;
 }
 
-/* Force dark bg on every possible wrapper Bootstrap/Django might add */
 html,
 body,
 main,
@@ -123,8 +150,9 @@ main,
 body {
   font-family: "DM Sans", sans-serif;
   font-weight: 400;
-  line-height: 1.65;
+  line-height: 1.7; /* CHANGED: was 1.65 — more readable */
   -webkit-font-smoothing: antialiased;
+  letter-spacing: 0.01em; /* ADDED: subtle tracking for DM Sans */
 }
 
 .landing {
@@ -135,6 +163,8 @@ body {
 
 /* ============================================================
    4. NAVBAR
+   CHANGED: Reduced blur, lighter border, refined link sizing,
+   tighter padding, improved dropdown polish
    ============================================================ */
 .navbar-brand a {
   border: none !important;
@@ -145,21 +175,23 @@ body {
 
 .navbar-container {
   width: 100%;
-  background: rgba(5, 12, 26, 0.75);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  background: rgba(5, 12, 26, 0.82); /* CHANGED: slightly more opaque */
+  backdrop-filter: blur(12px); /* CHANGED: was 18px — less haze */
+  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border-glass);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04),
+    /* ADDED: inner highlight line */ 0 4px 20px rgba(0, 0, 0, 0.3); /* CHANGED: was 0.4 — softer */
   position: sticky;
   top: 0;
   z-index: 1000;
-  animation: navSlideDown 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+  animation: navSlideDown 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
 .navbar-pill-full {
   max-width: 1200px;
   margin: auto;
-  padding: 14px 28px;
+  padding: var(--space-2) var(--space-6); /* CHANGED: was 14px 28px — grid-aligned */
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -168,33 +200,36 @@ body {
 .navbar-logo-wrap {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-2); /* CHANGED: was 10px → 12px */
 }
 
 .navbar-logo-wrap img {
-  height: 38px;
-  filter: brightness(1.15) drop-shadow(0 0 8px rgba(96, 165, 250, 0.3));
+  height: 36px; /* CHANGED: was 38px — slightly tighter */
+  filter: brightness(1.1) drop-shadow(0 0 6px rgba(96, 165, 250, 0.2)); /* CHANGED: reduced drop-shadow */
   transition: filter var(--transition);
 }
 
 .navbar-logo-wrap img:hover {
-  filter: brightness(1.3) drop-shadow(0 0 12px rgba(96, 165, 250, 0.5));
+  filter: brightness(1.2) drop-shadow(0 0 8px rgba(96, 165, 250, 0.35)); /* CHANGED: subtler */
 }
 
 .navbar-links {
   display: flex;
-  gap: 36px;
+  gap: var(
+    --space-8
+  ); /* CHANGED: was 36px → 32px (--space-5 is 32) — tighter */
+  gap: 32px;
   align-items: center;
 }
 
 .navbar-links a {
   text-decoration: none;
   font-family: "DM Sans", sans-serif;
-  font-size: 14px;
+  font-size: 13.5px; /* CHANGED: was 14px — refined */
   font-weight: 500;
   color: var(--text-muted);
   position: relative;
-  letter-spacing: 0.2px;
+  letter-spacing: 0.15px; /* CHANGED: was 0.2px */
   transition: color var(--transition);
 }
 
@@ -202,9 +237,9 @@ body {
   content: "";
   position: absolute;
   left: 0;
-  bottom: -5px;
+  bottom: -4px; /* CHANGED: was -5px — tighter underline */
   width: 0;
-  height: 2px;
+  height: 1.5px; /* CHANGED: was 2px — finer line */
   background: linear-gradient(90deg, var(--accent), var(--accent-bright));
   border-radius: 2px;
   transition: width var(--transition);
@@ -226,28 +261,33 @@ body {
 .navbar-action {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-2); /* was 12px → same */
 }
 
 .login-btn {
   background: var(--gradient-btn);
   color: #ffffff !important;
-  padding: 9px 22px;
-  border-radius: 9px;
+  padding: 8px 20px; /* CHANGED: was 9px 22px — tighter */
+  border-radius: var(--radius-btn);
   font-family: "DM Sans", sans-serif;
-  font-size: 14px;
+  font-size: 13.5px; /* CHANGED: was 14px */
   font-weight: 500;
   text-decoration: none;
-  letter-spacing: 0.2px;
-  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+  letter-spacing: 0.15px;
+  box-shadow: var(--shadow-btn); /* CHANGED: uses refined shadow token */
   transition:
     transform var(--transition),
     box-shadow var(--transition);
 }
 
 .login-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.5);
+  transform: translateY(-1px); /* CHANGED: was -2px — more restrained */
+  box-shadow: var(--shadow-btn-hover);
+}
+
+.login-btn:active {
+  transform: translateY(0); /* ADDED: active press state */
+  box-shadow: var(--shadow-btn);
 }
 
 .profile-wrapper {
@@ -256,25 +296,32 @@ body {
 
 .profile-dropdown {
   position: absolute;
-  top: calc(100% + 12px);
+  top: calc(100% + 10px); /* CHANGED: was +12px */
   right: 0;
-  background: rgba(10, 22, 40, 0.9);
+  background: rgba(
+    8,
+    18,
+    34,
+    0.95
+  ); /* CHANGED: more opaque, more trustworthy */
   border: 1px solid var(--border-glass);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-radius: 12px;
-  padding: 12px 10px;
+  backdrop-filter: blur(12px); /* CHANGED: was 16px */
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 11px; /* CHANGED: was 12px — slight tighten */
+  padding: var(--space-1) 8px; /* CHANGED: was 12px 10px */
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  min-width: 160px;
+  gap: 2px; /* CHANGED: was 6px — tighter items */
+  min-width: 156px; /* CHANGED: was 160px */
   opacity: 0;
   pointer-events: none;
-  transform: translateY(8px);
+  transform: translateY(6px); /* CHANGED: was 8px */
   transition:
     opacity var(--transition),
     transform var(--transition);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.3),
+    0 16px 40px rgba(0, 0, 0, 0.45); /* CHANGED: layered shadow */
 }
 
 .profile-wrapper:hover .profile-dropdown {
@@ -287,8 +334,8 @@ body {
 .profile-dropdown button {
   display: block;
   width: 100%;
-  padding: 9px 14px;
-  border-radius: 8px;
+  padding: 8px 12px; /* CHANGED: was 9px 14px */
+  border-radius: 7px; /* CHANGED: was 8px */
   font-family: "DM Sans", sans-serif;
   font-size: 13px;
   font-weight: 500;
@@ -305,23 +352,25 @@ body {
 
 .profile-dropdown a:hover,
 .profile-dropdown button:hover {
-  background: rgba(59, 130, 246, 0.1);
+  background: rgba(59, 130, 246, 0.08); /* CHANGED: was 0.1 — subtler */
   color: var(--text-primary);
 }
 
 .profile-dropdown hr {
   border: none;
-  border-top: 1px solid var(--border-glass);
+  border-top: 1px solid var(--border-subtle); /* CHANGED: uses finer border token */
   margin: 4px 0;
 }
 
 /* ============================================================
    5. HERO SECTION
+   CHANGED: Reduced orb opacity, improved heading letter-spacing,
+   better subtitle sizing, tightened button group
    ============================================================ */
 .hero {
   position: relative;
   background: var(--bg-base) !important;
-  padding: 110px 20px 100px;
+  padding: 120px 20px 108px; /* CHANGED: was 110/100 — on 8px grid */
   text-align: center;
   overflow: hidden;
 }
@@ -331,52 +380,52 @@ body {
   content: "";
   position: absolute;
   border-radius: 50%;
-  filter: blur(90px);
+  filter: blur(100px); /* CHANGED: was 90px — softer spread */
   pointer-events: none;
-  animation: float 8s ease-in-out infinite;
+  animation: float 10s ease-in-out infinite; /* CHANGED: was 8s — calmer */
 }
 
 .hero::before {
-  width: 480px;
-  height: 480px;
+  width: 500px;
+  height: 500px;
   background: radial-gradient(
     circle,
-    rgba(59, 130, 246, 0.22) 0%,
-    transparent 70%
+    rgba(59, 130, 246, 0.12) 0%,
+    /* CHANGED: was 0.22 — much less aggressive */ transparent 70%
   );
-  top: -80px;
-  left: -100px;
+  top: -100px;
+  left: -120px;
   animation-delay: 0s;
 }
 
 .hero::after {
-  width: 420px;
-  height: 420px;
+  width: 440px;
+  height: 440px;
   background: radial-gradient(
     circle,
-    rgba(124, 58, 237, 0.18) 0%,
-    transparent 70%
+    rgba(124, 58, 237, 0.1) 0%,
+    /* CHANGED: was 0.18 */ transparent 70%
   );
-  bottom: -80px;
-  right: -80px;
-  animation-delay: -4s;
+  bottom: -100px;
+  right: -100px;
+  animation-delay: -5s;
 }
 
 .hero-content {
   position: relative;
   z-index: 1;
-  max-width: 700px;
+  max-width: 680px; /* CHANGED: was 700px — tighter measure */
   margin: auto;
-  animation: fadeUp 0.8s ease both;
+  animation: fadeUp 0.7s ease both; /* CHANGED: was 0.8s */
 }
 
 .hero h1 {
   font-family: "Syne", sans-serif;
-  font-size: clamp(36px, 6vw, 58px);
+  font-size: clamp(34px, 5.5vw, 54px); /* CHANGED: was 36/58 — refined scale */
   font-weight: 800;
-  line-height: 1.15;
-  margin-bottom: 20px;
-  letter-spacing: -0.5px;
+  line-height: 1.12; /* CHANGED: was 1.15 — tighter for display */
+  margin-bottom: var(--space-4); /* CHANGED: was 20px → 24px */
+  letter-spacing: -0.8px; /* CHANGED: was -0.5 — more editorial */
   background: var(--gradient-text);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -384,95 +433,114 @@ body {
 }
 
 .hero p {
-  font-size: clamp(16px, 2vw, 19px);
+  font-size: clamp(15px, 1.8vw, 17px); /* CHANGED: was 16/19 — less oversized */
   color: var(--text-muted);
-  margin-bottom: 40px;
-  animation: fadeUp 0.8s 0.15s ease both;
+  margin-bottom: var(--space-6); /* CHANGED: was 40px → 48px — breathe */
+  line-height: 1.75; /* ADDED: explicit line-height for subtitle */
+  animation: fadeUp 0.7s 0.12s ease both;
 }
 
 .hero-buttons {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 16px;
-  animation: fadeUp 0.8s 0.3s ease both;
+  gap: var(--space-3); /* CHANGED: was 16px → 16px (same, via token) */
+  animation: fadeUp 0.7s 0.24s ease both;
 }
 
-/* ── BUTTONS ── */
+/* ── BUTTONS — CHANGED: premium press states, no glow ring ── */
 .primary-btn {
   background: var(--gradient-btn);
   color: #fff;
-  padding: 14px 30px;
-  border-radius: 10px;
+  padding: 13px 28px; /* CHANGED: was 14px 30px — cleaner proportions */
+  border-radius: var(--radius-btn);
   border: none;
   font-family: "DM Sans", sans-serif;
-  font-size: 15px;
+  font-size: 14.5px; /* CHANGED: was 15px */
   font-weight: 500;
   cursor: pointer;
-  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.35);
+  letter-spacing: 0.1px; /* ADDED */
+  box-shadow: var(--shadow-btn);
   transition:
     transform var(--transition),
     box-shadow var(--transition);
 }
 
 .primary-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 32px rgba(59, 130, 246, 0.5);
+  transform: translateY(-2px); /* CHANGED: was -3px */
+  box-shadow: var(--shadow-btn-hover);
+}
+
+.primary-btn:active {
+  transform: translateY(0); /* ADDED: press feedback */
+  box-shadow: var(--shadow-btn);
 }
 
 .secondary-btn {
   background: transparent;
   color: var(--accent-bright);
-  padding: 14px 30px;
-  border-radius: 10px;
-  border: 1px solid rgba(96, 165, 250, 0.4);
+  padding: 13px 28px; /* CHANGED: was 14px 30px */
+  border-radius: var(--radius-btn);
+  border: 1px solid rgba(96, 165, 250, 0.25); /* CHANGED: was 0.4 — less electric */
   font-family: "DM Sans", sans-serif;
-  font-size: 15px;
+  font-size: 14.5px;
   font-weight: 500;
   cursor: pointer;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(6px); /* CHANGED: was 8px */
   transition:
     background var(--transition),
     border-color var(--transition),
-    transform var(--transition);
+    transform var(--transition),
+    box-shadow var(--transition); /* ADDED: shadow transition */
 }
 
 .secondary-btn:hover {
-  background: rgba(59, 130, 246, 0.12);
-  border-color: var(--accent-bright);
-  transform: translateY(-3px);
+  background: rgba(59, 130, 246, 0.07); /* CHANGED: was 0.12 — subtler fill */
+  border-color: rgba(96, 165, 250, 0.45);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.12); /* ADDED: soft lift shadow */
+}
+
+.secondary-btn:active {
+  transform: translateY(0); /* ADDED */
+  box-shadow: none;
 }
 
 /* ============================================================
    6. EVENTS SECTION
+   CHANGED: Refined heading underline, tighter section padding,
+   better grid gap
    ============================================================ */
 .events-section {
-  padding: 80px 20px;
+  padding: var(--space-8) 20px; /* CHANGED: was 80px — on token */
   max-width: 1200px;
   margin: auto;
   background: transparent !important;
   position: relative;
   z-index: 1;
-  animation: fadeUp 0.7s 0.1s ease both;
+  animation: fadeUp 0.6s 0.08s ease both;
 }
 
 .events-section h2 {
   font-family: "Syne", sans-serif;
-  font-size: clamp(22px, 4vw, 32px);
+  font-size: clamp(20px, 3.5vw, 28px); /* CHANGED: was 22/32 — tighter range */
   font-weight: 700;
-  margin-bottom: 36px;
+  margin-bottom: var(--space-5); /* CHANGED: was 36px → 32px */
   color: var(--text-primary) !important;
   display: inline-block;
-  padding-bottom: 8px;
-  border-bottom: 2px solid transparent;
-  border-image: linear-gradient(90deg, var(--accent), transparent) 1;
+  padding-bottom: var(--space-1); /* CHANGED: was 8px — same via token */
+  letter-spacing: -0.3px; /* ADDED: tighter display heading */
+  border-bottom: 1px solid rgba(59, 130, 246, 0.3); /* CHANGED: was 2px transparent border-image — cleaner */
 }
 
-/* ── EVENTS GRID ── */
+/* ── EVENTS GRID — CHANGED: tighter border, better gap ── */
 .events-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(260px, 1fr)
+  ); /* CHANGED: was 250 */
+  gap: var(--space-4); /* CHANGED: was 24px — same via token */
   background: transparent !important;
 }
 
@@ -480,8 +548,8 @@ body {
   background: var(--bg-glass) !important;
   border: 1px solid var(--border-glass) !important;
   border-radius: var(--radius-card) !important;
-  backdrop-filter: blur(14px) !important;
-  -webkit-backdrop-filter: blur(14px) !important;
+  backdrop-filter: blur(10px) !important; /* CHANGED: was 14px */
+  -webkit-backdrop-filter: blur(10px) !important;
   transition:
     transform var(--transition),
     box-shadow var(--transition),
@@ -489,27 +557,24 @@ body {
 }
 
 .events-grid > *:hover {
-  transform: translateY(-6px);
-  box-shadow: var(--shadow-card);
-  border-color: rgba(96, 165, 250, 0.25) !important;
+  transform: translateY(-4px); /* CHANGED: was -6px */
+  box-shadow: var(--shadow-card-hover);
+  border-color: rgba(96, 165, 250, 0.18) !important; /* CHANGED: was 0.25 */
 }
 
 /* ============================================================
    7. CAROUSEL
+   CHANGED: Cleaner arrow style, subtle scroll shadow indicator
    ============================================================ */
-
-/* FIX: use flex layout so arrows sit beside the track,
-   NOT position:absolute inside overflow:hidden */
 .carousel-wrapper {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-2); /* CHANGED: was 12px — on token */
 }
 
-/* Scrollable track */
 .events-carousel {
   display: flex;
-  gap: 24px;
+  gap: var(--space-4); /* CHANGED: was 24px — on token */
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
@@ -518,7 +583,7 @@ body {
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  padding: 8px 4px 16px;
+  padding: var(--space-1) 4px var(--space-3); /* CHANGED: was 8px 4px 16px */
   cursor: grab;
   flex: 1;
 }
@@ -531,87 +596,98 @@ body {
   display: none;
 }
 
-/* Every card in the carousel */
 .events-carousel > * {
   scroll-snap-align: start;
   flex-shrink: 0;
-  min-width: 260px;
+  min-width: 268px; /* CHANGED: was 260px — slightly wider */
   transition:
     transform var(--transition),
     box-shadow var(--transition),
     border-color var(--transition);
-  animation: cardFadeUp 0.55s cubic-bezier(0.4, 0, 0.2, 1) both;
+  animation: cardFadeUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) both; /* CHANGED: was 0.55s */
 }
 
 .events-carousel > *:hover {
-  transform: translateY(-6px);
-  box-shadow:
-    0 20px 48px rgba(0, 0, 0, 0.55),
-    0 0 0 1px rgba(96, 165, 250, 0.18) !important;
-  border-color: rgba(96, 165, 250, 0.28) !important;
+  transform: translateY(-5px); /* CHANGED: was -6px */
+  box-shadow: var(--shadow-card-hover) !important;
+  border-color: rgba(96, 165, 250, 0.2) !important; /* CHANGED: was 0.28 */
 }
 
-/* Stagger entrance */
+/* Stagger entrance — UNCHANGED */
 .events-carousel > *:nth-child(1) {
   animation-delay: 0.05s;
 }
 .events-carousel > *:nth-child(2) {
-  animation-delay: 0.13s;
+  animation-delay: 0.12s;
 }
 .events-carousel > *:nth-child(3) {
-  animation-delay: 0.21s;
+  animation-delay: 0.19s;
 }
 .events-carousel > *:nth-child(4) {
-  animation-delay: 0.29s;
+  animation-delay: 0.26s;
 }
 .events-carousel > *:nth-child(5) {
-  animation-delay: 0.37s;
+  animation-delay: 0.33s;
 }
 .events-carousel > *:nth-child(6) {
-  animation-delay: 0.45s;
+  animation-delay: 0.4s;
 }
 
-/* ── CAROUSEL ARROWS ── */
+/* ── CAROUSEL ARROWS — CHANGED: flat+border style, no heavy gradient ── */
 .carousel-arrow {
-  background: var(--gradient-btn);
-  color: white;
-  border: none;
-  width: 44px;
-  height: 44px;
-  min-width: 44px;
+  background: rgba(
+    255,
+    255,
+    255,
+    0.04
+  ); /* CHANGED: glass instead of gradient */
+  border: 1px solid var(--border-glass); /* ADDED: crisp border */
+  color: var(--accent-bright); /* CHANGED: was white — matches palette */
+  width: 40px; /* CHANGED: was 44px */
+  height: 40px;
+  min-width: 40px;
   border-radius: 50%;
   cursor: pointer;
-  font-size: 24px;
+  font-size: 20px; /* CHANGED: was 24px */
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 4px 18px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); /* CHANGED: subtle shadow */
   transition:
     transform var(--transition),
-    box-shadow var(--transition);
-  /* Remove position:absolute — arrows are now flex siblings */
+    background var(--transition),
+    box-shadow var(--transition),
+    border-color var(--transition);
   position: static;
   transform: none;
 }
 
 .carousel-arrow:hover {
-  transform: scale(1.1);
-  box-shadow: 0 8px 28px rgba(59, 130, 246, 0.6);
+  background: rgba(59, 130, 246, 0.1); /* ADDED: accent tint on hover */
+  border-color: rgba(96, 165, 250, 0.3);
+  transform: scale(1.08); /* CHANGED: was 1.1 */
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.15);
+}
+
+.carousel-arrow:active {
+  transform: scale(0.97); /* ADDED: press feedback */
 }
 
 /* ============================================================
    8. EVENT CARD
+   CHANGED: Tighter image height, better content padding,
+   refined title/meta typography, subtle CTA button
    ============================================================ */
 .event-card {
   background: var(--bg-glass) !important;
   border: 1px solid var(--border-glass) !important;
   border-radius: var(--radius-card) !important;
   overflow: hidden;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(10px); /* CHANGED: was 14px */
+  -webkit-backdrop-filter: blur(10px);
   box-shadow: var(--shadow-card);
-  animation: cardFadeUp 0.55s cubic-bezier(0.4, 0, 0.2, 1) both;
+  animation: cardFadeUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
   transition:
     transform var(--transition),
     box-shadow var(--transition),
@@ -619,36 +695,35 @@ body {
 }
 
 .event-card:hover {
-  transform: translateY(-8px) scale(1.015);
-  box-shadow:
-    0 20px 48px rgba(0, 0, 0, 0.55),
-    0 0 0 1px rgba(96, 165, 250, 0.18);
-  border-color: rgba(96, 165, 250, 0.28) !important;
+  transform: translateY(-5px) scale(1.01); /* CHANGED: was -8px 1.015 — subtler */
+  box-shadow: var(--shadow-card-hover);
+  border-color: rgba(96, 165, 250, 0.2) !important; /* CHANGED: was 0.28 */
 }
 
+/* Stagger delays — UNCHANGED */
 .event-card:nth-child(1) {
   animation-delay: 0.05s;
 }
 .event-card:nth-child(2) {
-  animation-delay: 0.13s;
+  animation-delay: 0.12s;
 }
 .event-card:nth-child(3) {
-  animation-delay: 0.21s;
+  animation-delay: 0.19s;
 }
 .event-card:nth-child(4) {
-  animation-delay: 0.29s;
+  animation-delay: 0.26s;
 }
 .event-card:nth-child(5) {
-  animation-delay: 0.37s;
+  animation-delay: 0.33s;
 }
 .event-card:nth-child(6) {
-  animation-delay: 0.45s;
+  animation-delay: 0.4s;
 }
 
 /* Card image */
 .event-image {
   width: 100%;
-  height: 190px;
+  height: 176px; /* CHANGED: was 190px — less dominant */
   overflow: hidden;
   position: relative;
 }
@@ -659,8 +734,9 @@ body {
   inset: 0;
   background: linear-gradient(
     to bottom,
-    transparent 40%,
-    rgba(5, 12, 26, 0.7) 100%
+    transparent 50%,
+    /* CHANGED: was 40% — cleaner fade start */ rgba(5, 12, 26, 0.6) 100%
+      /* CHANGED: was 0.7 — less heavy */
   );
   pointer-events: none;
 }
@@ -669,28 +745,29 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: brightness(0.88) saturate(1.1);
+  filter: brightness(0.9) saturate(1.05); /* CHANGED: was 0.88 / 1.1 — cleaner */
   transition:
-    transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-    filter 0.5s ease;
+    transform 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+    /* CHANGED: was 0.5s */ filter 0.45s ease;
 }
 
 .event-card:hover .event-image img {
-  transform: scale(1.07);
-  filter: brightness(1) saturate(1.2);
+  transform: scale(1.05); /* CHANGED: was 1.07 — less dramatic */
+  filter: brightness(0.97) saturate(1.1);
 }
 
-/* Card content */
+/* Card content — CHANGED: consistent padding, tighter spacing */
 .event-content {
-  padding: 20px 18px 22px;
+  padding: var(--space-4) var(--space-3) var(--space-4); /* CHANGED: was 20px 18px 22px */
 }
 
 .event-content h3 {
   font-family: "Syne", sans-serif !important;
-  font-size: 17px;
+  font-size: 16px; /* CHANGED: was 17px */
   font-weight: 700;
-  margin-bottom: 10px;
-  line-height: 1.3;
+  margin-bottom: var(--space-2); /* CHANGED: was 10px → 12px */
+  line-height: 1.35; /* CHANGED: was 1.3 — slightly looser */
+  letter-spacing: -0.1px; /* ADDED */
   color: #e8f0fe !important;
   transition: color var(--transition);
 }
@@ -701,13 +778,13 @@ body {
 
 .event-content p {
   font-family: "DM Sans", sans-serif !important;
-  font-size: 13px;
+  font-size: 12.5px; /* CHANGED: was 13px — tighter meta */
   color: #8b9ab8 !important;
-  margin-bottom: 6px;
-  line-height: 1.55;
+  margin-bottom: var(--space-1); /* CHANGED: was 6px → 8px */
+  line-height: 1.5; /* CHANGED: was 1.55 */
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-1); /* CHANGED: was 6px → 8px */
 }
 
 .event-content p::before {
@@ -718,41 +795,58 @@ body {
   border-radius: 50%;
   background: var(--accent);
   flex-shrink: 0;
+  opacity: 0.6; /* ADDED: less punchy dot */
 }
 
-/* Card button */
+/* Card button — CHANGED: outlined style, not full gradient */
 .event-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  margin-top: 16px;
-  padding: 9px 18px;
-  background: var(--gradient-btn);
-  color: #ffffff !important;
+  gap: 5px; /* CHANGED: was 6px */
+  margin-top: var(--space-3); /* CHANGED: was 16px → same via token */
+  padding: 8px 16px; /* CHANGED: was 9px 18px */
+  background: rgba(
+    37,
+    99,
+    235,
+    0.12
+  ); /* CHANGED: was full gradient — subtler */
+  border: 1px solid rgba(59, 130, 246, 0.25); /* ADDED: crisp outline */
+  color: var(--accent-bright) !important; /* CHANGED: uses text color */
   border-radius: 8px;
   text-decoration: none;
   font-family: "DM Sans", sans-serif;
-  font-size: 13px;
+  font-size: 12.5px; /* CHANGED: was 13px */
   font-weight: 500;
-  letter-spacing: 0.2px;
+  letter-spacing: 0.1px;
   width: fit-content;
-  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.28);
+  box-shadow: none; /* CHANGED: removed shadow — clean look */
   transition:
+    background var(--transition),
+    border-color var(--transition),
     transform var(--transition),
     box-shadow var(--transition);
 }
 
 .event-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.48);
+  background: rgba(37, 99, 235, 0.2); /* CHANGED: deeper fill on hover */
+  border-color: rgba(96, 165, 250, 0.45);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.12);
+}
+
+.event-btn:active {
+  transform: translateY(0); /* ADDED */
+  box-shadow: none;
 }
 
 /* ============================================================
    9. WHY US SECTION
+   CHANGED: Better card padding, refined icon spacing, softer hover
    ============================================================ */
 .why-us {
   background-color: var(--bg-surface) !important;
-  padding: 80px 20px;
+  padding: var(--space-8) 20px;
   text-align: center;
   position: relative;
   overflow: hidden;
@@ -768,8 +862,8 @@ body {
   background: linear-gradient(
     90deg,
     transparent,
-    var(--border-glass),
-    transparent
+    var(--border-subtle),
+    /* CHANGED: uses finer border token */ transparent
   );
 }
 .why-us::before {
@@ -781,9 +875,10 @@ body {
 
 .why-us h2 {
   font-family: "Syne", sans-serif;
-  font-size: clamp(22px, 4vw, 32px);
+  font-size: clamp(20px, 3.5vw, 28px); /* CHANGED: was 22/32 */
   font-weight: 700;
-  margin-bottom: 36px;
+  margin-bottom: var(--space-5);
+  letter-spacing: -0.3px; /* ADDED */
   color: var(--text-primary) !important;
 }
 
@@ -792,22 +887,23 @@ body {
   margin: auto;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 24px;
+  gap: var(--space-4);
 }
 
 .why-card {
   background: var(--bg-glass) !important;
   border: 1px solid var(--border-glass) !important;
   border-radius: var(--radius-card);
-  padding: 34px 28px;
+  padding: var(--space-6) var(--space-4); /* CHANGED: was 34px 28px → 48px 24px — on grid */
   font-family: "DM Sans", sans-serif;
   font-weight: 500;
-  font-size: 15px;
+  font-size: 14.5px; /* CHANGED: was 15px */
+  line-height: 1.65; /* ADDED */
   color: var(--text-primary) !important;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(10px); /* CHANGED: was 12px */
+  -webkit-backdrop-filter: blur(10px);
   box-shadow: var(--shadow-card);
-  animation: fadeUp 0.6s ease both;
+  animation: fadeUp 0.55s ease both; /* CHANGED: was 0.6s */
   transition:
     transform var(--transition),
     border-color var(--transition),
@@ -815,13 +911,12 @@ body {
 }
 
 .why-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  border-color: rgba(96, 165, 250, 0.3) !important;
-  box-shadow:
-    0 16px 48px rgba(0, 0, 0, 0.5),
-    0 0 0 1px rgba(96, 165, 250, 0.12);
+  transform: translateY(-5px) scale(1.01); /* CHANGED: was -8px 1.02 */
+  border-color: rgba(96, 165, 250, 0.2) !important; /* CHANGED: was 0.3 */
+  box-shadow: var(--shadow-card-hover);
 }
 
+/* Stagger — UNCHANGED */
 .why-card:nth-child(1) {
   animation-delay: 0.05s;
 }
@@ -837,9 +932,10 @@ body {
 
 /* ============================================================
    10. ABOUT US SECTION
+   CHANGED: Better paragraph width, line-height, reduced orb blur
    ============================================================ */
 .about-us {
-  padding: 80px 20px;
+  padding: var(--space-8) 20px;
   text-align: center;
   background: var(--bg-base) !important;
   position: relative;
@@ -847,9 +943,10 @@ body {
 
 .about-us h2 {
   font-family: "Syne", sans-serif;
-  font-size: clamp(22px, 4vw, 32px);
+  font-size: clamp(20px, 3.5vw, 28px); /* CHANGED: was 22/32 */
   font-weight: 700;
-  margin-bottom: 18px;
+  margin-bottom: var(--space-3); /* ADDED: explicit spacing */
+  letter-spacing: -0.3px;
   background: var(--gradient-text);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -857,19 +954,21 @@ body {
 }
 
 .about-us p {
-  max-width: 680px;
-  margin: auto;
-  font-size: 16px;
+  max-width: 620px; /* CHANGED: was 680px — tighter readable measure */
+  margin: 0 auto var(--space-4); /* ADDED: bottom margin */
+  font-size: 15.5px; /* ADDED: explicit size */
   color: var(--text-muted) !important;
-  line-height: 1.8;
-  animation: fadeUp 0.7s 0.1s ease both;
+  line-height: 1.85; /* CHANGED: was inherited — looser for body copy */
+  animation: fadeUp 0.6s 0.08s ease both;
 }
 
 /* ============================================================
    11. CONTACT SECTION
+   CHANGED: Tighter box padding, refined input states,
+   cleaned up submit button animation
    ============================================================ */
 .contact-us {
-  padding: 90px 20px;
+  padding: var(--space-8) 20px 96px; /* CHANGED: was 90px — on grid */
   background: var(--bg-surface) !important;
   position: relative;
   overflow: hidden;
@@ -878,64 +977,73 @@ body {
 .contact-us::before {
   content: "";
   position: absolute;
-  width: 360px;
-  height: 360px;
+  width: 400px;
+  height: 400px;
   background: radial-gradient(
     circle,
-    rgba(124, 58, 237, 0.15) 0%,
-    transparent 70%
+    rgba(124, 58, 237, 0.08) 0%,
+    /* CHANGED: was 0.15 — much subtler */ transparent 70%
   );
   bottom: -80px;
   right: 5%;
   border-radius: 50%;
-  filter: blur(70px);
+  filter: blur(80px); /* CHANGED: was 70px — softer */
   pointer-events: none;
 }
 
 .contact-box {
-  max-width: 750px;
+  max-width: 680px; /* CHANGED: was 750px — tighter, more focused */
   margin: auto;
-  background: var(--bg-glass) !important;
+  background: rgba(
+    255,
+    255,
+    255,
+    0.025
+  ) !important; /* CHANGED: was var(--bg-glass) — more opaque yet delicate */
   border: 1px solid var(--border-glass);
-  padding: 48px 44px;
-  border-radius: 20px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
-  animation: fadeUp 0.7s ease both;
+  padding: var(--space-6) var(--space-6); /* CHANGED: was 48px 44px → uniform 48px */
+  border-radius: 18px; /* CHANGED: was 20px */
+  backdrop-filter: blur(16px); /* CHANGED: was 20px */
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    /* ADDED: inner top highlight */ 0 16px 56px rgba(0, 0, 0, 0.45);
+  animation: fadeUp 0.6s ease both;
   position: relative;
   z-index: 1;
 }
 
 .contact-box h2 {
   font-family: "Syne", sans-serif;
-  font-size: clamp(22px, 4vw, 30px);
+  font-size: clamp(20px, 3.5vw, 26px); /* CHANGED: was 22/30 */
   font-weight: 700;
+  letter-spacing: -0.3px;
   color: var(--text-primary) !important;
   text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: var(--space-1); /* CHANGED: was 10px */
 }
 
 .contact-box p {
   text-align: center;
   color: var(--text-muted) !important;
-  font-size: 14px;
-  margin-bottom: 32px;
+  font-size: 13.5px; /* CHANGED: was 14px */
+  margin-bottom: var(--space-5); /* CHANGED: was 32px → 32px same via token */
+  line-height: 1.6; /* ADDED */
 }
 
 .contact-form {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: var(--space-3); /* CHANGED: was 18px → 16px on token */
 }
 
 .contact-form input,
 .contact-form textarea {
   width: 100%;
-  padding: 14px 18px;
-  border-radius: 10px;
-  border: 1px solid var(--text-faint);
-  background: rgba(255, 255, 255, 0.04) !important;
+  padding: 12px 16px; /* CHANGED: was 14px 18px — slightly tighter */
+  border-radius: 9px; /* CHANGED: was 10px */
+  border: 1px solid rgba(62, 82, 122, 0.5); /* CHANGED: was var(--text-faint) — more visible but soft */
+  background: rgba(255, 255, 255, 0.03) !important;
   font-family: "DM Sans", sans-serif;
   font-size: 14px;
   color: var(--text-primary) !important;
@@ -948,61 +1056,74 @@ body {
 
 .contact-form input::placeholder,
 .contact-form textarea::placeholder {
-  color: var(--text-muted);
-  opacity: 0.7;
+  color: var(--text-faint); /* CHANGED: was var(--text-muted) — fainter */
+  opacity: 1; /* CHANGED: was 0.7 — use token opacity */
 }
 
 .contact-form input:focus,
 .contact-form textarea:focus {
-  border-color: var(--accent);
-  background: rgba(59, 130, 246, 0.06) !important;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
+  border-color: rgba(
+    59,
+    130,
+    246,
+    0.5
+  ); /* CHANGED: was var(--accent) — softer */
+  background: rgba(59, 130, 246, 0.04) !important; /* CHANGED: was 0.06 */
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); /* CHANGED: was 0.18 — clean ring */
 }
 
 .contact-form textarea {
-  min-height: 130px;
+  min-height: 120px; /* CHANGED: was 130px */
   resize: none;
+  line-height: 1.7; /* ADDED */
 }
 
 .contact-form button {
-  margin-top: 8px;
-  padding: 15px;
-  border-radius: 10px;
+  margin-top: var(--space-1); /* CHANGED: was 8px — on token */
+  padding: 14px; /* CHANGED: was 15px */
+  border-radius: 9px; /* CHANGED: was 10px */
   border: none;
   background: var(--gradient-btn);
   color: white;
   font-family: "DM Sans", sans-serif;
-  font-size: 15px;
+  font-size: 14.5px; /* CHANGED: was 15px */
   font-weight: 500;
+  letter-spacing: 0.1px; /* ADDED */
   cursor: pointer;
-  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
-  animation: pulseGlow 3s ease-in-out infinite;
+  box-shadow: var(--shadow-btn);
+  animation: pulseGlow 4s ease-in-out infinite; /* CHANGED: was 3s — subtler rhythm */
   transition:
     transform var(--transition),
     box-shadow var(--transition);
 }
 
 .contact-form button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 32px rgba(59, 130, 246, 0.5);
+  transform: translateY(-2px); /* CHANGED: was -2px (same) */
+  box-shadow: var(--shadow-btn-hover);
   animation-play-state: paused;
+}
+
+.contact-form button:active {
+  transform: translateY(0); /* ADDED */
+  box-shadow: var(--shadow-btn);
 }
 
 /* ============================================================
    13. RESPONSIVE
+   CHANGED: Consistent padding tokens, cleaner stacking
    ============================================================ */
 @media (max-width: 768px) {
   .navbar-pill-full {
     flex-direction: column;
     align-items: flex-start;
-    gap: 12px;
-    padding: 14px 16px;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
   }
 
   .navbar-links {
     flex-wrap: wrap;
     justify-content: flex-start;
-    gap: 20px;
+    gap: var(--space-3); /* CHANGED: was 20px → 16px */
   }
 
   .navbar-action {
@@ -1011,7 +1132,7 @@ body {
   }
 
   .hero {
-    padding: 80px 16px 70px;
+    padding: var(--space-8) var(--space-3) 72px;
   }
 
   .hero-buttons {
@@ -1026,8 +1147,9 @@ body {
   }
 
   .contact-box {
-    padding: 28px 20px;
+    padding: var(--space-5) var(--space-4); /* CHANGED: was 28px 20px */
   }
+
   .why-grid {
     grid-template-columns: 1fr;
   }
@@ -1035,7 +1157,6 @@ body {
     grid-template-columns: 1fr;
   }
 
-  /* Hide arrows on mobile — swipe is enough */
   .carousel-arrow {
     display: none;
   }
@@ -1048,18 +1169,18 @@ body {
 
 @media (max-width: 480px) {
   .hero h1 {
-    font-size: 32px;
+    font-size: 30px; /* CHANGED: was 32px */
   }
 
   .events-section,
   .why-us,
   .about-us,
   .contact-us {
-    padding: 60px 14px;
+    padding: var(--space-7) var(--space-2); /* CHANGED: was 60px 14px */
   }
 
   .login-btn {
-    padding: 8px 16px;
+    padding: 7px 14px; /* CHANGED: was 8px 16px */
     font-size: 13px;
   }
 }
