@@ -1,10 +1,11 @@
 import jwt from "jsonwebtoken";
 import { hash, compare } from "bcryptjs";
 
-export const handleResponse = (res, status, message, data = null) => {
-    res.status(status).json({
-        message,
-        data,
+export const handleResponse = (res, status, message, success, data = null) => {
+    return res.status(status).json({
+      success,
+      message,
+      data
     });
 };
 
@@ -19,13 +20,23 @@ export async function comparePassword(userPass, hashPass) {
     return isMatch;
 }
 
-export function createTokenUser(id) {
-    const token = jwt.sign(
-        { id },
-        process.env.SECRET,
-        { expiresIn: "30m" }
-    );
-    return token;
+export function createTokenUser(userId, activeClubId = null) {
+  const payload = {
+    userId,
+  };
+
+  // add club only if provided
+  if (activeClubId) {
+    payload.activeClubId = activeClubId;
+  }
+
+  const token = jwt.sign(
+    payload,
+    process.env.SECRET,
+    { expiresIn: "30m" }
+  );
+
+  return token;
 }
 
 export function clubUpdateFilter(body){

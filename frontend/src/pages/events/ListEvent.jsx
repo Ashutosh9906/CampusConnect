@@ -248,6 +248,7 @@ function CreateEvent() {
     duration: "",
     description: "",
     club: clubFromURL,
+    speaker: "",
     email: "",
     phones: [""],
     brochure: null,
@@ -282,50 +283,30 @@ function CreateEvent() {
     setFormData({ ...formData, phones: [...formData.phones, ""] });
   };
 
-  // NEW: SPEAKER HANDLERS
-  const handleSpeakerChange = (index, field, value) => {
-    const updated = [...formData.speakers];
-    updated[index] = { ...updated[index], [field]: value };
-    setFormData({ ...formData, speakers: updated });
-  };
-
-  const addSpeaker = () => {
-    setFormData({
-      ...formData,
-      speakers: [
-        ...formData.speakers,
-        {
-          name: "",
-          linkedin: "",
-          github: "",
-          showLinkedIn: false,
-          showGithub: false,
-        },
-      ],
-    });
-  };
-
-  const removeSpeaker = (index) => {
-    const updated = formData.speakers.filter((_, i) => i !== index);
-    setFormData({ ...formData, speakers: updated });
-  };
-
   const handleFile = (e) => {
-    setFormData({ ...formData, brochure: e.target.files[0] });
+    return; // disabled
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const data = new FormData();
+    // 🔥 VALIDATION
+    if (!formData.email) {
+      alert("Contact email is required");
+      return;
+    }
 
-    Object.keys(formData).forEach((key) => {
-      if (key === "phones") {
-        data.append("phones", JSON.stringify(formData.phones));
-      } else {
-        data.append(key, formData[key]);
-      }
-    });
+    const validPhones = formData.phones.filter(p => p.trim() !== "");
+
+    if (validPhones.length === 0) {
+      alert("At least one phone number is required");
+      return;
+    }
+
+    const data = {
+      ...formData,
+      phones: validPhones // ✅ cleaned phones
+    };
 
     // NEW: SPEAKERS SUBMISSION
     data.append("speakers", JSON.stringify(formData.speakers));
@@ -334,10 +315,21 @@ function CreateEvent() {
 
     fetch(`${API}/events`, {
       method: "POST",
-      body: data,
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data),
+      credentials: "include"
     })
       .then((res) => res.json())
-      .then(() => alert("Event Created Successfully!"))
+      .then((res) => {
+        if (res.success) {
+          alert("Event Created Successfully!");
+          window.location.href = "/clubs"; // 🔥 redirect
+        } else {
+          alert(res.message || "Failed to create event");
+        }
+      })
       .catch((err) => console.log(err));
   };
 
@@ -348,16 +340,16 @@ function CreateEvent() {
       <form onSubmit={handleSubmit} className="event-form">
         {/* FILE */}
         <label className="file-upload">
-          <input type="file" onChange={handleFile} required />
+          <input type="file" onChange={handleFile} disabled />
           <div className="upload-content">
             <img src={uploadIcon} alt="upload" className="upload-icon" />
-            <span>
-              {formData.brochure
-                ? formData.brochure.name
-                : "Add Event Brochure"}
-            </span>
+            <span>Add Event Brochure (Disabled)</span>
           </div>
         </label>
+
+        {/* EVERYTHING BELOW UNCHANGED */}
+
+        {/* rest remains EXACTLY SAME */}
 
         {/* BASIC DETAILS */}
         <input

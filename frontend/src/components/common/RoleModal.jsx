@@ -1,33 +1,49 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../../styles/roleModal.css";
 
-// ─── Sample role options (replace or fetch from backend later) ───────────────
-const ROLE_OPTIONS = ["Student", "Coding Club", "Dance Club", "AI Club"];
-
-// ─── Backend integration point ───────────────────────────────────────────────
-// When your backend is ready, replace the body of this function.
-// The rest of the component calls this function and does NOT need to change.
-async function updateUserRole(userId, role) {
-  // TODO: Replace with real API call
-  // const response = await fetch("/api/user/role", {
-  //   method: "POST",
-  //   headers: { "Content-Type": "application/json" },
-  //   body: JSON.stringify({ userId, role }),
-  // });
-  // if (!response.ok) throw new Error("Failed to update role");
-  // return await response.json();
-
-  // Temporary: simulate a successful async call
-  return Promise.resolve({ success: true, role });
-}
+const API = import.meta.env.VITE_API_URL;
 
 // ─── RoleModal Component ──────────────────────────────────────────────────────
-// Props:
-//   onRoleSelected(role) — called after role is saved; parent should hide modal
 export default function RoleModal({ onRoleSelected }) {
-  const [selectedRole, setSelectedRole] = useState("");
+  const [roles, setRoles] = useState([]); // ✅ dynamic roles
+  const [selectedRole, setSelectedRole] = useState(null); // ✅ object instead of string
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // ✅ Fetch roles (Student + clubs)
+  useEffect(() => {
+  async function fetchRoles() {
+    try {
+      const res = await fetch(`${API}/auth/my-clubs`, {
+        credentials: "include"
+      });
+
+      const data = await res.json();
+
+      // ✅ SAFE fallback
+      const clubs = data?.data || [];
+
+      const clubRoles = clubs.map((item) => ({
+        label: item.club.name,
+        clubId: item.club.id
+      }));
+
+      // ✅ ALWAYS include Student
+      setRoles([
+        { label: "Student", clubId: null },
+        ...clubRoles
+      ]);
+
+    } catch (err) {
+      console.error(err);
+
+      // ✅ Even if API fails → still show Student
+      setRoles([{ label: "Student", clubId: null }]);
+    }
+  }
+
+  fetchRoles();
+}, []);
 
   async function handleConfirm() {
     if (!selectedRole) {
@@ -43,15 +59,25 @@ export default function RoleModal({ onRoleSelected }) {
       const raw = localStorage.getItem("user");
       const user = raw ? JSON.parse(raw) : {};
 
-      // 2. Call backend (placeholder until API is ready)
-      await updateUserRole(user.id, selectedRole);
+      // 2. Call backend
+      await fetch(`${API}/auth/select-club`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          clubId: selectedRole.clubId
+        })
+      });
 
       // 3. Persist role in localStorage
-      const updatedUser = { ...user, role: selectedRole };
+      const updatedUser = { ...user, role: selectedRole.label };
       localStorage.setItem("user", JSON.stringify(updatedUser));
 
-      // 4. Notify parent — parent decides what to do next (redirect, re-render, etc.)
-      onRoleSelected(selectedRole);
+      // 4. Notify parent
+      onRoleSelected(selectedRole.label);
+
     } catch (err) {
       setError("Something went wrong. Please try again.");
     } finally {
@@ -59,7 +85,6 @@ export default function RoleModal({ onRoleSelected }) {
     }
   }
 
-  // Intentionally no click-outside-to-close — user must pick a role
   return (
     <div
       className="rm-overlay"
@@ -92,10 +117,12 @@ export default function RoleModal({ onRoleSelected }) {
 
         {/* Role Options */}
         <div className="rm-options">
-          {ROLE_OPTIONS.map((role) => (
+          {roles.map((role) => (
             <button
-              key={role}
-              className={`rm-option ${selectedRole === role ? "rm-option-selected" : ""}`}
+              key={role.label}
+              className={`rm-option ${
+                selectedRole?.label === role.label ? "rm-option-selected" : ""
+              }`}
               onClick={() => {
                 setSelectedRole(role);
                 setError("");
@@ -103,10 +130,12 @@ export default function RoleModal({ onRoleSelected }) {
               disabled={loading}
             >
               <span className="rm-option-radio">
-                {selectedRole === role && <span className="rm-option-dot" />}
+                {selectedRole?.label === role.label && (
+                  <span className="rm-option-dot" />
+                )}
               </span>
-              <span className="rm-option-label">{role}</span>
-              {selectedRole === role && (
+              <span className="rm-option-label">{role.label}</span>
+              {selectedRole?.label === role.label && (
                 <svg
                   className="rm-check"
                   viewBox="0 0 24 24"

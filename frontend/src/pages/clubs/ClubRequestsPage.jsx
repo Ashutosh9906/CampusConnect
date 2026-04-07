@@ -1,87 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import "../../styles/clubRequests.css";
 
-const INITIAL_REQUESTS = [
-  {
-    id: 1,
-    title: "React Summit 2025",
-    club: "Dev Club",
-    date: "2025-04-18",
-    description:
-      "A full-day summit covering React 19, server components, and modern frontend architecture with live coding sessions.",
-    status: "pending",
-    rejectionReason: "",
-    requesterName: "Aryan Mehta",
-    requesterEmail: "aryan.mehta@college.edu",
-    requesterPhone: "+91 98201 34567",
-  },
-  {
-    id: 2,
-    title: "Design Thinking Workshop",
-    club: "Design Society",
-    date: "2025-04-22",
-    description:
-      "Hands-on workshop introducing design thinking principles, user research, and rapid prototyping techniques.",
-    status: "pending",
-    rejectionReason: "",
-    requesterName: "Priya Sharma",
-    requesterEmail: "priya.sharma@college.edu",
-    requesterPhone: "+91 91234 56780",
-  },
-  {
-    id: 3,
-    title: "Startup Pitch Night",
-    club: "Entrepreneurship Cell",
-    date: "2025-04-25",
-    description:
-      "Students pitch their startup ideas to a panel of mentors and investors. Open to all departments.",
-    status: "pending",
-    rejectionReason: "",
-    requesterName: "Rohan Kulkarni",
-    requesterEmail: "rohan.k@college.edu",
-    requesterPhone: "+91 87654 32109",
-  },
-  {
-    id: 4,
-    title: "Cybersecurity CTF",
-    club: "Cyber Club",
-    date: "2025-05-02",
-    description:
-      "Capture the Flag competition testing skills in web exploitation, reverse engineering, and cryptography.",
-    status: "pending",
-    rejectionReason: "",
-    requesterName: "Sneha Patil",
-    requesterEmail: "sneha.patil@college.edu",
-    requesterPhone: "+91 99887 76655",
-  },
-  {
-    id: 5,
-    title: "Open Mic Night",
-    club: "Cultural Club",
-    date: "2025-05-08",
-    description:
-      "An evening of student performances — poetry, stand-up comedy, music, and spoken word.",
-    status: "pending",
-    rejectionReason: "",
-    requesterName: "Aditya Joshi",
-    requesterEmail: "aditya.j@college.edu",
-    requesterPhone: "+91 70011 22334",
-  },
-  {
-    id: 6,
-    title: "AI & Ethics Panel",
-    club: "AI Society",
-    date: "2025-05-12",
-    description:
-      "A panel discussion on the ethical implications of AI in healthcare, law, and social media.",
-    status: "pending",
-    rejectionReason: "",
-    requesterName: "Meera Nair",
-    requesterEmail: "meera.nair@college.edu",
-    requesterPhone: "+91 82233 44556",
-  },
-];
+const API = import.meta.env.VITE_API_URL;
 
 const STATUS_META = {
   pending: { label: "Pending", className: "crp-badge-pending" },
@@ -90,13 +11,47 @@ const STATUS_META = {
 };
 
 export default function ClubRequestsPage() {
-  const [requests, setRequests] = useState(INITIAL_REQUESTS);
+  const [requests, setRequests] = useState([]);
   const [rejectingId, setRejectingId] = useState(null);
   const [reasonInput, setReasonInput] = useState("");
   const [reasonError, setReasonError] = useState(false);
   const [filter, setFilter] = useState("all");
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [showModal, setShowModal] = useState(false);
+
+  // ✅ FETCH FROM BACKEND
+  useEffect(() => {
+    fetchRequests();
+  }, []);
+
+  const fetchRequests = async () => {
+    try {
+      const res = await fetch(`${API}/club/request`, {
+        credentials: "include",
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        const formatted = data.data.map((req) => ({
+          id: req.id,
+          title: "Join Request",
+          club: req.club.name,
+          date: req.createdAt,
+          description: req.message || "Wants to join club",
+          status: req.status.toLowerCase(),
+          rejectionReason: "",
+          requesterName: req.user?.name || "Unknown",
+          requesterEmail: req.user?.email || "N/A",
+          requesterPhone: "N/A",
+        }));
+
+        setRequests(formatted);
+      }
+    } catch (err) {
+      console.log("Failed to fetch requests", err);
+    }
+  };
 
   function handleViewDetails(req) {
     setSelectedRequest(req);
@@ -118,12 +73,32 @@ export default function ClubRequestsPage() {
   const visible =
     filter === "all" ? requests : requests.filter((r) => r.status === filter);
 
-  function handleApprove(id) {
-    setRequests((prev) =>
-      prev.map((r) =>
-        r.id === id ? { ...r, status: "approved", rejectionReason: "" } : r,
-      ),
-    );
+  // ✅ APPROVE (CONNECTED)
+  async function handleApprove(id) {
+    try {
+      const res = await fetch(`${API}/club/request/handle`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          requestId: id,
+          action: "APPROVE",
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setRequests((prev) =>
+          prev.map((r) =>
+            r.id === id ? { ...r, status: "approved", rejectionReason: "" } : r
+          )
+        );
+      }
+    } catch (err) {
+      console.log(err);
+    }
+
     if (rejectingId === id) {
       setRejectingId(null);
       setReasonInput("");
@@ -143,18 +118,43 @@ export default function ClubRequestsPage() {
     }
   }
 
-  function handleRejectSubmit(id) {
+  // ✅ REJECT (CONNECTED)
+  async function handleRejectSubmit(id) {
     if (!reasonInput.trim()) {
       setReasonError(true);
       return;
     }
-    setRequests((prev) =>
-      prev.map((r) =>
-        r.id === id
-          ? { ...r, status: "rejected", rejectionReason: reasonInput.trim() }
-          : r,
-      ),
-    );
+
+    try {
+      const res = await fetch(`${API}/club/request/handle`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          requestId: id,
+          action: "REJECT",
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setRequests((prev) =>
+          prev.map((r) =>
+            r.id === id
+              ? {
+                  ...r,
+                  status: "rejected",
+                  rejectionReason: reasonInput.trim(),
+                }
+              : r
+          )
+        );
+      }
+    } catch (err) {
+      console.log(err);
+    }
+
     setRejectingId(null);
     setReasonInput("");
     setReasonError(false);
@@ -163,10 +163,12 @@ export default function ClubRequestsPage() {
   function handleUndo(id) {
     setRequests((prev) =>
       prev.map((r) =>
-        r.id === id ? { ...r, status: "pending", rejectionReason: "" } : r,
-      ),
+        r.id === id ? { ...r, status: "pending", rejectionReason: "" } : r
+      )
     );
   }
+
+  // ⬇️ ⬇️ ⬇️ EVERYTHING BELOW IS EXACTLY SAME UI (UNCHANGED) ⬇️ ⬇️ ⬇️
 
   return (
     <div className="crp-root">
