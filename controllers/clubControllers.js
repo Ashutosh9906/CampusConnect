@@ -160,56 +160,71 @@ export const handleDeletClubDetails = async (req, res, next) => {
 
 export const handleGetClubRequest = async (req, res) => {
   try {
-    const clubId = res.locals.user.activeClubId
+    const clubId = res.locals.user.activeClubId;
 
-    const requestDetails = await prisma.clubJoinRequest.findFirst({
-        where: { clubId }
-    })
-    return res.status(200).json({
-      success: true,
-      message: "Club details fetchedd successfully",
-      requestDetails
+    const requests = await prisma.clubJoinRequest.findMany({
+      where: { clubId },
+      include: {
+        user: true, // 🔥 important for frontend
+        club: true
+      },
+      orderBy: { createdAt: "desc" }
     });
+
+    return handleResponse(res, 200, "Requests fetched", true, requests);
+
   } catch (error) {
-    console.error("Failed to fetch request", error);
-
-    return res.status(500).json({
-      success: false,
-      message: "Something went wrong. Please try again later.",
-    });
+    return handleResponse(res, 500, "Failed to fetch request", false);
   }
-}
+};
 
 export const handleCreateClubRequest = async (req, res) => {
   try {
-    const { clubId, role } = req.body;
     const userId = res.locals.user.userId;
+    const { clubId } = req.body;
 
-    const existingRequest = await prisma.clubJoinRequest.findFirst({
-      where: { userId, clubId, status: "PENDING" }
+    if (!clubId) {
+      return handleResponse(res, 400, "Club ID required", false);
+    }
+
+    // ❌ already a member
+    const membership = await prisma.userClubRole.findFirst({
+      where: { userId, clubId }
+    });
+
+    if (membership) {
+      return handleResponse(res, 400, "Already a member of this club", false);
+    }
+
+    // ❌ already requested
+    const existingRequest = await prisma.clubJoinRequest.findUnique({
+      where: {
+        userId_clubId: {
+          userId,
+          clubId
+        }
+      }
     });
 
     if (existingRequest) {
-      return res.status(400).json({
-        success: false,
-        message: "Club request already exist, try again later",
-      })
+      return handleResponse(res, 400, "Request already exists", false);
     }
 
+    // ✅ create request
     const request = await prisma.clubJoinRequest.create({
-      data: { userId, clubId, role }
-    })
-
-    handleResponse(res, 200, "club request created seccussfully", true);
-  } catch (error) {
-    console.error("Club request failed", error);
-
-    return res.status(500).json({
-      success: false,
-      message: "Something went wrong. Please try again later.",
+      data: {
+        userId,
+        clubId,
+        role: "CLUB_MEMBER"
+      }
     });
+
+    return handleResponse(res, 201, "Request sent successfully", true, request);
+
+  } catch (error) {
+    return handleResponse(res, 500, "Failed to create request", false);
   }
-}
+};
 
 export const handleClubRequest = async (req, res) => {
   try {
@@ -221,7 +236,7 @@ export const handleClubRequest = async (req, res) => {
       return handleResponse(res, 400, "Request ID and action are required", false);
     }
 
-    // ✅ Step 1: Find request
+    // // ✅ Step 1: Find request
     const clubRequest = await prisma.clubJoinRequest.findUnique({
       where: { id: requestId }
     });
@@ -314,18 +329,81 @@ export const handleGetJoinedClub = async (req, res) => {
   try {
     const userId = res.locals.user.userId;
 
-    const roles = await prisma.userClubRole.findMany({
+    const clubs = await prisma.userClubRole.findMany({
       where: { userId },
       include: { club: true }
     });
 
-    return handleResponse(res, 200, "User fetched successfully", true, roles);
-  } catch (error) {
-    console.error("Unable to make db query", error);
+    const result = clubs.map((item) => ({
+      id: item.club.id,
+      name: item.club.name
+    }));
 
-    return res.status(500).json({
-      success: false,
-      message: "Something went wrong. Please try again later.",
-    });
+    return handleResponse(res, 200, "Joined clubs fetched", true, result);
+
+  } catch (error) {
+    return handleResponse(res, 500, "Failed to fetch clubs", false);
   }
-}
+};
+
+export const getAvailableClubs = async (req, res) => {
+  try {
+    const userId = res.locals.user.userId;
+
+    // joined clubs
+    const joined = await prisma.userClubRole.findMany({
+      where: { userId },
+      select: { clubId: true }
+    });
+
+    const joinedIds = joined.map(j => j.clubId);
+
+    // requested clubs
+    const requested = await prisma.clubJoinRequest.findMany({
+      where: { userId },
+      select: { clubId: true }
+    });
+
+    const requestedIds = requested.map(r => r.clubId);
+
+    const clubs = await prisma.club.findMany({
+      where: {
+        id: { notIn: joinedIds }
+      }
+    });
+
+    // ✅ mark requested clubs
+    const result = clubs.map(club => ({
+      id: club.id,
+      name: club.name,
+      alreadyRequested: requestedIds.includes(club.id)
+    }));
+
+    return handleResponse(res, 200, "Available clubs fetched", true, result);
+
+  } catch (error) {
+    return handleResponse(res, 500, "Failed to fetch available clubs", false);
+  }
+};
+
+export const getRequestHistory = async (req, res) => {
+  try {
+    const userId = res.locals.user.userId;
+
+    const requests = await prisma.clubJoinRequest.findMany({
+      where: { userId },
+      include: { club: true },
+      orderBy: { createdAt: "desc" }
+    });
+
+    const result = requests.map((req) => ({
+      club: req.club.name,
+      status: req.status.toLowerCase()
+    }));
+
+    return handleResponse(res, 200, "History fetched", true, result);
+
+  } catch (error) {
+    return handleResponse(res, 500, "Failed to fetch history", false);
+  }
+};

@@ -120,7 +120,7 @@ export const handleCompleteProfile = async (req, res, next) => {
       },
     });
 
-    const token = createTokenUser(user.id);
+    const token = createTokenUser(user.id, null);
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -219,10 +219,23 @@ export const handleSelectClub = async (req, res) => {
     const userId = res.locals.user.userId;
     const { clubId } = req.body;
 
+    // ✅ STUDENT MODE
     if (!clubId) {
-      return handleResponse(res, 400, "Club ID is required", false);
+      const newToken = createTokenUser(userId, null);
+
+      res.cookie("token", newToken, {
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax",
+        maxAge: 30 * 60 * 1000
+      });
+
+      return handleResponse(res, 200, "Student mode selected", true, {
+        clubId: null
+      });
     }
 
+    // ✅ CLUB MODE
     const membership = await prisma.userClubRole.findFirst({
       where: {
         userId,
@@ -250,7 +263,7 @@ export const handleSelectClub = async (req, res) => {
   } catch (error) {
     return handleResponse(res, 500, "Failed to select club", false);
   }
-}
+};
 
 export const getUserClubs = async (req, res) => {
   try {

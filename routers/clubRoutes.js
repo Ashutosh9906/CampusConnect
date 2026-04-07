@@ -1,29 +1,36 @@
 import { Router } from "express";
 import { validateRequest } from "../middlewares/parseBody.js";
-import { checkAuthentication, checkAuthorizatioon } from "../middlewares/auth.js";
+import { checkAuthentication, checkAuthorization } from "../middlewares/auth.js";
 import { clubIdSchema, clubPostSchema } from "../validators/clubValidationSchema.js";
-import { handleAddNewClub, handleClubRequest, handleCreateClubRequest, handleDeletClubDetails, handleDeleteClubRequest, handleGetAllClub, handleGetClubById, handleGetClubRequest, handleGetJoinedClub, handleUpdateClubDetail } from "../controllers/clubControllers.js";
+import { getAvailableClubs, getRequestHistory, handleAddNewClub, handleClubRequest, handleCreateClubRequest, handleDeletClubDetails, handleDeleteClubRequest, handleGetAllClub, handleGetClubById, handleGetClubRequest, handleGetJoinedClub, handleUpdateClubDetail } from "../controllers/clubControllers.js";
 
 const router = Router();
 
-router.get("/", handleGetAllClub)
+// ✅ SPECIFIC ROUTES FIRST
+router.get("/joined", checkAuthentication, handleGetJoinedClub);
 
-router.get("/:id", validateRequest(clubIdSchema), handleGetClubById)
+router.get("/available", checkAuthentication, getAvailableClubs);
 
-router.post("/", validateRequest(clubPostSchema), handleAddNewClub)
+router.get("/history", checkAuthentication, getRequestHistory);
 
-router.patch("/:id", validateRequest(clubIdSchema), handleUpdateClubDetail)
+router.post("/request", checkAuthentication, handleCreateClubRequest);
 
-router.delete("/:id", validateRequest(clubIdSchema), handleDeletClubDetails)
+router.get("/request", checkAuthentication, checkAuthorization("CLUB_HEAD"), handleGetClubRequest);
 
-router.post("/request", checkAuthentication, handleCreateClubRequest)
-
-router.get("/request", checkAuthentication, checkAuthorizatioon("CLUB_HEAD"), handleGetClubRequest)
-
-router.post("/request/handle", checkAuthentication, checkAuthorizatioon("CLUB_HEAD"), handleClubRequest);
+router.post("/request/handle", checkAuthentication, handleClubRequest);
 
 router.delete("/request/:requestId", checkAuthentication, handleDeleteClubRequest);
 
-router.get("/joined", checkAuthentication, handleGetJoinedClub)
+
+// ✅ GENERIC ROUTES LAST
+router.get("/", handleGetAllClub);
+
+router.get("/:id", validateRequest(clubIdSchema), handleGetClubById);
+
+router.post("/", validateRequest(clubPostSchema), handleAddNewClub);
+
+router.patch("/:id", validateRequest(clubIdSchema), handleUpdateClubDetail);
+
+router.delete("/:id", validateRequest(clubIdSchema), handleDeletClubDetails);
 
 export default router;

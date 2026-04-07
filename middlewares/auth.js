@@ -1,34 +1,58 @@
 import jwt from "jsonwebtoken";
+import { PrismaClient } from "@prisma/client";
 import { handleResponse } from "../utilities/userUtility.js";
 
-export function checkAuthentication(req, res, next){
-    try {
-        const token = req.cookies.token;
-        if(!token){
-            return res.status(401).json({
-                success: false,
-                message: "User is unAuthentaicated",
-            })
-        } 
-        const secret = process.env.SECRET ?? "TEmp154"
-        const decoded = jwt.verify(token, secret);
-        res.locals.user = decoded;
-        next();
-    } catch (error) {
-        next(error);
+const prisma = new PrismaClient();
+
+export function checkAuthentication(req, res, next) {
+  try {
+    const token = req.cookies.token;
+
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: "User is unauthenticated",
+      });
     }
+
+    const secret = process.env.SECRET;
+    if (!secret) {
+      throw new Error("JWT SECRET not defined");
+    }
+
+    const decoded = jwt.verify(token, secret);
+
+    res.locals.user = decoded;
+    next();
+
+  } catch (error) {
+    return res.status(401).json({
+      success: false,
+      message: "Invalid or expired token",
+    });
+  }
 }
 
-export const checkAuthorizatioon = (requiredRole) => {
+export const checkAuthorization = (requiredRole) => {
   return async (req, res, next) => {
     try {
       const userId = res.locals.user.userId;
       const clubId = res.locals.user.activeClubId;
 
+      // ✅ STUDENT MODE
       if (!clubId) {
-        return handleResponse(res, 400, "No club selected", false);
+        res.locals.club = null;
+        res.locals.role = "STUDENT";
+
+        // if route requires specific club role → block
+        if (requiredRole && requiredRole !== "STUDENT") {
+          return handleResponse(res, 403, "Club context required", false);
+        }
+
+        return next();
       }
 
+      // ✅ CLUB MODE
       const membership = await prisma.userClubRole.findFirst({
         where: { userId, clubId },
         include: { club: true }
@@ -42,11 +66,11 @@ export const checkAuthorizatioon = (requiredRole) => {
         return handleResponse(res, 403, "Insufficient permissions", false);
       }
 
-      // attach useful data
       res.locals.club = membership.club;
       res.locals.role = membership.role;
 
       next();
+
     } catch (error) {
       return handleResponse(res, 500, "Authorization failed", false);
     }

@@ -38,6 +38,8 @@ model Club {
 
   members          UserClubRole[]
   clubJoinRequests ClubJoinRequest[]
+
+  events Event[]
 }
 
 model UserClubRole {
@@ -85,4 +87,44 @@ enum RequestStatus {
 enum Role {
   CLUB_MEMBER
   CLUB_HEAD
+}
+
+model Event {
+  id String @id @default(cuid())
+
+  clubId String
+  club   Club @relation(fields: [clubId], references: [id])
+
+  name        String
+  description String?
+  venue       String
+  date        DateTime
+  duration    String?
+
+  hostName String
+
+  contactEmail  String?
+  contactPhones String[]
+
+  registrationLink String?
+
+  brochureUrl String?
+
+  speakers Speaker[]   // ✅ MULTIPLE SPEAKERS
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Speaker {
+  id String @id @default(cuid())
+
+  name String
+  linkedin String?
+  github String?
+
+  eventId String
+  event   Event @relation(fields: [eventId], references: [id])
+
+  createdAt DateTime @default(now())
 }

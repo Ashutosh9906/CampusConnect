@@ -13,7 +13,8 @@ const PORT = process.env.PORT || 8000;
 //custom imports
 import errorHandling from "./middlewares/errorHandler.js";
 import authRoutes from "./routers/authRoutes.js";
-import clubRoutes from "./routers/clubRoutes.js"
+import clubRoutes from "./routers/clubRoutes.js";
+import eventRoutes from "./routers/eventRoutes.js";
 
 //middlewares
 app.use(cookieParser());
@@ -27,6 +28,7 @@ app.use(cors({
 //custom api
 app.use("/auth", authRoutes);
 app.use("/club", clubRoutes);
+app.use("/event", eventRoutes);
 
 //central error handlinf system
 app.use(errorHandling);
