@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 
-import { handleResponse } from "../utilities/userUtility.js";
+import { buildEventFilter, handleResponse } from "../utilities/userUtility.js";
 
 const prisma = new PrismaClient();
 
@@ -10,7 +10,7 @@ export const createEvent = async (req, res) => {
     const clubId = club?.id;
 
     if (!clubId) {
-      return handleResponse(res, 400, "Club context missing", false);
+      return handleResponse(res, 400, "Change the role from the profile", false);
     }
 
     const {
@@ -126,5 +126,26 @@ export const getEventById = async (req, res) => {
 
   } catch (error) {
     return handleResponse(res, 500, "Failed to fetch event", false);
+  }
+};
+
+export const getFilteredEvents = async (req, res) => {
+  try {
+    const filters = buildEventFilter(req.query);
+
+    const events = await prisma.event.findMany({
+      where: filters.where,
+      orderBy: filters.orderBy,
+      include: {
+        club: true,
+        speakers: true,
+      },
+    });
+
+    return handleResponse(res, 200, "Filtered events", true, events);
+
+  } catch (error) {
+    console.error("Filter error", error);
+    return handleResponse(res, 500, "Something went wrong", false);
   }
 };

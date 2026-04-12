@@ -33,18 +33,19 @@ function EventDetails() {
             registrationLink: e.registrationLink,
 
             organizer: {
-              name: e.club?.name || "Club",
+              name: e.hostName || e.club?.name || "Club",   // 🔥 FIX
               email: e.contactEmail,
+              phones: e.contactPhones,                     // 🔥 ADD
             },
 
             // 🔥 handle speakers (array → single for UI)
             speaker: e.speakers?.length
               ? {
-                  name: e.speakers[0].name,
-                  role: "Speaker",
-                  linkedin: e.speakers[0].linkedin,
-                  github: e.speakers[0].github,
-                }
+                name: e.speakers[0].name,
+                role: "Speaker",
+                linkedin: e.speakers[0].linkedin,
+                github: e.speakers[0].github,
+              }
               : null,
           };
 
@@ -90,8 +91,9 @@ function EventDetails() {
 
             <div className="box">
               <h2>Organizer</h2>
-              <p>{event.organizer.name}</p>
-              <p>{event.organizer.email}</p>
+              <p><strong>Host:</strong> {event.organizer.name}</p>
+              <p><strong>Email:</strong> {event.organizer.email}</p>
+              <p><strong>Contact:</strong> {event.organizer.phones?.join(", ")}</p>
             </div>
 
             {event.speaker && (

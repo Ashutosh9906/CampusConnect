@@ -85,6 +85,9 @@ function Landing() {
                 key={event.id}
                 id={event.id}
                 title={event.name}
+                hostName={event.hostName}
+                email={event.contactEmail}
+                phones={event.contactPhones}
               />
             ))}
           </div>

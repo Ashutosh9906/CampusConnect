@@ -71,8 +71,16 @@ function CreateEvent() {
     }
 
     const data = {
-      ...formData,
-      phones: validPhones // ✅ cleaned phones
+      name: formData.name,
+      hostName: formData.host,              // 🔥 FIX
+      date: new Date(`${formData.date}T${formData.time}`),
+      venue: formData.venue,
+      duration: formData.duration,
+      description: formData.description,
+      club: formData.club,
+      registrationLink: formData.registrationLink,
+      contactEmail: formData.email,         // 🔥 FIX
+      contactPhones: validPhones,           // 🔥 FIX
     };
 
     const API = import.meta.env.VITE_API_URL;

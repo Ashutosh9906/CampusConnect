@@ -59,24 +59,20 @@ function Clubs() {
   };
 
   // 🆕 DELETE REQUEST (added logic)
-  const handleDeleteRequest = async (clubName) => {
+  const handleDeleteRequest = async (requestId) => {
     const confirmDelete = window.confirm(
-      `Are you sure you want to delete request for ${clubName}?`
+      `Are you sure you want to delete this request?`
     );
 
     if (!confirmDelete) return;
 
     try {
-      await fetch(`${API}/club/request`, {
+      await fetch(`${API}/club/request/${requestId}`, {
         method: "DELETE",
         credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ clubName }),
       });
 
-      setHistory((prev) => prev.filter((item) => item.club !== clubName));
+      setHistory((prev) => prev.filter((item) => item.id !== requestId));
     } catch (err) {
       console.log(err);
     }
@@ -116,6 +112,7 @@ function Clubs() {
       });
 
       const data = await res.json();
+      console.log(data);
 
       if (!data.success) {
         alert(data.message || "Failed to send request");
@@ -123,7 +120,11 @@ function Clubs() {
       }
 
       setHistory((prev) => [
-        { club: selectedClub.name, status: "pending" },
+        {
+          id: data.data.id,   // 🔥 IMPORTANT
+          club: selectedClub.name,
+          status: "pending"
+        },
         ...prev,
       ]);
 
@@ -223,7 +224,7 @@ function Clubs() {
                 {item.status === "pending" && (
                   <button
                     className="delete-btn"
-                    onClick={() => handleDeleteRequest(item.club)}
+                    onClick={() => handleDeleteRequest(item.id)}
                     style={{ marginLeft: "10px" }} // keeps it beside status
                   >
                     ✖

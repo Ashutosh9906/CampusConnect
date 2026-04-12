@@ -288,6 +288,7 @@ export const handleDeleteClubRequest = async (req, res) => {
   try {
     const { requestId } = req.params;
     const userId = res.locals.user.userId;
+    console.log(requestId);
 
     if (!requestId) {
       return handleResponse(res, 400, "Request ID is required", false);
