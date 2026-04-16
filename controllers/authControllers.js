@@ -281,3 +281,5 @@ export const getUserClubs = async (req, res) => {
     return handleResponse(res, 500, "Error fetching clubs", false);
   }
 };
+
+//somthing to test te 
