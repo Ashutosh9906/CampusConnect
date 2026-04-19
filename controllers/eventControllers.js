@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 export const createEvent = async (req, res) => {
   try {
-    const club = res.locals.club; // ✅ from middleware
+    const club = res.locals.club;
     const clubId = club?.id;
 
     if (!clubId) {
@@ -14,71 +14,48 @@ export const createEvent = async (req, res) => {
     }
 
     const {
-      name,
-      host,
-      date,
-      time,
-      venue,
-      duration,
-      description,
-      speaker,
-      linkedin,
-      github,
-      email,
-      phones,
-      registrationLink
+      name, hostName, date, time, venue, duration,
+      description, speaker, linkedin, github,
+      contactEmail, contactPhones, registrationLink
     } = req.body;
 
-    // 🔥 combine date + time
     const eventDateTime = new Date(`${date}T${time}`);
 
-    // 🔥 parse phones (comes as JSON string)
-    const parsedPhones = Array.isArray(phones)
-      ? phones.map(p => String(p))
-      : [];
+    // ✅ phones sent as JSON string from FormData
+    const parsedPhones = (() => {
+      try { return JSON.parse(contactPhones); }
+      catch { return Array.isArray(contactPhones) ? contactPhones : []; }
+    })();
 
-    // 🔥 build speakers array (for now single, scalable later)
+    // ✅ Cloudinary URL from multer
+    const brochureUrl = req.file?.path || null;
+
     let speakersData = [];
-
     if (speaker) {
       speakersData.push({
         name: speaker,
         linkedin: linkedin || null,
-        github: github || null
+        github: github || null,
       });
     }
 
-    // ✅ CREATE EVENT
     const event = await prisma.event.create({
       data: {
-        name,
-        venue,
+        name, venue,
         date: eventDateTime,
-        duration,
-        description,
-
-        hostName: host,
-
-        contactEmail: email,
+        duration, description,
+        hostName,
+        contactEmail,
         contactPhones: parsedPhones,
-
         registrationLink,
-
+        brochureUrl,          // ✅ saved here
         clubId,
-
-        // 🔥 speakers relation
-        speakers: {
-          create: speakersData
-        }
+        speakers: { create: speakersData },
       },
-      include: {
-        speakers: true,
-        club: true
-      }
+      include: { speakers: true, club: true },
     });
 
     return handleResponse(res, 201, "Event created successfully", true, event);
-
   } catch (error) {
     console.error(error);
     return handleResponse(res, 500, "Failed to create event", false);

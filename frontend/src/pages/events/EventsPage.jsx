@@ -214,7 +214,7 @@ export default function EventsPage() {
           <div className="ep-grid">
             {filteredEvents.map((event) => (
               <div className="ep-card-wrap" key={event.id}>
-                <EventCard id={event.id} title={event.name} />
+                <EventCard id={event.id} title={event.name} brochureUrl={event.brochureUrl} />
               </div>
             ))}
           </div>

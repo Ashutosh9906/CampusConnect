@@ -2,6 +2,7 @@ import { useState } from "react";
 import "../../styles/listEvent.css";
 import uploadIcon from "../../assets/upload.png";
 
+
 function CreateEvent() {
   const params = new URLSearchParams(window.location.search);
   const clubFromURL = params.get("club");
@@ -34,6 +35,8 @@ function CreateEvent() {
     showGithub: false,
     registrationLink: "",
   });
+  const [preview, setPreview] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -51,58 +54,60 @@ function CreateEvent() {
   };
 
   const handleFile = (e) => {
-    return; // disabled
+    const file = e.target.files[0];
+    setFormData({ ...formData, brochure: file });
+    // Optional: show preview
+    setPreview(URL.createObjectURL(file));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // 🔥 VALIDATION
-    if (!formData.email) {
-      alert("Contact email is required");
-      return;
-    }
-
     const validPhones = formData.phones.filter(p => p.trim() !== "");
+    if (!formData.email) return alert("Contact email is required");
+    if (validPhones.length === 0) return alert("At least one phone number is required");
 
-    if (validPhones.length === 0) {
-      alert("At least one phone number is required");
-      return;
+    // ✅ Use FormData instead of JSON
+    const data = new FormData();
+    data.append("name", formData.name);
+    data.append("hostName", formData.host);
+    data.append("date", formData.date);
+    data.append("time", formData.time);
+    data.append("venue", formData.venue);
+    data.append("duration", formData.duration);
+    data.append("description", formData.description);
+    data.append("club", formData.club);
+    data.append("registrationLink", formData.registrationLink);
+    data.append("contactEmail", formData.email);
+    data.append("contactPhones", JSON.stringify(validPhones)); // stringify array
+    data.append("speaker", formData.speaker);
+    data.append("linkedin", formData.linkedin);
+    data.append("github", formData.github);
+
+    if (formData.brochure) {
+      data.append("brochure", formData.brochure); // ✅ actual file
     }
-
-    const data = {
-      name: formData.name,
-      hostName: formData.host,              // 🔥 FIX
-      date: new Date(`${formData.date}T${formData.time}`),
-      venue: formData.venue,
-      duration: formData.duration,
-      description: formData.description,
-      club: formData.club,
-      registrationLink: formData.registrationLink,
-      contactEmail: formData.email,         // 🔥 FIX
-      contactPhones: validPhones,           // 🔥 FIX
-    };
 
     const API = import.meta.env.VITE_API_URL;
 
+    setLoading(true);
+
     fetch(`${API}/event`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(data),
-      credentials: "include"
+      body: data,              // ✅ NO Content-Type header — browser sets it with boundary
+      credentials: "include",
     })
-      .then((res) => res.json())
-      .then((res) => {
+      .then(res => res.json())
+      .then(res => {
         if (res.success) {
           alert("Event Created Successfully!");
-          window.location.href = "/clubs"; // 🔥 redirect
+          window.location.href = "/clubs";
         } else {
           alert(res.message || "Failed to create event");
         }
       })
-      .catch((err) => console.log(err));
+      .catch(err => console.log(err))
+      .finally(() => setLoading(false));
   };
 
   return (
@@ -112,10 +117,14 @@ function CreateEvent() {
       <form onSubmit={handleSubmit} className="event-form">
         {/* FILE */}
         <label className="file-upload">
-          <input type="file" onChange={handleFile} disabled />
+          <input type="file" onChange={handleFile} accept="image/*,application/pdf" />
           <div className="upload-content">
-            <img src={uploadIcon} alt="upload" className="upload-icon" />
-            <span>Add Event Brochure (Disabled)</span>
+            {preview ? (
+              <img src={preview} alt="preview" className="upload-icon" style={{ objectFit: "cover", borderRadius: "8px" }} />
+            ) : (
+              <img src={uploadIcon} alt="upload" className="upload-icon" />
+            )}
+            <span>{preview ? formData.brochure?.name : "Add Event Brochure"}</span>
           </div>
         </label>
 
@@ -233,8 +242,12 @@ function CreateEvent() {
         </button>
 
         {/* SUBMIT */}
-        <button type="submit" className="primary-btn">
-          Create Event
+        <button type="submit" className="primary-btn" disabled={loading}>
+          {loading ? (
+            <span className="btn-spinner" />
+          ) : (
+            "Create Event"
+          )}
         </button>
       </form>
     </div>

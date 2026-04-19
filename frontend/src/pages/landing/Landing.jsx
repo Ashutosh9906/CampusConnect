@@ -85,6 +85,7 @@ function Landing() {
                 key={event.id}
                 id={event.id}
                 title={event.name}
+                brochureUrl={event.brochureUrl}  // ✅ add this
                 hostName={event.hostName}
                 email={event.contactEmail}
                 phones={event.contactPhones}

@@ -20,9 +20,8 @@ function EventDetails() {
           const mappedEvent = {
             id: e.id,
             title: e.name,
-            bannerUrl:
+            bannerUrl: e.brochureUrl ||
               "https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&w=1400&q=80",
-
             date: new Date(e.date).toLocaleDateString(),
             time: new Date(e.date).toLocaleTimeString(),
 
