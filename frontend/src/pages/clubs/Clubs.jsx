@@ -55,7 +55,7 @@ function Clubs() {
 
   // HOST EVENT
   const handleHostEvent = (club) => {
-    window.location.href = `/create-event?club=${club.name}`;
+    window.location.href = `/#/create-event?club=${club.name}`;
   };
 
   // 🆕 DELETE REQUEST (added logic)
