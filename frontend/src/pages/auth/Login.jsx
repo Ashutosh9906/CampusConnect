@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import GoogleButton from "../../components/auth/GoogleButton"; // ✅ ADDED
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import GoogleButton from "../../components/auth/GoogleButton";
 
 import "../../styles/auth.css";
 import "../../styles/form.css";
@@ -8,11 +8,11 @@ import illustration from "../../assets/login-illustration.svg";
 
 function Login() {
   const API = import.meta.env.VITE_API_URL;
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // ✅ Read message from query string
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const message = params.get("message");
@@ -21,33 +21,25 @@ function Login() {
     try {
       const res = await fetch(`${API}/auth/login`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({
-          email,
-          password,
-        }),
+        body: JSON.stringify({ email, password }),
       });
 
       const result = await res.json();
 
-      if (res.status === 404 || res.status == 400) {
-        window.location.href = `/login?message=${result.message}`;
+      if (res.status === 404 || res.status === 400) {
+        navigate(`/login?message=${result.message}`);
         return;
       }
 
-      if (res.status == 500 && !result.success) {
-        window.location.href = `/auth/failure?message=${encodeURIComponent(
-          result.message || "Registration failed",
-        )}`;
+      if (res.status === 500 && !result.success) {
+        navigate(`/auth/failure?message=${encodeURIComponent(result.message || "Login failed")}`);
         return;
       }
 
-      // ✅ Login success
       localStorage.setItem("user", JSON.stringify(result.user));
-      window.location.href = "/";
+      navigate("/");
     } catch (err) {
       console.error(err);
       alert("Login failed");

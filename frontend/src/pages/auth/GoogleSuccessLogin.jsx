@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { account } from "../../config/appwrite";
 
 function GoogleSuccessLogin() {
   const API = import.meta.env.VITE_API_URL;
+  const navigate = useNavigate();
   const hasRun = useRef(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -13,51 +15,38 @@ function GoogleSuccessLogin() {
     const processLogin = async () => {
       try {
         const user = await account.get();
-        console.log(user);
 
         const res = await fetch(`${API}/auth/google-login`, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           credentials: "include",
-          body: JSON.stringify({
-            email: user.email,
-          }),
+          body: JSON.stringify({ email: user.email }),
         });
 
         const result = await res.json();
 
-        // ❌ User not found
         if (res.status === 404) {
-          await account.deleteSession("current"); // cleanup
-          window.location.href = `/login?message=${result.message}`;
+          await account.deleteSession("current");
+          navigate(`/login?message=${result.message}`);
           return;
         }
 
-        // ❌ Server error
         if (res.status === 500 && !result.success) {
-          window.location.href = `/auth/failure?message=${encodeURIComponent(
-            result.message || "Registration failed"
-          )}`;
+          navigate(`/auth/failure?message=${encodeURIComponent(result.message || "Login failed")}`);
           return;
         }
 
-        // ✅ SUCCESS → now safe to delete Appwrite session
         try {
           await account.deleteSession("current");
         } catch (err) {
           console.log("Session cleanup failed (safe to ignore)");
         }
 
-        // ✅ Store user
         localStorage.setItem("user", JSON.stringify(result.user));
-
-        window.location.href = "/";
-
+        navigate("/");
       } catch (err) {
         console.error(err);
-        window.location.href = `/login?message=${err.message}`;
+        navigate(`/login?message=${encodeURIComponent(err.message)}`);
       }
     };
 
