@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import "../../styles/clubs.css";
+import { useNavigate } from "react-router-dom";
 
 function Clubs() {
+  const navigate = useNavigate();   // ✅ CORRECT PLACE
+
   const API = import.meta.env.VITE_API_URL;
 
   const [activeTab, setActiveTab] = useState("my");
@@ -55,7 +58,7 @@ function Clubs() {
 
   // HOST EVENT
   const handleHostEvent = (club) => {
-    window.location.href = `/#/create-event?club=${club.name}`;
+    navigate(`/create-event?club=${club.name}`);
   };
 
   // 🆕 DELETE REQUEST (added logic)
