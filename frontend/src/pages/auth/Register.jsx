@@ -11,6 +11,7 @@ import "../../styles/auth.css";
 import "../../styles/form.css";
 
 function Register() {
+  const API = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
 
   const [step, setStep] = useState(1);
@@ -64,7 +65,7 @@ function Register() {
       const user = await account.get();
 
       // ✅ Call backend
-      const res = await fetch("http://localhost:4000/auth/google-register", {
+      const res = await fetch(`${APi}/auth/google-register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

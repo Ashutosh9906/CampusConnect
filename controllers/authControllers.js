@@ -23,10 +23,10 @@ export const handleGoogleLogin = async (req, res, next) => {
     const token = createTokenUser(user.id);
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",     //while worling with frontend else use "strict"
+      secure: true,
+      sameSite: "None",
       maxAge: 30 * 60 * 1000,
-      path: "/"         //implifies that the created cookie can be accessied through all routes
+      path: "/"
     });
 
     return res.status(200).json({
@@ -76,10 +76,10 @@ export const handleGoogleRegister = async (req, res, next) => {
     const token = createTokenUser(user.id);
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",     //while worling with frontend else use "strict"
+      secure: true,
+      sameSite: "None",
       maxAge: 30 * 60 * 1000,
-      path: "/"         //implifies that the created cookie can be accessied through all routes
+      path: "/"
     });
 
     return res.status(201).json({
@@ -123,10 +123,10 @@ export const handleCompleteProfile = async (req, res, next) => {
     const token = createTokenUser(user.id, null);
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",     //while worling with frontend else use "strict"
+      secure: true,
+      sameSite: "None",
       maxAge: 30 * 60 * 1000,
-      path: "/"         //implifies that the created cookie can be accessied through all routes
+      path: "/"
     });
 
     res.status(201).json({
@@ -169,10 +169,10 @@ export const handleLogin = async (req, res, next) => {
     const token = createTokenUser(user.id);
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",     //while worling with frontend else use "strict"
+      secure: true,
+      sameSite: "None",
       maxAge: 30 * 60 * 1000,
-      path: "/"         //implifies that the created cookie can be accessied through all routes
+      path: "/"
     });
 
     return res.status(200).json({

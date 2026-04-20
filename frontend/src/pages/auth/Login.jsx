@@ -7,6 +7,7 @@ import "../../styles/form.css";
 import illustration from "../../assets/login-illustration.svg";
 
 function Login() {
+  const API = import.meta.env.VITE_API_URL;
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,7 +19,7 @@ function Login() {
 
   const handleLogin = async () => {
     try {
-      const res = await fetch("http://localhost:4000/auth/login", {
+      const res = await fetch(`${API}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

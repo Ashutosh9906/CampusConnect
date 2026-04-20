@@ -5,6 +5,7 @@ function GoogleSuccessRegister() {
   const hasRun = useRef(false);
 
   useEffect(() => {
+    const API = import.meta.env.VITE_API_URL;
     if (hasRun.current) return;
     hasRun.current = true;
 
@@ -13,7 +14,7 @@ function GoogleSuccessRegister() {
         const user = await account.get();
         console.log("register user -> ", user);
 
-        const res = await fetch("http://localhost:4000/auth/google-register", {
+        const res = await fetch(`${API}/auth/google-register`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

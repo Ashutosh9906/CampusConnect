@@ -4,6 +4,7 @@ import "../../styles/form.css";
 import { account } from "../../config/appwrite";
 
 function CompleteProfile() {
+  const API = import.meta.env.VITE_API_URL;
   const [showPassword, setShowPassword] = useState(false);
 
   const [password, setPassword] = useState("");
@@ -22,7 +23,7 @@ function CompleteProfile() {
     try {
       const user = await account.get();
 
-      const res = await fetch("http://localhost:4000/auth/complete-profile", {
+      const res = await fetch(`${API}/auth/complete-profile`, {
         method: "POST",
         credentials: "include",
         headers: {

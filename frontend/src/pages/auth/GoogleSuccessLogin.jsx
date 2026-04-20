@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { account } from "../../config/appwrite";
 
 function GoogleSuccessLogin() {
+  const API = import.meta.env.VITE_API_URL;
   const hasRun = useRef(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -14,7 +15,7 @@ function GoogleSuccessLogin() {
         const user = await account.get();
         console.log(user);
 
-        const res = await fetch("http://localhost:4000/auth/google-login", {
+        const res = await fetch(`${API}/auth/google-login`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
