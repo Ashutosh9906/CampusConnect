@@ -225,9 +225,10 @@ export const handleSelectClub = async (req, res) => {
 
       res.cookie("token", newToken, {
         httpOnly: true,
-        secure: false,
-        sameSite: "lax",
-        maxAge: 30 * 60 * 1000
+        secure: true,
+        sameSite: "None",
+        maxAge: 30 * 60 * 1000,
+        path: "/"
       });
 
       return handleResponse(res, 200, "Student mode selected", true, {
@@ -251,9 +252,10 @@ export const handleSelectClub = async (req, res) => {
 
     res.cookie("token", newToken, {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-      maxAge: 30 * 60 * 1000
+      secure: true,
+      sameSite: "None",
+      maxAge: 30 * 60 * 1000,
+      path: "/"
     });
 
     return handleResponse(res, 200, "Active club selected", true, {
