@@ -18,7 +18,7 @@ import eventRoutes from "./routers/eventRoutes.js";
 
 //middlewares
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: "https://campusconnect-2-hrdd.onrender.com",
   credentials: true
 }));
 app.use(cookieParser());
