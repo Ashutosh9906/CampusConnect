@@ -18,7 +18,7 @@ import eventRoutes from "./routers/eventRoutes.js";
 
 //middlewares
 app.use(cors({
-  origin: "https://campusconnect-2-hrdd.onrender.com",
+  origin: "https://campusconnect-3-gmoc.onrender.com",
   credentials: true
 }));
 app.use(cookieParser());
