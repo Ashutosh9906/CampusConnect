@@ -57,8 +57,24 @@ function Clubs() {
   };
 
   // HOST EVENT
-  const handleHostEvent = (club) => {
-    navigate(`/create-event?club=${club.name}`);
+  const handleHostEvent = async (club) => {
+    try {
+      await fetch(`${API}/auth/select-club`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          clubId: club.id   // 🔥 IMPORTANT
+        })
+      });
+
+      navigate(`/create-event?club=${club.name}`);
+
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   // 🆕 DELETE REQUEST (added logic)
