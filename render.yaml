@@ -1,8 +1,15 @@
 services:
   - type: static
     name: campusconnect
-    buildCommand: npm install && npm run build
+    buildCommand: cd frontend && npm install && npm run build
     staticPublishPath: frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://campusconnect-91kx.onrender.com
+      - key: VITE_APPWRITE_ENDPOINT
+        value: your_appwrite_endpoint
+      - key: VITE_APPWRITE_PROJECT_ID
+        value: your_appwrite_project_id
     routes:
       - type: rewrite
         source: /*

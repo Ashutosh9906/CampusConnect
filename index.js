@@ -18,7 +18,7 @@ import eventRoutes from "./routers/eventRoutes.js";
 
 //middlewares
 app.use(cors({
-  origin: "https://campusconnect-3-kyzk.onrender.com",
+  origin: "campus-connect-kfagag2p5-ashutoshgandule1-6105s-projects.vercel.app",
   credentials: true
 }));
 // app.use(cors({
