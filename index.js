@@ -18,9 +18,13 @@ import eventRoutes from "./routers/eventRoutes.js";
 
 //middlewares
 app.use(cors({
-  origin: "https://campusconnect-3-gmoc.onrender.com",
+  origin: "localhost:5173",
   credentials: true
 }));
+// app.use(cors({
+//   origin: "https://campusconnect-3-gmoc.onrender.com",
+//   credentials: true
+// }));
 app.use(cookieParser());
 app.use(express.json());
 
