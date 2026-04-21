@@ -18,7 +18,7 @@ import eventRoutes from "./routers/eventRoutes.js";
 
 //middlewares
 app.use(cors({
-  origin: "campus-connect-nine-virid.vercel.app",
+  origin: "https://campus-connect-nine-virid.vercel.app", // 👈 add https://
   credentials: true
 }));
 // app.use(cors({
