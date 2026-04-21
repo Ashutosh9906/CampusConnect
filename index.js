@@ -18,11 +18,11 @@ import eventRoutes from "./routers/eventRoutes.js";
 
 //middlewares
 app.use(cors({
-  origin: "localhost:5173",
+  origin: "https://campusconnect-3-kyzk.onrender.com",
   credentials: true
 }));
 // app.use(cors({
-//   origin: "https://campusconnect-3-gmoc.onrender.com",
+//   origin: "https://campusconnect-3-kyzk.onrender.com",
 //   credentials: true
 // }));
 app.use(cookieParser());
