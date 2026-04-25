@@ -33,6 +33,8 @@ function GoogleFailure() {
 }
 
 function App() {
+  const API = import.meta.env.VITE_API_URL;
+
   const [user, setUser] = useState(() => {
     const stored = localStorage.getItem("user");
     return stored ? JSON.parse(stored) : null;
@@ -40,9 +42,28 @@ function App() {
 
   const [showRoleModal, setShowRoleModal] = useState(false);
 
-  const loadUser = () => {
+  const loadUser = async () => {
     const stored = localStorage.getItem("user");
-    setUser(stored ? JSON.parse(stored) : null);
+    const localUser = stored ? JSON.parse(stored) : null;
+    setUser(localUser);
+
+    if (!localUser) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API}/auth/me`, {
+        credentials: "include",
+      });
+      const data = await res.json();
+
+      if (data?.success && data.user) {
+        localStorage.setItem("user", JSON.stringify(data.user));
+        setUser(data.user);
+      }
+    } catch (err) {
+      console.error("Failed to sync current user", err);
+    }
   };
 
   useEffect(() => {
@@ -55,6 +76,8 @@ function App() {
     // Listen for user updates
     window.addEventListener("storage", loadUser);
     window.addEventListener("userUpdated", loadUser);
+
+    loadUser();
 
     return () => {
       window.removeEventListener("storage", loadUser);

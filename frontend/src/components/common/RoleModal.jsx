@@ -25,12 +25,13 @@ export default function RoleModal({ onRoleSelected }) {
 
       const clubRoles = clubs.map((item) => ({
         label: item.club.name,
-        clubId: item.club.id
+        clubId: item.club.id,
+        clubRole: item.role,
       }));
 
       // ✅ ALWAYS include Student
       setRoles([
-        { label: "Student", clubId: null },
+        { label: "Student", clubId: null, clubRole: "STUDENT" },
         ...clubRoles
       ]);
 
@@ -72,7 +73,12 @@ export default function RoleModal({ onRoleSelected }) {
       });
 
       // 3. Persist role in localStorage
-      const updatedUser = { ...user, role: selectedRole.label };
+      const updatedUser = {
+        ...user,
+        role: selectedRole.label,
+        clubRole: selectedRole.clubRole,
+        activeClubId: selectedRole.clubId,
+      };
       localStorage.setItem("user", JSON.stringify(updatedUser));
       window.dispatchEvent(new Event("userUpdated"));
 

@@ -98,7 +98,9 @@ function Navbar() {
           </NavLink>
           <NavLink to="/events">Events</NavLink>
           {/* Show Requests only for CLUB_HEAD */}
-          {user?.role === 'CLUB_HEAD' && <NavLink to="/club-requests">Requests</NavLink>}
+          {(user?.clubRole === 'CLUB_HEAD' || user?.role === 'CLUB_HEAD') && (
+            <NavLink to="/club-requests">Requests</NavLink>
+          )}
           {/* ABOUT */}
           {/* <a
             href="#about"
@@ -139,8 +141,10 @@ function Navbar() {
             Contact
           </span>
 
-          {/* ✅ Show Clubs only for CLUB_MEMBER or CLUB_HEAD */}
-          {(user?.role === 'CLUB_MEMBER' || user?.role === 'CLUB_HEAD') && <NavLink to="/clubs">Clubs</NavLink>}
+          {/* ✅ Show Clubs only when a club role or active club exists */}
+          {((user?.clubRole && user.clubRole !== "STUDENT") || (user?.role && user.role !== "Student")) && (
+            <NavLink to="/clubs">Clubs</NavLink>
+          )}
         </div>
 
         {/* AUTH */}

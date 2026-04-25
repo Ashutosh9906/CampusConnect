@@ -232,7 +232,8 @@ export const handleSelectClub = async (req, res) => {
       });
 
       return handleResponse(res, 200, "Student mode selected", true, {
-        clubId: null
+        clubId: null,
+        clubRole: "STUDENT"
       });
     }
 
@@ -241,7 +242,8 @@ export const handleSelectClub = async (req, res) => {
       where: {
         userId,
         clubId
-      }
+      },
+      include: { club: true }
     });
 
     if (!membership) {
@@ -259,11 +261,66 @@ export const handleSelectClub = async (req, res) => {
     });
 
     return handleResponse(res, 200, "Active club selected", true, {
-      clubId
+      clubId,
+      clubName: membership.club.name,
+      clubRole: membership.role,
     });
 
   } catch (error) {
     return handleResponse(res, 500, "Failed to select club", false);
+  }
+};
+
+export const getCurrentUser = async (req, res) => {
+  try {
+    const userId = res.locals.user.userId;
+    const activeClubId = res.locals.user.activeClubId || null;
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        appwriteUserId: true,
+        email: true,
+        name: true,
+        profileComplete: true,
+        prn: true,
+        roll: true,
+        division: true,
+        role: true
+      }
+    });
+
+    let clubRole = null;
+    let activeClubName = null;
+
+    if (activeClubId) {
+      const membership = await prisma.userClubRole.findFirst({
+        where: {
+          userId,
+          clubId: activeClubId
+        },
+        include: { club: true }
+      });
+
+      if (membership) {
+        clubRole = membership.role;
+        activeClubName = membership.club.name;
+      }
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Current user fetched",
+      user: {
+        ...user,
+        activeClubId,
+        clubRole,
+        role: activeClubName || user.role,
+      }
+    });
+  } catch (error) {
+    return handleResponse(res, 500, "Failed to fetch current user", false);
   }
 };
 
