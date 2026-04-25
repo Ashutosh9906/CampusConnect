@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import logo from "../../assets/cc-logo.png";
 import "../../styles/navbar.css";
 
@@ -97,7 +97,8 @@ function Navbar() {
             Home
           </NavLink>
           <NavLink to="/events">Events</NavLink>
-          <NavLink to="/club-requests">Requests</NavLink>
+          {/* Show Requests only for CLUB_HEAD */}
+          {user?.role === 'CLUB_HEAD' && <NavLink to="/club-requests">Requests</NavLink>}
           {/* ABOUT */}
           {/* <a
             href="#about"
@@ -138,8 +139,8 @@ function Navbar() {
             Contact
           </span>
 
-          {/* ✅ ONLY AFTER LOGIN */}
-          {user && <NavLink to="/clubs">Clubs</NavLink>}
+          {/* ✅ Show Clubs only for CLUB_MEMBER or CLUB_HEAD */}
+          {(user?.role === 'CLUB_MEMBER' || user?.role === 'CLUB_HEAD') && <NavLink to="/clubs">Clubs</NavLink>}
         </div>
 
         {/* AUTH */}
