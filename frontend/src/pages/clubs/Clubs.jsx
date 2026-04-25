@@ -214,12 +214,10 @@ function Clubs() {
           {history.length > 0 ? (
             history.map((item) => (
               <div className="history-card" key={item.id || item.club}>
-                <div className="history-card-left">
-                  <h4>{item.club}</h4>
-                  <span className={`status ${item.status}`}>
-                    {item.status}
-                  </span>
-                </div>
+                <h4>{item.club}</h4>
+                <span className={`status ${item.status}`}>
+                  {item.status}
+                </span>
                 <button
                   className="delete-btn"
                   onClick={() => handleDeleteRequest(item.id)}

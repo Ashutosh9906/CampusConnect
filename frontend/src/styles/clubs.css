@@ -438,12 +438,6 @@
   gap: 4px;
 }
 /*added*/
-.history-card-left {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-/*added*/
 .delete-btn {
   align-self: flex-end;
   white-space: nowrap;
@@ -509,6 +503,7 @@
   text-transform: uppercase;
 
   border: 1px solid transparent; /* thinner feel */
+  margin-left: 12px; /* add space after club name */
 }
 
 /* Pending — amber glass */
