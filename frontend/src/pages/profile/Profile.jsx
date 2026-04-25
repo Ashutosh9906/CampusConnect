@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import "../../styles/profile.css";
 
@@ -177,6 +177,7 @@ export default function Profile() {
       const updated = { ...user, role: pendingRole };
       setUser(updated);
       localStorage.setItem("user", JSON.stringify(updated));
+      window.dispatchEvent(new Event("userUpdated"));
 
     } catch (err) {
       console.error(err);

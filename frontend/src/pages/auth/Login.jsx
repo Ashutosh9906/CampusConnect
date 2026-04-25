@@ -1,10 +1,10 @@
   import { useState } from "react";
-  import { Link, useLocation, useNavigate } from "react-router-dom";
-  import GoogleButton from "../../components/auth/GoogleButton";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import GoogleButton from "../../components/auth/GoogleButton";
 
-  import "../../styles/auth.css";
-  import "../../styles/form.css";
   import illustration from "../../assets/login-illustration.svg";
+import "../../styles/auth.css";
+import "../../styles/form.css";
 
   function Login() {
     const API = import.meta.env.VITE_API_URL;
@@ -39,6 +39,7 @@
         }
 
         localStorage.setItem("user", JSON.stringify(result.user));
+        window.dispatchEvent(new Event("userUpdated"));
         navigate("/");
       } catch (err) {
         console.error(err);

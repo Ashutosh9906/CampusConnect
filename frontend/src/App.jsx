@@ -1,23 +1,22 @@
-import { Routes, Route } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Route, Routes } from "react-router-dom";
 
-import Login from "./pages/auth/Login";
-import Register from "./pages/auth/Register";
+import RoleModal from "./components/common/RoleModal";
+import EventDetails from "./components/events/EventDetails.jsx";
+import Footer from "./components/Footer";
 import Navbar from "./components/layout/Navbar";
-import Landing from "./pages/landing/Landing";
 import CompleteProfile from "./pages/auth/CompleteProfile";
-import Clubs from "./pages/clubs/Clubs";
-import EventsPage from "./pages/events/EventsPage";
 import GoogleSuccessLogin from "./pages/auth/GoogleSuccessLogin";
 import GoogleSuccessRegister from "./pages/auth/GoogleSuccessRegister";
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
 import VerifyOTP from "./pages/auth/VerifyOTP";
 import ClubRequestsPage from "./pages/clubs/ClubRequestsPage";
-import Profile from "./pages/profile/Profile.jsx";
-import Footer from "./components/Footer";
-import { Outlet } from "react-router-dom";
+import Clubs from "./pages/clubs/Clubs";
+import EventsPage from "./pages/events/EventsPage";
 import ListEvent from "./pages/events/ListEvent";
-import EventDetails from "./components/events/EventDetails.jsx";
-import RoleModal from "./components/common/RoleModal";
+import Landing from "./pages/landing/Landing";
+import Profile from "./pages/profile/Profile.jsx";
 
 import "./styles/App.css";
 
@@ -41,11 +40,27 @@ function App() {
 
   const [showRoleModal, setShowRoleModal] = useState(false);
 
+  const loadUser = () => {
+    const stored = localStorage.getItem("user");
+    setUser(stored ? JSON.parse(stored) : null);
+  };
+
   useEffect(() => {
     if (user && !user.role) {
       setShowRoleModal(true);
     }
   }, [user]);
+
+  useEffect(() => {
+    // Listen for user updates
+    window.addEventListener("storage", loadUser);
+    window.addEventListener("userUpdated", loadUser);
+
+    return () => {
+      window.removeEventListener("storage", loadUser);
+      window.removeEventListener("userUpdated", loadUser);
+    };
+  }, []);
 
   const handleRoleSelected = (role) => {
     const updatedUser = { ...user, role };

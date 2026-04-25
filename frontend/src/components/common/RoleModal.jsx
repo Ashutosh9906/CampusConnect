@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import "../../styles/roleModal.css";
 
 const API = import.meta.env.VITE_API_URL;
@@ -74,6 +74,7 @@ export default function RoleModal({ onRoleSelected }) {
       // 3. Persist role in localStorage
       const updatedUser = { ...user, role: selectedRole.label };
       localStorage.setItem("user", JSON.stringify(updatedUser));
+      window.dispatchEvent(new Event("userUpdated"));
 
       // 4. Notify parent
       onRoleSelected(selectedRole.label);

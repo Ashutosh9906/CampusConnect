@@ -43,6 +43,7 @@ function GoogleSuccessLogin() {
         }
 
         localStorage.setItem("user", JSON.stringify(result.user));
+        window.dispatchEvent(new Event("userUpdated"));
         navigate("/");
       } catch (err) {
         console.error(err);
