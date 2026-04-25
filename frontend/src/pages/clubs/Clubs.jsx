@@ -12,8 +12,6 @@ function Clubs() {
   const [history, setHistory] = useState([]);
 
   const [selectedClub, setSelectedClub] = useState(null);
-  const [showRequestBox, setShowRequestBox] = useState(false);
-  const [showRequestModal, setShowRequestModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   useEffect(() => {
@@ -93,16 +91,6 @@ function Clubs() {
     setShowConfirmModal(true);
   };
 
-  const handleOpenRequestModal = (club) => {
-    setSelectedClub(club);
-    setShowRequestModal(true);
-  };
-
-  const handleSubmitRequest = () => {
-    setShowRequestModal(false);
-    setShowConfirmModal(true);
-  };
-
   const handleConfirmRequest = async () => {
     const alreadyRequested = history.some(
       (item) =>
@@ -150,9 +138,7 @@ function Clubs() {
   };
 
   const handleCloseAll = () => {
-    setShowRequestModal(false);
     setShowConfirmModal(false);
-    setShowRequestBox(false);
     setSelectedClub(null);
   };
 
@@ -204,38 +190,20 @@ function Clubs() {
 
       {/* REQUEST TAB */}
       {activeTab === "request" && (
-        <div>
-          <button
-            className="open-request-btn"
-            onClick={() => setShowRequestBox(true)}
-          >
-            + Create New Request
-          </button>
+        <div className="request-box">
+          <h3>Available Clubs</h3>
 
-          {showRequestBox && (
-            <div className="request-box">
-              <h3>Available Clubs</h3>
-
-              {availableClubs.length > 0 ? (
-                availableClubs.map((club) => (
-                  <div className="request-card" key={club.id}>
-                    <span>{club.name}</span>
-                    <button onClick={() => handleOpenRequestModal(club)}>
-                      Create Request
-                    </button>
-                  </div>
-                ))
-              ) : (
-                <p>No clubs available</p>
-              )}
-
-              <button
-                className="close-btn"
-                onClick={() => setShowRequestBox(false)}
-              >
-                Close
-              </button>
-            </div>
+          {availableClubs.length > 0 ? (
+            availableClubs.map((club) => (
+              <div className="request-card" key={club.id}>
+                <span>{club.name}</span>
+                <button onClick={() => handleOpenConfirmModal(club)}>
+                  Create Request
+                </button>
+              </div>
+            ))
+          ) : (
+            <p>No clubs available</p>
           )}
         </div>
       )}
@@ -244,12 +212,20 @@ function Clubs() {
       {activeTab === "history" && (
         <div className="history-list">
           {history.length > 0 ? (
-            history.map((item, index) => (
-              <div className="history-card" key={index}>
-                <h4>{item.club}</h4>
-                <span className={`status ${item.status}`}>
-                  {item.status}
-                </span>
+            history.map((item) => (
+              <div className="history-card" key={item.id || item.club}>
+                <div className="history-card-left">
+                  <h4>{item.club}</h4>
+                  <span className={`status ${item.status}`}>
+                    {item.status}
+                  </span>
+                </div>
+                <button
+                  className="delete-btn"
+                  onClick={() => handleDeleteRequest(item.id)}
+                >
+                  Delete
+                </button>
               </div>
             ))
           ) : (
@@ -258,28 +234,6 @@ function Clubs() {
         </div>
       )}
 
-      {/* MODAL STEP 1 */}
-      {showRequestModal && (
-        <div className="modal-overlay">
-          <div className="modal-box">
-            <h3>Send Request</h3>
-            <p className="confirm-text">
-              Send request to join{" "}
-              <strong>{selectedClub?.name}</strong>?
-            </p>
-            <div className="modal-actions">
-              <button onClick={handleSubmitRequest}>
-                Submit Request
-              </button>
-              <button className="cancel-btn" onClick={handleCloseAll}>
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL STEP 2 */}
       {showConfirmModal && (
         <div className="modal-overlay">
           <div className="modal-box">
@@ -292,14 +246,8 @@ function Clubs() {
               <button onClick={handleConfirmRequest}>
                 Confirm Request
               </button>
-              <button
-                className="cancel-btn"
-                onClick={() => {
-                  setShowConfirmModal(false);
-                  setShowRequestModal(true);
-                }}
-              >
-                Back
+              <button className="cancel-btn" onClick={handleCloseAll}>
+                Cancel
               </button>
             </div>
           </div>
