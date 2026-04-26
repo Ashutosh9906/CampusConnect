@@ -144,7 +144,7 @@ function Navbar() {
           {user && (
             <NavLink to="/clubs">Clubs</NavLink>
           )}
-        </div>
+          </div>
 
         {/* AUTH */}
         <div className="navbar-action">
