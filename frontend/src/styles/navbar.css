@@ -92,7 +92,7 @@ span {
 .navbar-links span {
   text-decoration: none;
   font-family: "DM Sans", sans-serif;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
   color: var(--text-muted);
   position: relative;
@@ -181,6 +181,7 @@ span {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex: 1;
 }
 
 .navbar-logo-wrap img {
@@ -201,13 +202,14 @@ span {
   display: flex;
   gap: 36px;
   align-items: center;
+  justify-content: center;
 }
 
 /* Base link style */
 .navbar-links a {
   text-decoration: none;
   font-family: "DM Sans", sans-serif;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
   color: var(--text-muted);
   position: relative;
@@ -253,6 +255,8 @@ span {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex: 1;
+  justify-content: flex-end;
 }
 
 /* ============================================================
@@ -377,6 +381,10 @@ span {
     padding: 14px 16px;
   }
 
+  .navbar-logo-wrap {
+    flex: none;
+  }
+
   .navbar-links {
     flex-wrap: wrap;
     justify-content: flex-start;
@@ -385,6 +393,7 @@ span {
 
   .navbar-action {
     width: 100%;
+    flex: none;
     justify-content: flex-start;
   }
 
