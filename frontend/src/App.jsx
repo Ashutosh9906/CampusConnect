@@ -23,14 +23,14 @@ function App() {
 
   const [user, setUser] = useState(() => {
     const stored = localStorage.getItem("user");
-    return stored ? JSON.parse(stored) : null;
+    return stored && stored !== "undefined" ? JSON.parse(stored) : null;
   });
 
   const [showRoleModal, setShowRoleModal] = useState(false);
 
   const loadUser = async () => {
     const stored = localStorage.getItem("user");
-    const localUser = stored ? JSON.parse(stored) : null;
+    const localUser = stored && stored !== "undefined" ? JSON.parse(stored) : null;
     setUser(localUser);
 
     if (!localUser) {

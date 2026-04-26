@@ -58,7 +58,7 @@ export default function RoleModal({ onRoleSelected }) {
     try {
       // 1. Read current user from localStorage
       const raw = localStorage.getItem("user");
-      const user = raw ? JSON.parse(raw) : {};
+      const user = raw && raw !== "undefined" ? JSON.parse(raw) : {};
 
       // 2. Call backend
       await fetch(`${API}/auth/select-club`, {

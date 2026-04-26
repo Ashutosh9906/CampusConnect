@@ -51,7 +51,7 @@ const getInitials = (name) => {
 function getStoredUser() {
   try {
     const raw = localStorage.getItem("user");
-    return raw
+    return raw && raw !== "undefined"
       ? JSON.parse(raw)
       : {
           name: "Aarav Shah",
