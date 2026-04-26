@@ -88,9 +88,7 @@ function App() {
 
     // Check token validity every 5 minutes
     const tokenCheckInterval = setInterval(() => {
-      if (user) {
-        loadUser();
-      }
+      loadUser();
     }, 5 * 60 * 1000); // 5 minutes
 
     return () => {
@@ -98,7 +96,7 @@ function App() {
       window.removeEventListener("userUpdated", loadUser);
       clearInterval(tokenCheckInterval);
     };
-  }, [user]);
+  }, []);
 
   const handleRoleSelected = (role) => {
     const updatedUser = { ...user, role };
