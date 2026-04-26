@@ -185,7 +185,6 @@ export const getCurrentUser = async (req, res) => {
       where: { id: userId },
       select: {
         id: true,
-        appwriteUserId: true,
         email: true,
         name: true,
         profileComplete: true,
