@@ -142,9 +142,9 @@ function Navbar() {
           </span>
 
           {/* ✅ Show Clubs only when a club role or active club exists */}
-          {((user?.clubRole && user.clubRole !== "STUDENT") || (user?.role && user.role !== "Student")) && (
+          {/* {((user?.clubRole && user.clubRole !== "STUDENT") || (user?.role && user.role !== "Student")) && ( */}
             <NavLink to="/clubs">Clubs</NavLink>
-          )}
+          {/* // )} */}
         </div>
 
         {/* AUTH */}
