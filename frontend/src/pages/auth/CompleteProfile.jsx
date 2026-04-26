@@ -1,11 +1,13 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../../styles/auth.css";
 import "../../styles/form.css";
-import { account } from "../../config/appwrite";
 
 function CompleteProfile() {
   const API = import.meta.env.VITE_API_URL;
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -21,7 +23,7 @@ function CompleteProfile() {
     }
 
     try {
-      const user = await account.get();
+      setLoading(true);
 
       const res = await fetch(`${API}/auth/complete-profile`, {
         method: "POST",
@@ -30,7 +32,6 @@ function CompleteProfile() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          appwriteUserId: user.$id,
           name,
           password,
           prn,
@@ -42,21 +43,17 @@ function CompleteProfile() {
       const result = await res.json();
 
       if (res.status === 400 || res.status === 404) {
-        window.location.href = `/login?message=${result.message}`;
+        navigate(`/login?message=${result.message}`);
         return;
       }
 
       if (res.status === 500 && !result.success) {
-        window.location.href = `/auth/failure?message=${encodeURIComponent(
-          result.message || "Registration failed"
-        )}`;
+        navigate(
+          `/auth/failure?message=${encodeURIComponent(
+            result.message || "Registration failed"
+          )}`
+        );
         return;
-      }
-
-      try {
-        await account.deleteSession("current");
-      } catch (err) {
-        console.log("Session cleanup failed (safe to ignore)");
       }
 
       // Success
@@ -65,6 +62,8 @@ function CompleteProfile() {
     } catch (err) {
       console.error(err);
       alert("Something went wrong");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -76,6 +75,7 @@ function CompleteProfile() {
 
           {/* PASSWORD */}
           <div className="form-group">
+            <label>Password</label>
             <div className="password-field">
               <input
                 type={showPassword ? "text" : "password"}
@@ -88,82 +88,59 @@ function CompleteProfile() {
                 className="eye-btn"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                {showPassword ? (
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    />
-                    <circle
-                      cx="12"
-                      cy="12"
-                      r="3"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    />
-                  </svg>
-                ) : (
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M3 3l18 18"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    />
-                    <path
-                      d="M10.58 10.58A3 3 0 0012 15a3 3 0 002.42-4.42"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    />
-                    <path
-                      d="M2 12s3.5-7 10-7 10 7 10 7a18.5 18.5 0 01-3.5 4.5"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    />
-                  </svg>
-                )}
+                {showPassword ? "🙈" : "👁️"}
               </span>
             </div>
           </div>
 
           {/* NAME */}
-          <input
-            type="text"
-            placeholder="Student Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
+          <div className="form-group">
+            <label>Full Name</label>
+            <input
+              type="text"
+              placeholder="Your Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </div>
 
           {/* PRN */}
-          <input
-            type="text"
-            placeholder="PRN Number"
-            value={prn}
-            onChange={(e) => setPrn(e.target.value)}
-          />
+          <div className="form-group">
+            <label>PRN</label>
+            <input
+              type="text"
+              placeholder="e.g., A0123456"
+              value={prn}
+              onChange={(e) => setPrn(e.target.value.toUpperCase())}
+              maxLength="8"
+            />
+          </div>
 
           {/* ROLL */}
-          <input
-            type="text"
-            placeholder="Roll Number"
-            value={roll}
-            onChange={(e) => setRoll(e.target.value)}
-          />
+          <div className="form-group">
+            <label>Roll Number</label>
+            <input
+              type="text"
+              placeholder="e.g., 12345"
+              value={roll}
+              onChange={(e) => setRoll(e.target.value)}
+              maxLength="5"
+            />
+          </div>
 
           {/* DIVISION */}
-          <input
-            type="text"
-            placeholder="Division"
-            value={division}
-            onChange={(e) => setDivision(e.target.value)}
-          />
+          <div className="form-group">
+            <label>Division</label>
+            <input
+              type="text"
+              placeholder="e.g., A, B, C"
+              value={division}
+              onChange={(e) => setDivision(e.target.value)}
+            />
+          </div>
 
-          {/* BUTTON */}
-          <button
-            className="btn-primary"
-            onClick={handleSubmit}
-          >
-            Create Account
+          <button className="btn-primary" onClick={handleSubmit} disabled={loading}>
+            {loading ? "Completing..." : "Complete Profile"}
           </button>
         </div>
       </div>

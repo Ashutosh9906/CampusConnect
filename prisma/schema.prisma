@@ -15,7 +15,6 @@ datasource db {
 
 model User {
   id              String  @id @default(cuid())
-  appwriteUserId  String  @unique
   email           String  @unique
   name            String?
   passwordHash    String?
@@ -28,6 +27,15 @@ model User {
   clubRoles        UserClubRole[]
   clubJoinRequests ClubJoinRequest[] @relation("UserRequests")
   reviewedRequests ClubJoinRequest[] @relation("ReviewedRequests")
+}
+
+model Otp {
+  id         String   @id @default(cuid())
+  otp        String   @unique
+  email      String   @unique
+  isVerified Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  expiresAt  DateTime
 }
 
 model Club {

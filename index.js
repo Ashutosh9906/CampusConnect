@@ -1,8 +1,8 @@
 //pre defined dependencies
-import express from "express";
-import { configDotenv } from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import { configDotenv } from "dotenv";
+import express from "express";
 
 configDotenv();
 
@@ -15,6 +15,7 @@ import errorHandling from "./middlewares/errorHandler.js";
 import authRoutes from "./routers/authRoutes.js";
 import clubRoutes from "./routers/clubRoutes.js";
 import eventRoutes from "./routers/eventRoutes.js";
+import otpRoutes from "./routers/otpRoutes.js";
 
 //middlewares
 app.use(cors({
@@ -31,6 +32,7 @@ app.use(express.json());
 
 //custom api
 app.use("/auth", authRoutes);
+app.use("/otp", otpRoutes);
 app.use("/club", clubRoutes);
 app.use("/event", eventRoutes);
 

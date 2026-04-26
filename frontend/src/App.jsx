@@ -6,8 +6,6 @@ import EventDetails from "./components/events/EventDetails.jsx";
 import Footer from "./components/Footer";
 import Navbar from "./components/layout/Navbar";
 import CompleteProfile from "./pages/auth/CompleteProfile";
-import GoogleSuccessLogin from "./pages/auth/GoogleSuccessLogin";
-import GoogleSuccessRegister from "./pages/auth/GoogleSuccessRegister";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import VerifyOTP from "./pages/auth/VerifyOTP";
@@ -19,18 +17,6 @@ import Landing from "./pages/landing/Landing";
 import Profile from "./pages/profile/Profile.jsx";
 
 import "./styles/App.css";
-
-function GoogleFailure() {
-  const params = new URLSearchParams(window.location.search);
-  const message = params.get("message");
-
-  return (
-    <div style={{ padding: "40px", fontSize: "18px" }}>
-      <h2>Google login failed</h2>
-      <p>{message}</p>
-    </div>
-  );
-}
 
 function App() {
   const API = import.meta.env.VITE_API_URL;
@@ -60,10 +46,31 @@ function App() {
       if (data?.success && data.user) {
         localStorage.setItem("user", JSON.stringify(data.user));
         setUser(data.user);
+      } else if (!data?.success && res.status === 401) {
+        // Token expired or invalid - logout user
+        handleAutoLogout();
       }
     } catch (err) {
       console.error("Failed to sync current user", err);
     }
+  };
+
+  const handleAutoLogout = async () => {
+    try {
+      await fetch(`${API}/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
+    
+    // Clear user data
+    localStorage.removeItem("user");
+    setUser(null);
+    
+    // Redirect to login
+    window.location.href = "/login?session=expired";
   };
 
   useEffect(() => {
@@ -79,11 +86,19 @@ function App() {
 
     loadUser();
 
+    // Check token validity every 5 minutes
+    const tokenCheckInterval = setInterval(() => {
+      if (user) {
+        loadUser();
+      }
+    }, 5 * 60 * 1000); // 5 minutes
+
     return () => {
       window.removeEventListener("storage", loadUser);
       window.removeEventListener("userUpdated", loadUser);
+      clearInterval(tokenCheckInterval);
     };
-  }, []);
+  }, [user]);
 
   const handleRoleSelected = (role) => {
     const updatedUser = { ...user, role };
@@ -173,17 +188,6 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/complete-profile" element={<CompleteProfile />} />
             <Route path="/verify-otp" element={<VerifyOTP />} />
-
-            {/* GOOGLE */}
-            <Route
-              path="/auth/success-login"
-              element={<GoogleSuccessLogin />}
-            />
-            <Route
-              path="/auth/success-register"
-              element={<GoogleSuccessRegister />}
-            />
-            <Route path="/auth/failure" element={<GoogleFailure />} />
           </Routes>
         </div>
 

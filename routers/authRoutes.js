@@ -1,18 +1,14 @@
 import { Router } from "express";
-import { getCurrentUser, getUserClubs, handleCompleteProfile, handleGoogleLogin, handleGoogleRegister, handleLogin, handleLogout, handleSelectClub } from "../controllers/authControllers.js";
+import { getCurrentUser, getUserClubs, handleCompleteProfile, handleLogin, handleLogout, handleSelectClub } from "../controllers/authControllers.js";
 import { checkAuthentication } from "../middlewares/auth.js";
 import { validateRequest } from "../middlewares/parseBody.js";
-import { completeProfileSchema, googleLoginSchema, googleRegisterSchema, loginSchema } from "../validators/userValidationSchema.js";
+import { loginSchema } from "../validators/userValidationSchema.js";
 
 const router = Router();
 
-router.post("/google-login", validateRequest(googleLoginSchema), handleGoogleLogin);
-
-router.post("/google-register", validateRequest(googleRegisterSchema), handleGoogleRegister);
-
-router.post("/complete-profile", validateRequest(completeProfileSchema), handleCompleteProfile);
-
 router.post("/login", validateRequest(loginSchema), handleLogin)
+
+router.post("/complete-profile", checkAuthentication, handleCompleteProfile)
 
 router.post("/logout", handleLogout)
 

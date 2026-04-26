@@ -4,114 +4,25 @@ import { comparePassword, createTokenUser, handleResponse, hashPassword } from "
 
 const prisma = new PrismaClient();
 
-
-export const handleGoogleLogin = async (req, res, next) => {
+export const handleCompleteProfile = async (req, res) => {
   try {
-    const { email } = res.locals.validated.body;
+    const userId = res.locals.user.userId;
+    const { name, password, prn, roll, division } = req.body;
 
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User does not exist. Please register first.",
-      });
+    // Validate inputs
+    if (!name || !password || !prn || !roll || !division) {
+      return handleResponse(res, 400, "All fields are required", false);
     }
 
-    const token = createTokenUser(user.id);
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "None",
-      maxAge: 30 * 60 * 1000,
-      path: "/"
-    });
+    // Hash password
+    const passwordHash = await hashPassword(password);
 
-    return res.status(200).json({
-      success: true,
-      message: "Login successful",
-      user,
-    });
-
-  } catch (err) {
-    console.error("Google Register Error:", err);
-
-    return res.status(500).json({
-      success: false,
-      message: "Something went wrong. Please try again later.",
-    });
-  }
-}
-
-export const handleGoogleRegister = async (req, res, next) => {
-  try {
-    const { appwriteUserId, email } = res.locals.validated.body;
-    console.log(res.locals.validated.body);
-
-    // 🔍 Check if user exists
-    let user = await prisma.user.findUnique({
-      where: { email, appwriteUserId },
-    });
-
-    // ✅ EXISTING USER → LOGIN
-    if (user) {
-      return res.status(409).json({
-        success: false,
-        message: "User Already Exist, Try Login",
-        isNewUser: false,
-      });
-    }
-
-    // ✅ NEW USER → REGISTER
-    user = await prisma.user.create({
-      data: {
-        appwriteUserId,
-        email,
-        profileComplete: false,
-      },
-    });
-
-    const token = createTokenUser(user.id);
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "None",
-      maxAge: 30 * 60 * 1000,
-      path: "/"
-    });
-
-    return res.status(201).json({
-      success: true,
-      message: "Registration successful",
-      user,
-      isNewUser: true,
-    });
-
-  } catch (err) {
-    // next(err);
-    console.error("Google Register Error:", err);
-
-    return res.status(500).json({
-      success: false,
-      message: "Something went wrong. Please try again later.",
-    });
-  }
-}
-
-export const handleCompleteProfile = async (req, res, next) => {
-  try {
-    const { appwriteUserId, name, password, prn, roll, division } = res.locals.validated.body;
-    console.log(res.body);
-
-    const hash = await hashPassword(password);
-
+    // Update user profile
     const user = await prisma.user.update({
-      where: { appwriteUserId },
+      where: { id: userId },
       data: {
         name,
-        passwordHash: hash,
+        passwordHash,
         passwordSet: true,
         prn,
         roll,
@@ -125,24 +36,18 @@ export const handleCompleteProfile = async (req, res, next) => {
       httpOnly: true,
       secure: true,
       sameSite: "None",
-      maxAge: 30 * 60 * 1000,
-      path: "/"
+      maxAge: 12 * 60 * 60 * 1000,
+      path: "/",
     });
 
-    res.status(201).json({
-      success: true,
-      message: "user register successfully",
-      user
+    return handleResponse(res, 201, "Profile completed successfully", true, {
+      user,
     });
   } catch (err) {
-    console.error("Google Register Error:", err);
-
-    return res.status(500).json({
-      success: false,
-      message: "Something went wrong. Please try again later.",
-    });
+    console.error("Complete Profile Error:", err);
+    return handleResponse(res, 500, "Failed to complete profile", false);
   }
-}
+};
 
 export const handleLogin = async (req, res, next) => {
   try {
@@ -171,7 +76,7 @@ export const handleLogin = async (req, res, next) => {
       httpOnly: true,
       secure: true,
       sameSite: "None",
-      maxAge: 30 * 60 * 1000,
+      maxAge: 12 * 60 * 60 * 1000,
       path: "/"
     });
 
@@ -227,7 +132,7 @@ export const handleSelectClub = async (req, res) => {
         httpOnly: true,
         secure: true,
         sameSite: "None",
-        maxAge: 30 * 60 * 1000,
+        maxAge: 12 * 60 * 60 * 1000,
         path: "/"
       });
 
@@ -256,7 +161,7 @@ export const handleSelectClub = async (req, res) => {
       httpOnly: true,
       secure: true,
       sameSite: "None",
-      maxAge: 30 * 60 * 1000,
+      maxAge: 12 * 60 * 60 * 1000,
       path: "/"
     });
 

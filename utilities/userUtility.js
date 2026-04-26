@@ -1,5 +1,5 @@
+import { compare, hash } from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { hash, compare } from "bcryptjs";
 
 export const handleResponse = (res, status, message, success, data = null) => {
   return res.status(status).json({
@@ -33,7 +33,7 @@ export function createTokenUser(userId, activeClubId = null) {
   const token = jwt.sign(
     payload,
     process.env.SECRET,
-    { expiresIn: "30m" }
+    { expiresIn: "12h" }
   );
 
   return token;

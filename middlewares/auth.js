@@ -1,5 +1,5 @@
-import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
+import jwt from "jsonwebtoken";
 import { handleResponse } from "../utilities/userUtility.js";
 
 const prisma = new PrismaClient();
@@ -26,6 +26,14 @@ export function checkAuthentication(req, res, next) {
     next();
 
   } catch (error) {
+    if (error.name === "TokenExpiredError") {
+      return res.status(401).json({
+        success: false,
+        message: "Token has expired. Please login again.",
+        code: "TOKEN_EXPIRED"
+      });
+    }
+    
     return res.status(401).json({
       success: false,
       message: "Invalid or expired token",
