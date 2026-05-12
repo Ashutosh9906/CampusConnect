@@ -5,12 +5,15 @@ async function sendEmail(recipientEmail, { subject, html }) {
 
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
-      port: 465,
-      secure: true,
+      port: 587,
+      secure: false,
+
       auth: {
         user: process.env.USER_EMAIL,
         pass: process.env.APP_PASS,
       },
+
+      family: 4
     });
 
     await transporter.verify();
