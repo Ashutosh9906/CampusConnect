@@ -1,0 +1,611 @@
+/* /* ============================================================
+   DARK THEME — Create Event Page
+   Matches landing.css design system.
+   Glassmorphism form, animated background orbs, gradient inputs,
+   speaker section, social buttons, and premium file upload zone.
+   ============================================================ */
+
+/* ============================================================
+   1. PAGE BASE
+   ============================================================ */
+.create-event-page {
+  min-height: 100vh;
+  padding-bottom: 80px;
+  background: var(--bg-base) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.create-event-page::before {
+  content: "";
+  position: absolute;
+  top: 80px;
+  left: -140px;
+  width: 420px;
+  height: 420px;
+  background: radial-gradient(
+    circle,
+    rgba(59, 130, 246, 0.18) 0%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  animation: float 10s ease-in-out infinite;
+  animation-delay: 0s;
+}
+
+.create-event-page::after {
+  content: "";
+  position: absolute;
+  bottom: 60px;
+  right: -140px;
+  width: 380px;
+  height: 380px;
+  background: radial-gradient(
+    circle,
+    rgba(124, 58, 237, 0.16) 0%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  animation: float 10s ease-in-out infinite;
+  animation-delay: -5s;
+}
+
+.create-event-wrapper {
+  position: relative;
+}
+
+.create-event-wrapper::before {
+  content: "";
+  position: absolute;
+  top: 40%;
+  left: 10%;
+  width: 260px;
+  height: 260px;
+  background: radial-gradient(
+    circle,
+    rgba(96, 165, 250, 0.08) 0%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  filter: blur(60px);
+  pointer-events: none;
+  animation: float 14s ease-in-out infinite;
+  animation-delay: -3s;
+}
+
+/* ============================================================
+   2. PAGE HEADING
+   ============================================================ */
+.create-event h2 {
+  font-family: "Syne", sans-serif;
+  font-size: clamp(24px, 4vw, 32px);
+  font-weight: 800;
+  text-align: center;
+  /* MODIFIED: increased bottom margin for breathing room */
+  margin-bottom: 36px;
+  letter-spacing: -0.4px;
+  background: var(--gradient-text);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: fadeUp 0.7s ease both;
+}
+
+/* ============================================================
+   3. FORM CARD — glassmorphism shell
+   ============================================================ */
+.event-form {
+  max-width: 700px;
+  margin: auto;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  /* MODIFIED: increased padding for premium spacious feel */
+  padding: 48px 52px;
+  border-radius: 20px;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  /* MODIFIED: increased gap for consistent vertical rhythm */
+  gap: 22px;
+  position: relative;
+  z-index: 1;
+  animation: fadeUp 0.65s 0.1s cubic-bezier(0.4, 0, 0.2, 1) both;
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition);
+}
+
+.event-form:hover {
+  border-color: rgba(96, 165, 250, 0.14);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+}
+
+/* ============================================================
+   4. INPUTS & TEXTAREA
+   ============================================================ */
+.event-form input,
+.event-form textarea {
+  width: 100%;
+  /* MODIFIED: slightly more vertical padding for taller, more readable inputs */
+  padding: 14px 18px;
+  border-radius: 10px;
+  border: 1px solid var(--text-faint);
+  background: rgba(255, 255, 255, 0.04) !important;
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  color: var(--text-primary) !important;
+  outline: none;
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition),
+    background var(--transition);
+}
+
+.event-form input::placeholder,
+.event-form textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 0.65;
+}
+
+.event-form input:focus,
+.event-form textarea:focus {
+  border-color: var(--accent);
+  background: rgba(59, 130, 246, 0.06) !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
+}
+
+.event-form input[type="file"] {
+  border: none !important;
+  background: transparent !important;
+  padding: 0;
+  color: var(--text-muted);
+}
+
+/* ============================================================
+   5. BUTTONS
+   ============================================================ */
+.event-form button {
+  padding: 13px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  transition:
+    transform var(--transition),
+    box-shadow var(--transition),
+    background var(--transition);
+}
+
+.event-form button[type="button"] {
+  background: rgba(255, 255, 255, 0.07) !important;
+  color: var(--text-muted) !important;
+  border: 1px solid var(--border-glass) !important;
+  letter-spacing: 0.2px;
+}
+
+.event-form button[type="button"]:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: var(--text-primary) !important;
+  border-color: rgba(96, 165, 250, 0.25) !important;
+  transform: translateY(-1px);
+}
+
+.event-form .primary-btn {
+  background: var(--gradient-btn) !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 22px rgba(59, 130, 246, 0.35);
+  animation: pulseGlow 3s ease-in-out infinite;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  /* ADDED: top margin to visually separate submit from form body */
+  margin-top: 10px;
+}
+
+.event-form .primary-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(59, 130, 246, 0.52);
+  animation-play-state: paused;
+}
+
+/* ============================================================
+   6. SPEAKER SECTION
+   ============================================================ */
+.speaker-section {
+  /* MODIFIED: more generous top spacing for clear section separation */
+  margin-top: 20px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border-glass);
+  /* ADDED: flex column layout for consistent internal spacing */
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.speaker-section h3 {
+  font-family: "Syne", sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  /* MODIFIED: reduced bottom margin — gap handles spacing now */
+  margin-bottom: 4px;
+  color: var(--text-primary) !important;
+  position: relative;
+  padding-bottom: 10px;
+}
+
+.speaker-section h3::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 32px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-bright));
+  border-radius: 2px;
+  transition: width var(--transition);
+}
+
+.speaker-section:hover h3::after {
+  width: 100%;
+}
+
+/* ADDED: Individual speaker card — soft glass separation */
+.speaker-block {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px 22px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  transition:
+    border-color var(--transition),
+    background var(--transition);
+}
+
+.speaker-block:hover {
+  border-color: rgba(96, 165, 250, 0.14);
+  background: rgba(59, 130, 246, 0.03);
+}
+
+/* ADDED: Remove speaker button — aligned to right, subtle red tone on hover */
+.speaker-block button[type="button"]:last-of-type {
+  align-self: flex-end;
+  padding: 9px 18px;
+  font-size: 13px;
+  min-width: unset;
+  width: auto;
+  color: var(--text-muted) !important;
+  border-color: rgba(239, 68, 68, 0.2) !important;
+}
+
+.speaker-block button[type="button"]:last-of-type:hover {
+  background: rgba(239, 68, 68, 0.08) !important;
+  border-color: rgba(239, 68, 68, 0.45) !important;
+  color: #f87171 !important;
+}
+
+/* ADDED: "+ Add Speaker" button — full width, sits below all speaker cards */
+.speaker-section > button[type="button"] {
+  width: 100%;
+  padding: 13px;
+  margin-top: 4px;
+  border: 1px dashed rgba(96, 165, 250, 0.3) !important;
+  background: rgba(59, 130, 246, 0.04) !important;
+  color: var(--accent-bright) !important;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  border-radius: 10px;
+  transition:
+    background var(--transition),
+    border-color var(--transition),
+    transform var(--transition);
+}
+
+.speaker-section > button[type="button"]:hover {
+  background: rgba(59, 130, 246, 0.09) !important;
+  border-color: rgba(96, 165, 250, 0.55) !important;
+  color: var(--text-primary) !important;
+  transform: translateY(-1px);
+}
+
+/* ============================================================
+   7. SOCIAL BUTTONS
+   ============================================================ */
+.social-buttons {
+  display: flex;
+  gap: 14px;
+  /* MODIFIED: tighter vertical margin — speaker-block gap handles spacing */
+  margin: 4px 0 0;
+  flex-wrap: wrap;
+}
+
+.social-btn {
+  flex: 1;
+  min-width: 120px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-family: "DM Sans", sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  background: var(--gradient-btn) !important;
+  color: #ffffff !important;
+  border: none !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 2px 10px rgba(59, 130, 246, 0.28);
+  transition:
+    transform var(--transition),
+    box-shadow var(--transition);
+}
+
+.social-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 10px rgba(59, 130, 246, 0.46) !important;
+  filter: brightness(1.1);
+}
+
+/* ============================================================
+   8. FILE UPLOAD ZONE
+   ============================================================ */
+.file-upload {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* MODIFIED: slightly taller for more premium feel */
+  padding: 32px 18px;
+  border: 2px dashed rgba(59, 130, 246, 0.4);
+  border-radius: 14px;
+  cursor: pointer;
+  background: rgba(59, 130, 246, 0.04) !important;
+  transition:
+    border-color var(--transition),
+    background var(--transition),
+    box-shadow var(--transition);
+}
+
+.file-upload:hover {
+  border-color: var(--accent-bright);
+  background: rgba(59, 130, 246, 0.09) !important;
+  box-shadow:
+    0 0 0 4px rgba(59, 130, 246, 0.1),
+    inset 0 0 30px rgba(59, 130, 246, 0.05);
+}
+
+.file-upload input {
+  display: none;
+}
+
+.upload-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: var(--accent-bright) !important;
+  font-family: "DM Sans", sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  transition: color var(--transition);
+}
+
+.file-upload:hover .upload-content {
+  color: var(--text-primary) !important;
+}
+
+.upload-icon {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  filter: brightness(0) saturate(100%) invert(55%) sepia(80%) saturate(400%)
+    hue-rotate(195deg);
+  transition:
+    transform var(--transition),
+    filter var(--transition);
+}
+
+.file-upload:hover .upload-icon {
+  transform: translateY(-3px) scale(1.08);
+  filter: brightness(0) saturate(100%) invert(75%) sepia(40%) saturate(300%)
+    hue-rotate(195deg);
+}
+
+/* ============================================================
+   9. ACCESS DENIED
+   ============================================================ */
+.no-access {
+  text-align: center;
+  padding: 120px 20px;
+  color: var(--text-muted) !important;
+  font-family: "DM Sans", sans-serif;
+  font-size: 16px;
+  animation: fadeUp 0.6s ease both;
+}
+
+.no-access h2,
+.no-access h3 {
+  font-family: "Syne", sans-serif;
+  font-weight: 700;
+  background: var(--gradient-text);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 16px;
+}
+
+/* ============================================================
+   10. RESPONSIVE
+   ============================================================ */
+@media (max-width: 768px) {
+  .event-form {
+    /* MODIFIED: balanced padding on tablet */
+    padding: 32px 28px;
+    border-radius: 16px;
+    gap: 18px;
+  }
+
+  /* MODIFIED: tighter speaker card on tablet */
+  .speaker-block {
+    padding: 16px 18px;
+    gap: 12px;
+  }
+
+  .social-buttons {
+    flex-direction: column;
+  }
+
+  .social-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .create-event h2 {
+    font-size: 24px;
+    margin-bottom: 24px;
+  }
+
+  .event-form {
+    padding: 24px 18px;
+    gap: 14px;
+  }
+
+  .file-upload {
+    padding: 22px 14px;
+  }
+
+  /* MODIFIED: compact speaker card on mobile */
+  .speaker-block {
+    padding: 14px 14px;
+    gap: 10px;
+    border-radius: 12px;
+  }
+
+  /* MODIFIED: remove speaker button full width on mobile */
+  .speaker-block button[type="button"]:last-of-type {
+    align-self: stretch;
+    width: 100%;
+  }
+}
+
+.btn-spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.primary-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* ============================================================
+   11. TOAST POPUP NOTIFICATION
+   ============================================================ */
+.toast-popup {
+  position: fixed;
+  bottom: 40px;
+  right: -400px;
+  background: rgba(17, 24, 39, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 16px 24px;
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  z-index: 9999;
+  min-width: 300px;
+  transition: right 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.toast-popup.show {
+  right: 40px;
+}
+
+/* Fade out transition - it will slide back to right */
+.toast-popup:not(.show) {
+  transition: right 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53);
+}
+
+.toast-content {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 6px;
+}
+
+.toast-icon {
+  font-size: 22px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+.toast-text {
+  font-family: "Syne", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: 0.2px;
+}
+
+.toast-popup.success {
+  border-left: 4px solid var(--accent, #3b82f6);
+}
+
+.toast-popup.error {
+  border-left: 4px solid #ef4444;
+}
+
+.toast-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: var(--gradient-btn, linear-gradient(135deg, #3b82f6, #8b5cf6));
+  width: 100%;
+}
+
+.toast-popup.error .toast-progress {
+  background: #ef4444;
+}
+
+.toast-popup.show .toast-progress {
+  animation: toastProgress 3s linear forwards;
+}
+
+@keyframes toastProgress {
+  0% { width: 100%; }
+  100% { width: 0%; }
+}
+
+@media (max-width: 480px) {
+  .toast-popup {
+    bottom: 24px;
+    right: -100%;
+    min-width: calc(100vw - 48px);
+  }
+  .toast-popup.show {
+    right: 24px;
+  }
+}
