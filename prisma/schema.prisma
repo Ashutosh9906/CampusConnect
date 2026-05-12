@@ -27,6 +27,7 @@ model User {
   clubRoles        UserClubRole[]
   clubJoinRequests ClubJoinRequest[] @relation("UserRequests")
   reviewedRequests ClubJoinRequest[] @relation("ReviewedRequests")
+  deletedEvents    DeletedEvent[]
 }
 
 model Otp {
@@ -47,7 +48,8 @@ model Club {
   members          UserClubRole[]
   clubJoinRequests ClubJoinRequest[]
 
-  events Event[]
+  events        Event[]
+  deletedEvents DeletedEvent[]
 }
 
 model UserClubRole {
@@ -101,7 +103,7 @@ model Event {
   id String @id @default(cuid())
 
   clubId String
-  club   Club @relation(fields: [clubId], references: [id])
+  club   Club   @relation(fields: [clubId], references: [id])
 
   name        String
   description String?
@@ -118,7 +120,7 @@ model Event {
 
   brochureUrl String?
 
-  speakers Speaker[]   // ✅ MULTIPLE SPEAKERS
+  speakers Speaker[] // ✅ MULTIPLE SPEAKERS
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -127,12 +129,48 @@ model Event {
 model Speaker {
   id String @id @default(cuid())
 
-  name String
+  name     String
   linkedin String?
-  github String?
+  github   String?
 
   eventId String
-  event   Event @relation(fields: [eventId], references: [id])
+  event   Event  @relation(fields: [eventId], references: [id])
 
   createdAt DateTime @default(now())
+}
+
+model DeletedEvent {
+  id String @id @default(cuid())
+
+  // Original Event Reference
+  originalEventId String
+
+  clubId String
+  club   Club   @relation(fields: [clubId], references: [id])
+
+  name        String
+  description String?
+  venue       String
+
+  date DateTime
+
+  duration String?
+
+  hostName String
+
+  contactEmail String?
+
+  contactPhones String[]
+
+  registrationLink String?
+
+  brochureUrl String?
+
+  // Audit fields
+  deletedByUserId String
+  deletedByUser   User   @relation(fields: [deletedByUserId], references: [id])
+
+  deletedByRole String
+
+  deletedAt DateTime @default(now())
 }
