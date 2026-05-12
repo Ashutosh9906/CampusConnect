@@ -2,14 +2,19 @@ import nodemailer from "nodemailer";
 
 async function sendEmail(recipientEmail, { subject, html }) {
   try {
-    // ✅ create transporter HERE (after env is loaded)
+
     const transporter = nodemailer.createTransport({
-      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
       auth: {
         user: process.env.USER_EMAIL,
         pass: process.env.APP_PASS,
       },
     });
+
+    await transporter.verify();
+    console.log("SMTP Ready");
 
     const info = await transporter.sendMail({
       from: process.env.USER_EMAIL,
@@ -22,13 +27,9 @@ async function sendEmail(recipientEmail, { subject, html }) {
     return true;
 
   } catch (error) {
-    console.log("❌ Email Error:", error.message);
+    console.log("❌ Email Error:", error);
     return false;
   }
 }
 
-// export { sendEmail };
-
-export {
-  sendEmail
-}
+export { sendEmail };
