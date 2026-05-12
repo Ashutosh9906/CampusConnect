@@ -18,17 +18,22 @@ import eventRoutes from "./routers/eventRoutes.js";
 import otpRoutes from "./routers/otpRoutes.js";
 
 //middlewares
-app.use(cors({
-  origin: "https://campus-connect-nine-virid.vercel.app", // 👈 add https://
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://campus-connect-nine-virid.vercel.app",
+    ],
+    credentials: true,
+  }),
+);
+
 // app.use(cors({
 //   origin: "https://campusconnect-3-kyzk.onrender.com",
 //   credentials: true
 // }));
 app.use(cookieParser());
 app.use(express.json());
-
 
 //custom api
 app.use("/auth", authRoutes);

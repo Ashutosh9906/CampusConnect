@@ -38,7 +38,7 @@ function Register() {
       const res = await fetch(`${API}/otp/send-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email })
+        body: JSON.stringify({ email }),
       });
 
       const data = await res.json();
@@ -73,7 +73,7 @@ function Register() {
       const res = await fetch(`${API}/otp/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp: otpValue })
+        body: JSON.stringify({ email, otp: otpValue }),
       });
 
       const data = await res.json();
@@ -109,7 +109,7 @@ function Register() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ email, password, name, prn, roll, division })
+        body: JSON.stringify({ email, password, name, prn, roll, division }),
       });
 
       const data = await res.json();
@@ -149,7 +149,16 @@ function Register() {
               <h3>Create your account</h3>
 
               {error && (
-                <div style={{ background: "#ffe5e5", color: "#b30000", padding: "10px", borderRadius: "6px", marginBottom: "15px", fontSize: "14px" }}>
+                <div
+                  style={{
+                    background: "#ffe5e5",
+                    color: "#b30000",
+                    padding: "10px",
+                    borderRadius: "6px",
+                    marginBottom: "15px",
+                    fontSize: "14px",
+                  }}
+                >
                   {error}
                 </div>
               )}
@@ -164,11 +173,21 @@ function Register() {
                 />
               </div>
 
-              <button className="btn-primary" onClick={handleSendOTP} disabled={loading}>
+              <button
+                className="btn-primary"
+                onClick={handleSendOTP}
+                disabled={loading}
+              >
                 {loading ? "Sending..." : "Send OTP"}
               </button>
 
-              <p style={{ marginTop: "15px", textAlign: "center", fontSize: "14px" }}>
+              <p
+                style={{
+                  marginTop: "15px",
+                  textAlign: "center",
+                  fontSize: "14px",
+                }}
+              >
                 Already have an account? <a href="/login">Sign in</a>
               </p>
             </>
@@ -180,25 +199,55 @@ function Register() {
               <h3>Email Verification</h3>
 
               {error && (
-                <div style={{ background: "#ffe5e5", color: "#b30000", padding: "10px", borderRadius: "6px", marginBottom: "15px", fontSize: "14px" }}>
+                <div
+                  style={{
+                    background: "#ffe5e5",
+                    color: "#b30000",
+                    padding: "10px",
+                    borderRadius: "6px",
+                    marginBottom: "15px",
+                    fontSize: "14px",
+                  }}
+                >
                   {error}
                 </div>
               )}
 
-              <p style={{ fontSize: "14px", color: "#666", marginBottom: "15px" }}>
+              <p
+                style={{
+                  fontSize: "14px",
+                  color: "#666",
+                  marginBottom: "15px",
+                }}
+              >
                 Enter the 6-digit OTP sent to {email}
               </p>
 
               <OTPInput otp={otp} setOtp={setOtp} />
 
-              <button className="btn-primary" onClick={handleVerifyOTP} disabled={loading}>
+              <button
+                className="btn-primary"
+                onClick={handleVerifyOTP}
+                disabled={loading}
+              >
                 {loading ? "Verifying..." : "Verify OTP"}
               </button>
 
               <button
                 className="btn-secondary"
                 onClick={() => setStep(1)}
-                style={{ marginTop: "10px", background: "#f0f0f0", color: "#333" }}
+                style={{
+                  marginTop: "12px",
+                  width: "100%",
+                  padding: "12px",
+                  borderRadius: "10px",
+                  border: "1px solid rgba(255,255,255,0.08)",
+                  background: "rgba(255,255,255,0.06)",
+                  color: "#e8f0fe",
+                  fontWeight: "600",
+                  cursor: "pointer",
+                  transition: "all 0.3s ease",
+                }}
               >
                 Back
               </button>
@@ -211,7 +260,16 @@ function Register() {
               <h3>Complete your profile</h3>
 
               {error && (
-                <div style={{ background: "#ffe5e5", color: "#b30000", padding: "10px", borderRadius: "6px", marginBottom: "15px", fontSize: "14px" }}>
+                <div
+                  style={{
+                    background: "#ffe5e5",
+                    color: "#b30000",
+                    padding: "10px",
+                    borderRadius: "6px",
+                    marginBottom: "15px",
+                    fontSize: "14px",
+                  }}
+                >
                   {error}
                 </div>
               )}
@@ -235,7 +293,10 @@ function Register() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
-                  <span className="eye-btn" onClick={() => setShowPassword(!showPassword)}>
+                  <span
+                    className="eye-btn"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
                     {showPassword ? "🙈" : "👁️"}
                   </span>
                 </div>
@@ -273,14 +334,29 @@ function Register() {
                 />
               </div>
 
-              <button className="btn-primary" onClick={handleRegister} disabled={loading}>
+              <button
+                className="btn-primary"
+                onClick={handleRegister}
+                disabled={loading}
+              >
                 {loading ? "Registering..." : "Complete Registration"}
               </button>
 
               <button
                 className="btn-secondary"
-                onClick={() => setStep(2)}
-                style={{ marginTop: "10px", background: "#f0f0f0", color: "#333" }}
+                onClick={() => setStep(1)}
+                style={{
+                  marginTop: "12px",
+                  width: "100%",
+                  padding: "12px",
+                  borderRadius: "10px",
+                  border: "1px solid rgba(255,255,255,0.08)",
+                  background: "rgba(255,255,255,0.06)",
+                  color: "#e8f0fe",
+                  fontWeight: "600",
+                  cursor: "pointer",
+                  transition: "all 0.3s ease",
+                }}
               >
                 Back
               </button>
