@@ -289,7 +289,7 @@ function Register() {
                 <div className="password-field">
                   <input
                     type={showPassword ? "text" : "password"}
-                    placeholder="Create a strong password"
+                    placeholder="8+ chars, letter, number & symbol"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
@@ -306,7 +306,7 @@ function Register() {
                 <label>PRN</label>
                 <input
                   type="text"
-                  placeholder="e.g., A0123456"
+                  placeholder="8 uppercase letters/numbers"
                   value={prn}
                   onChange={(e) => setPrn(e.target.value.toUpperCase())}
                   maxLength="8"
@@ -317,7 +317,7 @@ function Register() {
                 <label>Roll Number</label>
                 <input
                   type="text"
-                  placeholder="e.g., 12345"
+                  placeholder="Exactly 5 digits"
                   value={roll}
                   onChange={(e) => setRoll(e.target.value)}
                   maxLength="5"
@@ -328,7 +328,7 @@ function Register() {
                 <label>Division</label>
                 <input
                   type="text"
-                  placeholder="e.g., A, B, C"
+                  placeholder="Maximum 5 characters"
                   value={division}
                   onChange={(e) => setDivision(e.target.value)}
                 />

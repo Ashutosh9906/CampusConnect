@@ -2,7 +2,6 @@ import { useState } from "react";
 import "../../styles/listEvent.css";
 import uploadIcon from "../../assets/upload.png";
 
-
 function CreateEvent() {
   const params = new URLSearchParams(window.location.search);
   const clubFromURL = params.get("club");
@@ -63,9 +62,10 @@ function CreateEvent() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const validPhones = formData.phones.filter(p => p.trim() !== "");
+    const validPhones = formData.phones.filter((p) => p.trim() !== "");
     if (!formData.email) return alert("Contact email is required");
-    if (validPhones.length === 0) return alert("At least one phone number is required");
+    if (validPhones.length === 0)
+      return alert("At least one phone number is required");
 
     // ✅ Use FormData instead of JSON
     const data = new FormData();
@@ -94,11 +94,11 @@ function CreateEvent() {
 
     fetch(`${API}/event`, {
       method: "POST",
-      body: data,              // ✅ NO Content-Type header — browser sets it with boundary
+      body: data, // ✅ NO Content-Type header — browser sets it with boundary
       credentials: "include",
     })
-      .then(res => res.json())
-      .then(res => {
+      .then((res) => res.json())
+      .then((res) => {
         if (res.success) {
           alert("Event Created Successfully!");
           window.location.href = "/clubs";
@@ -106,7 +106,7 @@ function CreateEvent() {
           alert(res.message || "Failed to create event");
         }
       })
-      .catch(err => console.log(err))
+      .catch((err) => console.log(err))
       .finally(() => setLoading(false));
   };
 
@@ -117,14 +117,25 @@ function CreateEvent() {
       <form onSubmit={handleSubmit} className="event-form">
         {/* FILE */}
         <label className="file-upload">
-          <input type="file" onChange={handleFile} accept="image/*,application/pdf" />
+          <input
+            type="file"
+            onChange={handleFile}
+            accept="image/*,application/pdf"
+          />
           <div className="upload-content">
             {preview ? (
-              <img src={preview} alt="preview" className="upload-icon" style={{ objectFit: "cover", borderRadius: "8px" }} />
+              <img
+                src={preview}
+                alt="preview"
+                className="upload-icon"
+                style={{ objectFit: "cover", borderRadius: "8px" }}
+              />
             ) : (
               <img src={uploadIcon} alt="upload" className="upload-icon" />
             )}
-            <span>{preview ? formData.brochure?.name : "Add Event Brochure"}</span>
+            <span>
+              {preview ? formData.brochure?.name : "Add Event Brochure"}
+            </span>
           </div>
         </label>
 
@@ -147,7 +158,27 @@ function CreateEvent() {
           required
         />
 
-        <input type="date" name="date" onChange={handleChange} required />
+        <input
+          type="date"
+          name="date"
+          min={
+            new Date(Date.now() + 2 * 24 * 60 * 60 * 1000)
+              .toISOString()
+              .split("T")[0]
+          }
+          onChange={handleChange}
+          required
+        />
+        <p
+          style={{
+            fontSize: "13px",
+            color: "#94a3b8",
+            marginTop: "-6px",
+            marginBottom: "10px",
+          }}
+        >
+          Event must be scheduled at least 2 days in advance.
+        </p>
         <input type="time" name="time" onChange={handleChange} required />
 
         <input
@@ -243,11 +274,7 @@ function CreateEvent() {
 
         {/* SUBMIT */}
         <button type="submit" className="primary-btn" disabled={loading}>
-          {loading ? (
-            <span className="btn-spinner" />
-          ) : (
-            "Create Event"
-          )}
+          {loading ? <span className="btn-spinner" /> : "Create Event"}
         </button>
       </form>
     </div>

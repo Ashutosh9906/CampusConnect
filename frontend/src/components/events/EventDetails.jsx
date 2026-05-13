@@ -171,7 +171,7 @@ function EventDetails() {
                 </button>
               )}
             </div>
-            {user?.clubRole === "CLUB_HEAD" && (
+            {user?.role?.toLowerCase() === event.category?.toLowerCase() && (
               <button
                 className="event-delete-btn"
                 onClick={() => setShowDeleteModal(true)}

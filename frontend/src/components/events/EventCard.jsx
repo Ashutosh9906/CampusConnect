@@ -25,11 +25,10 @@ import { Link } from "react-router-dom";
 //       <div className="event-image">
 //         <img src={image} alt={title} />
 //       </div>
-      
+
 //     </div>
 //   );
 // }
-
 
 // Remove the counter and static images array, or keep as fallback
 const FALLBACK_IMAGES = [
@@ -40,9 +39,10 @@ const FALLBACK_IMAGES = [
 let counter = 0;
 
 function EventCard({ id, title = "Tech Fest 2026", brochureUrl }) {
-  const image = brochureUrl || FALLBACK_IMAGES[counter % FALLBACK_IMAGES.length];
-  if (!brochureUrl) counter++;  // only increment for fallbacks
-  
+  const image =
+    brochureUrl || FALLBACK_IMAGES[counter % FALLBACK_IMAGES.length];
+  if (!brochureUrl) counter++; // only increment for fallbacks
+
   return (
     <div className="event-card">
       <div className="event-image">
