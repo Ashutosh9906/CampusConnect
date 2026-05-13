@@ -44,11 +44,11 @@ function EventDetails() {
             // 🔥 handle speakers (array → single for UI)
             speaker: e.speakers?.length
               ? {
-                  name: e.speakers[0].name,
-                  role: "Speaker",
-                  linkedin: e.speakers[0].linkedin,
-                  github: e.speakers[0].github,
-                }
+                name: e.speakers[0].name,
+                role: "Speaker",
+                linkedin: e.speakers[0].linkedin,
+                github: e.speakers[0].github,
+              }
               : null,
           };
 
@@ -209,12 +209,49 @@ function EventDetails() {
                   deleteInput.trim().toLowerCase() !==
                   event.title?.toLowerCase()
                 }
-                onClick={() => {
-                  // BACKEND DELETE API WILL COME HERE
-                  console.log("Delete event:", event.id);
+                onClick={async () => {
+                  try {
 
-                  setShowDeleteModal(false);
-                  setDeleteInput("");
+                    const API = import.meta.env.VITE_API_URL;
+
+                    const response = await fetch(
+                      `${API}/event/delete/${event.id}`,
+                      {
+                        method: "DELETE",
+                        credentials: "include",
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                          confirmationText: deleteInput,
+                        }),
+                      }
+                    );
+
+                    const data = await response.json();
+
+                    if (data.success) {
+
+                      alert("Event deleted successfully");
+
+                      setShowDeleteModal(false);
+                      setDeleteInput("");
+
+                      window.location.href = "/";
+
+                    } else {
+
+                      alert(data.message || "Delete failed");
+
+                    }
+
+                  } catch (error) {
+
+                    console.error(error);
+
+                    alert("Something went wrong");
+
+                  }
                 }}
               >
                 Confirm Delete
