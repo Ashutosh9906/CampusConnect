@@ -43,8 +43,8 @@ function Login() {
       if (res.status === 500 && !result.success) {
         navigate(
           `/login?message=${encodeURIComponent(
-            result.message || "Login failed"
-          )}`
+            result.message || "Login failed",
+          )}`,
         );
         return;
       }

@@ -1,4 +1,5 @@
-import { useParams } from "react-router-dom";
+// import { useParams } from "react-router-dom"; chanage 
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Navbar from "../layout/Navbar";
 import "../../styles/eventDetails.css";
@@ -6,6 +7,9 @@ import "../../styles/eventDetails.css";
 function EventDetails() {
   const { id } = useParams();
   const [event, setEvent] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteInput, setDeleteInput] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const API = import.meta.env.VITE_API_URL;
@@ -18,9 +22,11 @@ function EventDetails() {
 
           // 🔥 map backend → frontend structure
           const mappedEvent = {
+            clubId: e.clubId,
             id: e.id,
             title: e.name,
-            bannerUrl: e.brochureUrl ||
+            bannerUrl:
+              e.brochureUrl ||
               "https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&w=1400&q=80",
             date: new Date(e.date).toLocaleDateString(),
             time: new Date(e.date).toLocaleTimeString(),
@@ -32,19 +38,19 @@ function EventDetails() {
             registrationLink: e.registrationLink,
 
             organizer: {
-              name: e.hostName || e.club?.name || "Club",   // 🔥 FIX
+              name: e.hostName || e.club?.name || "Club", // 🔥 FIX
               email: e.contactEmail,
-              phones: e.contactPhones,                     // 🔥 ADD
+              phones: e.contactPhones, // 🔥 ADD
             },
 
             // 🔥 handle speakers (array → single for UI)
             speaker: e.speakers?.length
               ? {
-                name: e.speakers[0].name,
-                role: "Speaker",
-                linkedin: e.speakers[0].linkedin,
-                github: e.speakers[0].github,
-              }
+                  name: e.speakers[0].name,
+                  role: "Speaker",
+                  linkedin: e.speakers[0].linkedin,
+                  github: e.speakers[0].github,
+                }
               : null,
           };
 
@@ -57,7 +63,8 @@ function EventDetails() {
   if (!event) {
     return <p style={{ padding: "40px" }}>Loading...</p>;
   }
-
+  const user = JSON.parse(localStorage.getItem("user"));
+  console.log(user);
   return (
     <>
       <Navbar />
@@ -90,9 +97,15 @@ function EventDetails() {
 
             <div className="box">
               <h2>Organizer</h2>
-              <p><strong>Host:</strong> {event.organizer.name}</p>
-              <p><strong>Email:</strong> {event.organizer.email}</p>
-              <p><strong>Contact:</strong> {event.organizer.phones?.join(", ")}</p>
+              <p>
+                <strong>Host:</strong> {event.organizer.name}
+              </p>
+              <p>
+                <strong>Email:</strong> {event.organizer.email}
+              </p>
+              <p>
+                <strong>Contact:</strong> {event.organizer.phones?.join(", ")}
+              </p>
             </div>
 
             {event.speaker && (
@@ -103,12 +116,20 @@ function EventDetails() {
 
                 <div className="social-links">
                   {event.speaker.linkedin && (
-                    <a href={event.speaker.linkedin} target="_blank">
+                    <a
+                      href={event.speaker.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       LinkedIn
                     </a>
                   )}
                   {event.speaker.github && (
-                    <a href={event.speaker.github} target="_blank">
+                    <a
+                      href={event.speaker.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       GitHub
                     </a>
                   )}
@@ -152,9 +173,91 @@ function EventDetails() {
                 </button>
               )}
             </div>
+            {user?.clubRole === "CLUB_HEAD" && (
+              <button
+                className="event-delete-btn"
+                onClick={() => setShowDeleteModal(true)}
+              >
+                Delete Event
+              </button>
+            )}
           </div>
         </div>
       </div>
+      {showDeleteModal && (
+        <div className="delete-modal-overlay">
+          <div className="delete-modal">
+            <h2>Delete Event</h2>
+
+            <p>
+              You are deleting the event:
+              <strong> {event.title}</strong>
+            </p>
+
+            <p>Please type the event name below to confirm deletion.</p>
+
+            <input
+              type="text"
+              placeholder="Enter event name"
+              value={deleteInput}
+              onChange={(e) => setDeleteInput(e.target.value)}
+              className="delete-input"
+            />
+
+            <div className="delete-actions">
+              <button
+                className="confirm-delete-btn"
+                disabled={
+                  deleteInput.trim().toLowerCase() !==
+                  event.title?.toLowerCase()
+                }
+                // onClick={() => {
+                //   // BACKEND DELETE API WILL COME HERE
+                //   console.log("Delete event:", event.id);
+
+                //   setShowDeleteModal(false);
+                //   setDeleteInput("");
+                // }}
+                onClick={async () => {
+  const API = import.meta.env.VITE_API_URL;
+  const token = localStorage.getItem("token");
+
+  const res = await fetch(`${API}/event/delete/${event.id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ confirmationText: deleteInput }),
+  });
+
+  const data = await res.json();
+
+  if (data.success) {
+    setShowDeleteModal(false);
+    setDeleteInput("");
+    navigate("/events");
+  } else {
+    alert(data.message || "Failed to delete event");
+  }
+}}
+              >
+                Confirm Delete
+              </button>
+
+              <button
+                className="cancel-delete-btn"
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setDeleteInput("");
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
