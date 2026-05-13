@@ -56,7 +56,7 @@ function getStoredUser() {
       : {
           name: "Aarav Shah",
           prn: "PRN2024001",
-          rollNumber: "CS-42",
+          roll: "CS-42",
           division: "B",
           role: "Student",
           email: "aarav@college.edu",
@@ -65,7 +65,7 @@ function getStoredUser() {
     return {
       name: "Aarav Shah",
       prn: "PRN2024001",
-      rollNumber: "CS-42",
+      roll: "CS-42",
       division: "B",
       role: "Student",
       email: "aarav@college.edu",
@@ -89,7 +89,7 @@ export default function Profile() {
     async function fetchRoles() {
       try {
         const res = await fetch(`${API}/auth/my-clubs`, {
-          credentials: "include"
+          credentials: "include",
         });
 
         const data = await res.json();
@@ -107,7 +107,6 @@ export default function Profile() {
 
         ROLE_OPTIONS = roles; // 🔥 mutate global (keeps JSX same)
         setRoleMap(map);
-
       } catch (err) {
         console.error(err);
         ROLE_OPTIONS = ["Student"];
@@ -123,7 +122,7 @@ export default function Profile() {
     setEditForm({
       name: user.name,
       prn: user.prn,
-      rollNumber: user.rollNumber,
+      roll: user.roll,
       division: user.division,
     });
     setShowRoleList(false);
@@ -166,19 +165,18 @@ export default function Profile() {
       await fetch(`${API}/auth/select-club`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         credentials: "include",
         body: JSON.stringify({
-          clubId: roleMap[pendingRole] // 🔥 correct mapping
-        })
+          clubId: roleMap[pendingRole], // 🔥 correct mapping
+        }),
       });
 
       const updated = { ...user, role: pendingRole };
       setUser(updated);
       localStorage.setItem("user", JSON.stringify(updated));
       window.dispatchEvent(new Event("userUpdated"));
-
     } catch (err) {
       console.error(err);
     }
@@ -316,15 +314,13 @@ export default function Profile() {
                 {editMode ? (
                   <input
                     className="pf-input"
-                    name="rollNumber"
-                    value={editForm.rollNumber}
+                    name="roll"
+                    value={editForm.roll}
                     onChange={handleEditChange}
                     placeholder="Enter roll number"
                   />
                 ) : (
-                  <p className="pf-field-value pf-field-mono">
-                    {user.rollNumber}
-                  </p>
+                  <p className="pf-field-value pf-field-mono">{user.roll}</p>
                 )}
               </div>
 
