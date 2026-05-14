@@ -159,7 +159,27 @@ function CreateEvent() {
           required
         />
 
-        <input type="date" name="date" onChange={handleChange} required />
+        <input
+          type="date"
+          name="date"
+          min={
+            new Date(Date.now() + 2 * 24 * 60 * 60 * 1000)
+              .toISOString()
+              .split("T")[0]
+          }
+          onChange={handleChange}
+          required
+        />
+        <p
+          style={{
+            fontSize: "13px",
+            color: "#94a3b8",
+            marginTop: "-6px",
+            marginBottom: "10px",
+          }}
+        >
+          Event must be scheduled at least 2 days in advance.
+        </p>
         <input type="time" name="time" onChange={handleChange} required />
 
         <input

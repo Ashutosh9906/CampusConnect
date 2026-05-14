@@ -19,7 +19,10 @@ import otpRoutes from "./routers/otpRoutes.js";
 
 //middlewares
 app.use(cors({
-  origin: "https://campus-connect-nine-virid.vercel.app", // 👈 add https://
+  origin: [
+    "http://localhost:5173",
+    "https://campus-connect-nine-virid.vercel.app"
+  ],
   credentials: true
 }));
 // app.use(cors({

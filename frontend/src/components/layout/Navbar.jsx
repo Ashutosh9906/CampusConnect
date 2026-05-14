@@ -98,7 +98,7 @@ function Navbar() {
           </NavLink>
           <NavLink to="/events">Events</NavLink>
           {/* Show Requests only for CLUB_HEAD */}
-          {(user?.clubRole === 'CLUB_HEAD' || user?.role === 'CLUB_HEAD') && (
+          {user?.role && user.role !== "Student" && (
             <NavLink to="/club-requests">Requests</NavLink>
           )}
           {/* ABOUT */}
@@ -144,7 +144,7 @@ function Navbar() {
           {user && (
             <NavLink to="/clubs">Clubs</NavLink>
           )}
-          </div>
+        </div>
 
         {/* AUTH */}
         <div className="navbar-action">
