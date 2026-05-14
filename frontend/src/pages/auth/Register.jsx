@@ -198,7 +198,18 @@ function Register() {
               <button
                 className="btn-secondary"
                 onClick={() => setStep(1)}
-                style={{ marginTop: "10px", background: "#f0f0f0", color: "#333" }}
+                style={{
+                  marginTop: "12px",
+                  width: "100%",
+                  padding: "12px",
+                  borderRadius: "10px",
+                  border: "1px solid rgba(255,255,255,0.08)",
+                  background: "rgba(255,255,255,0.06)",
+                  color: "#e8f0fe",
+                  fontWeight: "600",
+                  cursor: "pointer",
+                  transition: "all 0.3s ease",
+                }}
               >
                 Back
               </button>
