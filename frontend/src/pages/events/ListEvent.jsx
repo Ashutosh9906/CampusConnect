@@ -37,6 +37,19 @@ function CreateEvent() {
   });
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState({ show: false, message: "", type: "" });
+
+  const showToastMessage = (message, type = "success") => {
+    setToast({ show: true, message, type });
+    setTimeout(() => {
+      setToast(prev => ({ ...prev, show: false }));
+      if (type === "success") {
+        setTimeout(() => {
+          window.location.href = "/clubs";
+        }, 500); // Redirect after slide-out animation
+      }
+    }, 3000);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -100,10 +113,9 @@ function CreateEvent() {
       .then(res => res.json())
       .then(res => {
         if (res.success) {
-          alert("Event Created Successfully!");
-          window.location.href = "/clubs";
+          showToastMessage("Event Created Successfully!", "success");
         } else {
-          alert(res.message || "Failed to create event");
+          showToastMessage(res.message || "Failed to create event", "error");
         }
       })
       .catch(err => console.log(err))
@@ -147,7 +159,27 @@ function CreateEvent() {
           required
         />
 
-        <input type="date" name="date" onChange={handleChange} required />
+        <input
+          type="date"
+          name="date"
+          min={
+            new Date(Date.now() + 2 * 24 * 60 * 60 * 1000)
+              .toISOString()
+              .split("T")[0]
+          }
+          onChange={handleChange}
+          required
+        />
+        <p
+          style={{
+            fontSize: "13px",
+            color: "#94a3b8",
+            marginTop: "-6px",
+            marginBottom: "10px",
+          }}
+        >
+          Event must be scheduled at least 2 days in advance.
+        </p>
         <input type="time" name="time" onChange={handleChange} required />
 
         <input
@@ -250,6 +282,17 @@ function CreateEvent() {
           )}
         </button>
       </form>
+
+      {/* TOAST POPUP */}
+      <div className={`toast-popup ${toast.show ? "show" : ""} ${toast.type}`}>
+        <div className="toast-content">
+          <span className="toast-icon">
+            {toast.type === "success" ? "✅" : "❌"}
+          </span>
+          <span className="toast-text">{toast.message}</span>
+        </div>
+        <div className="toast-progress"></div>
+      </div>
     </div>
   );
 }
