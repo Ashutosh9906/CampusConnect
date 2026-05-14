@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,19 +8,19 @@ datasource db {
 }
 
 model User {
-  id              String  @id @default(cuid())
-  email           String  @unique
-  name            String?
-  passwordHash    String?
-  passwordSet     Boolean @default(false)
-  prn             String?
-  roll            String?
-  division        String?
-  profileComplete Boolean @default(false)
-
-  clubRoles        UserClubRole[]
-  clubJoinRequests ClubJoinRequest[] @relation("UserRequests")
+  id               String            @id @default(cuid())
+  email            String            @unique
+  name             String?
+  passwordHash     String?
+  passwordSet      Boolean           @default(false)
+  prn              String?
+  roll             String?
+  division         String?
+  profileComplete  Boolean           @default(false)
   reviewedRequests ClubJoinRequest[] @relation("ReviewedRequests")
+  clubJoinRequests ClubJoinRequest[] @relation("UserRequests")
+  deletedEvents    DeletedEvent[]
+  clubRoles        UserClubRole[]
 }
 
 model Otp {
@@ -39,51 +33,92 @@ model Otp {
 }
 
 model Club {
-  id              String @id @default(cuid())
-  name            String @unique
-  description     String
-  clubCoordinator String
-
-  members          UserClubRole[]
+  id               String            @id @default(cuid())
+  name             String            @unique
+  description      String
+  clubCoordinator  String
   clubJoinRequests ClubJoinRequest[]
-
-  events Event[]
+  deletedEvents    DeletedEvent[]
+  events           Event[]
+  members          UserClubRole[]
 }
 
 model UserClubRole {
-  id String @id @default(cuid())
-
+  id     String @id @default(cuid())
   userId String
   clubId String
   role   Role
-
-  user User @relation(fields: [userId], references: [id])
-  club Club @relation(fields: [clubId], references: [id])
+  club   Club   @relation(fields: [clubId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
 
   @@unique([userId, clubId, role])
 }
 
 model ClubJoinRequest {
-  id String @id @default(cuid())
-
-  userId String
-  clubId String
-  role   Role
-
-  status RequestStatus @default(PENDING)
-
-  message String?
-
+  id           String        @id @default(cuid())
+  userId       String
+  clubId       String
+  role         Role
+  status       RequestStatus @default(PENDING)
+  message      String?
   reviewedById String?
   reviewedAt   DateTime?
-
-  createdAt DateTime @default(now())
-
-  user       User  @relation("UserRequests", fields: [userId], references: [id])
-  club       Club  @relation(fields: [clubId], references: [id])
-  reviewedBy User? @relation("ReviewedRequests", fields: [reviewedById], references: [id])
+  createdAt    DateTime      @default(now())
+  club         Club          @relation(fields: [clubId], references: [id])
+  reviewedBy   User?         @relation("ReviewedRequests", fields: [reviewedById], references: [id])
+  user         User          @relation("UserRequests", fields: [userId], references: [id])
 
   @@unique([userId, clubId])
+}
+
+model Event {
+  id               String    @id @default(cuid())
+  clubId           String
+  name             String
+  description      String?
+  venue            String
+  date             DateTime
+  duration         String?
+  hostName         String
+  contactEmail     String?
+  contactPhones    String[]
+  registrationLink String?
+  brochureUrl      String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  club             Club      @relation(fields: [clubId], references: [id])
+  speakers         Speaker[]
+}
+
+model Speaker {
+  id        String   @id @default(cuid())
+  name      String
+  linkedin  String?
+  github    String?
+  eventId   String
+  createdAt DateTime @default(now())
+  event     Event    @relation(fields: [eventId], references: [id])
+}
+
+model DeletedEvent {
+  id               String   @id @default(cuid())
+  originalEventId  String
+  clubId           String
+  name             String
+  description      String?
+  venue            String
+  date             DateTime
+  duration         String?
+  hostName         String
+  contactEmail     String?
+  contactPhones    String[]
+  registrationLink String?
+  brochureUrl      String?
+  deletedByUserId  String
+  deletedByRole    String
+  deletedAt        DateTime @default(now())
+  club             Club     @relation(fields: [clubId], references: [id])
+  deletedByUser    User     @relation(fields: [deletedByUserId], references: [id])
 }
 
 enum RequestStatus {
@@ -95,44 +130,4 @@ enum RequestStatus {
 enum Role {
   CLUB_MEMBER
   CLUB_HEAD
-}
-
-model Event {
-  id String @id @default(cuid())
-
-  clubId String
-  club   Club @relation(fields: [clubId], references: [id])
-
-  name        String
-  description String?
-  venue       String
-  date        DateTime
-  duration    String?
-
-  hostName String
-
-  contactEmail  String?
-  contactPhones String[]
-
-  registrationLink String?
-
-  brochureUrl String?
-
-  speakers Speaker[]   // ✅ MULTIPLE SPEAKERS
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Speaker {
-  id String @id @default(cuid())
-
-  name String
-  linkedin String?
-  github String?
-
-  eventId String
-  event   Event @relation(fields: [eventId], references: [id])
-
-  createdAt DateTime @default(now())
 }
